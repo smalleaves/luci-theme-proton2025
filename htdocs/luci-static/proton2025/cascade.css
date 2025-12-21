@@ -965,6 +965,239 @@ table.assoclist td.cbi-section-actions button {
     table-layout: fixed;
 }
 
+/* =====================================================
+   Wireless - элегантное разделение модулей и сетей
+   ===================================================== */
+/* Модули радио (radio0, radio1) - тусклые заголовки секций */
+#cbi-wireless tr[data-section-id^="radio"] {
+    background: transparent;
+    border-left: none;
+    margin-top: 24px;
+    opacity: 0.7;
+}
+
+#cbi-wireless tr[data-section-id^="radio"]:first-child {
+    margin-top: 0;
+}
+
+#cbi-wireless tr[data-section-id^="radio"] td {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--proton-border);
+}
+
+#cbi-wireless tr[data-section-id^="radio"] td[data-name="_badge"] .ifacebadge {
+    background: transparent;
+    color: var(--proton-muted);
+    font-weight: 500;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+}
+
+#cbi-wireless tr[data-section-id^="radio"] td[data-name="_badge"] .ifacebadge img {
+    opacity: 0.5;
+}
+
+#cbi-wireless tr[data-section-id^="radio"] td[data-name="_stat"] big {
+    color: var(--proton-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+#cbi-wireless tr[data-section-id^="radio"] td[data-name="_stat"] {
+    color: var(--proton-muted);
+    font-size: 0.85rem;
+}
+
+#cbi-wireless tr[data-section-id^="radio"] .cbi-section-actions .cbi-button {
+    opacity: 0.7;
+    font-size: 0.85rem;
+    padding: 6px 12px;
+}
+
+/* WiFi сети (wifinet0, wifinet1) - ЯРКИЕ карточки с цветом частоты */
+#cbi-wireless tr[data-section-id^="wifinet"] {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--proton-radius);
+    margin: 8px 0 8px 0;
+    transition: all 0.2s ease;
+}
+
+#cbi-wireless tr[data-section-id^="wifinet"]:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#cbi-wireless tr[data-section-id^="wifinet"] td {
+    padding: 14px 16px;
+}
+
+/* wifinet0 под radio0 (2.4 GHz) - оранжевый акцент */
+/* Применяется только к строкам таблицы (tr), не к модальным окнам */
+tr#cbi-wireless-wifinet0 {
+    border-left: 4px solid #ff9800;
+    box-shadow: inset 0 0 0 1px rgba(255, 152, 0, 0.15);
+}
+
+tr#cbi-wireless-wifinet0 td[data-name="_badge"] .ifacebadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.15), rgba(255, 152, 0, 0.05));
+    border: 1px solid rgba(255, 152, 0, 0.3);
+    border-radius: var(--proton-radius-sm);
+    padding: 8px 12px;
+}
+
+tr#cbi-wireless-wifinet0 td[data-name="_badge"] .ifacebadge::after {
+    content: "2.4 GHz";
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ff9800, #ff6f00);
+    color: #fff;
+    white-space: nowrap;
+}
+
+/* wifinet1 под radio1 (5 GHz) - голубой акцент */
+/* Применяется только к строкам таблицы (tr), не к модальным окнам */
+tr#cbi-wireless-wifinet1 {
+    border-left: 4px solid #00bcd4;
+    box-shadow: inset 0 0 0 1px rgba(0, 188, 212, 0.15);
+}
+
+tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, rgba(0, 188, 212, 0.15), rgba(0, 188, 212, 0.05));
+    border: 1px solid rgba(0, 188, 212, 0.3);
+    border-radius: var(--proton-radius-sm);
+    padding: 8px 12px;
+}
+
+tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
+    content: "5 GHz";
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #00bcd4, #0097a7);
+    color: #fff;
+    white-space: nowrap;
+}
+
+#cbi-wireless tr[data-section-id^="wifinet"] td[data-name="_stat"] strong {
+    color: var(--proton-fg);
+}
+
+#cbi-wireless tr[data-section-id^="wifinet"] td[data-name="_stat"] {
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* =====================================================
+   Wireless Actions - Dropdown меню (⋮) на ПК
+   ===================================================== */
+@media (min-width: 801px) {
+    #cbi-wireless .cbi-section-actions {
+        position: relative;
+        overflow: visible !important;
+    }
+
+    #cbi-wireless .cbi-section-table {
+        overflow: visible !important;
+    }
+
+    #cbi-wireless .cbi-section-table-row {
+        overflow: visible !important;
+    }
+
+    /* Кнопка три точки */
+    #cbi-wireless .cbi-section-actions .actions-toggle {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--proton-border);
+        border-radius: var(--proton-radius-sm);
+        cursor: pointer;
+        transition: var(--proton-transition);
+        color: var(--proton-fg-secondary);
+        font-size: 1.3rem;
+        line-height: 1;
+        letter-spacing: 2px;
+        font-weight: bold;
+    }
+
+    #cbi-wireless .cbi-section-actions .actions-toggle:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--proton-fg);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Dropdown контейнер - скрыт по умолчанию */
+    #cbi-wireless .cbi-section-actions .actions-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 4px;
+        min-width: 160px;
+        padding: 6px;
+        background: rgba(20, 25, 35, 0.98);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--proton-border);
+        border-radius: var(--proton-radius);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        display: none;
+    }
+
+    /* Открытый dropdown */
+    #cbi-wireless .cbi-section-actions .actions-dropdown.open {
+        display: block;
+    }
+
+    /* Кнопки внутри dropdown */
+    #cbi-wireless .cbi-section-actions .actions-dropdown .cbi-button,
+    #cbi-wireless .cbi-section-actions .actions-dropdown button {
+        display: flex !important;
+        width: 100%;
+        justify-content: flex-start;
+        padding: 10px 14px;
+        margin: 2px 0;
+        border-radius: var(--proton-radius-sm);
+        font-size: 0.875rem;
+        background: transparent;
+        border: none;
+        color: var(--proton-fg-secondary);
+        cursor: pointer;
+        transition: var(--proton-transition);
+        text-align: left;
+    }
+
+    #cbi-wireless .cbi-section-actions .actions-dropdown .cbi-button:hover,
+    #cbi-wireless .cbi-section-actions .actions-dropdown button:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--proton-fg);
+    }
+
+    #cbi-wireless .cbi-section-actions .actions-dropdown .cbi-button-negative:hover {
+        background: rgba(255, 107, 107, 0.15);
+        color: var(--proton-danger);
+    }
+
+    #cbi-wireless .cbi-section-actions .actions-dropdown .cbi-button-action:hover {
+        background: rgba(94, 158, 255, 0.15);
+        color: var(--proton-accent);
+    }
+}
+
 #cbi-network-device table.cbi-section-table th,
 #cbi-network-device table.cbi-section-table td {
     padding: 10px 12px;
@@ -1621,18 +1854,25 @@ body.modal-overlay-active #modal_overlay {
     border-radius: var(--proton-radius-lg);
     box-shadow: var(--proton-shadow-md);
     width: 90%;
-    max-width: 500px;
-    max-height: 80vh;
+    max-width: 800px;
+    max-height: 85vh;
     overflow-y: auto;
-    padding: 24px;
+    padding: 28px;
+}
+
+/* Большие модальные окна для редактирования (Edit) */
+#modal_overlay>.modal:has(.cbi-section),
+#modal_overlay>.modal:has(.cbi-value) {
+    max-width: 900px;
 }
 
 .modal>h4:first-child {
-    margin: 0 0 12px 0;
-    padding: 0;
-    font-size: 15px;
+    margin: 0 0 16px 0;
+    padding: 0 0 12px 0;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--proton-fg);
+    border-bottom: 1px solid var(--proton-border);
 }
 
 /* =====================================================
@@ -1771,6 +2011,59 @@ body.modal-overlay-active #modal_overlay {
 }
 
 /* =====================================================
+   Mobile Menu Overlay
+   ===================================================== */
+#menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 998;
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#menu-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Кнопка закрытия панели в header */
+#mainmenu .menu-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--proton-border);
+    border-radius: 8px;
+    color: var(--proton-fg-secondary);
+    cursor: pointer;
+    transition: var(--proton-transition);
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+#mainmenu .menu-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--proton-fg);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+#mainmenu .menu-close:active {
+    transform: scale(0.95);
+}
+
+/* =====================================================
    Responsive Design - Mobile (max 800px)
    ===================================================== */
 @media only screen and (max-width: 800px) {
@@ -1862,21 +2155,22 @@ body.modal-overlay-active #modal_overlay {
     /* Sidebar as slide-out panel - position:fixed pulls it out of menubar flow */
     #mainmenu {
         position: fixed;
-        top: 64px;
+        top: 0;
         left: 0;
         bottom: 0;
-        width: 260px;
-        max-width: 80vw;
+        width: 320px;
+        max-width: 90vw;
         z-index: 999;
         transform: translateX(-100%);
-        transition: transform 0.25s ease-in-out;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         overflow-y: auto;
-        padding: 16px 0;
+        overflow-x: hidden;
+        padding: 64px 0 16px 0;
         background: rgba(15, 20, 25, 0.98);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
         border-right: 1px solid var(--proton-border);
-        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
+        box-shadow: 8px 0 32px rgba(0, 0, 0, 0.6);
     }
 
     #mainmenu.active {
@@ -1915,7 +2209,7 @@ body.modal-overlay-active #modal_overlay {
         position: static;
         max-height: 0;
         overflow: hidden;
-        transition: max-height 0.2s ease-in-out;
+        transition: max-height 0.3s ease-in-out;
         display: block;
         background: transparent;
         border: 0;
@@ -1926,7 +2220,8 @@ body.modal-overlay-active #modal_overlay {
 
     #mainmenu ul:not(.active)>li.selected>ul,
     #mainmenu li.active>ul {
-        max-height: 500px;
+        max-height: 800px;
+        overflow-y: auto;
     }
 
     /* Content adjustments */
@@ -1970,9 +2265,15 @@ body.modal-overlay-active #modal_overlay {
     td[data-title]::before {
         content: attr(data-title) ": ";
         font-weight: 600;
-        color: var(--proton-fg);
+        color: var(--proton-fg-secondary);
         display: inline-block;
-        min-width: 120px;
+        min-width: 100px;
+        margin-right: 8px;
+    }
+
+    /* Для ячеек без data-title показываем как есть */
+    td:not([data-title]) {
+        padding: 8px 0;
     }
 
     /* Form layout */
@@ -2023,8 +2324,546 @@ body.modal-overlay-active #modal_overlay {
     /* Modal */
     #modal_overlay>.modal {
         width: 95%;
-        margin: 20px;
-        max-height: calc(100vh - 40px);
+        max-width: none;
+        margin: 10px;
+        max-height: calc(100vh - 20px);
+        padding: 16px;
+    }
+
+    #modal_overlay>.modal:has(.cbi-section),
+    #modal_overlay>.modal:has(.cbi-value) {
+        max-width: none;
+    }
+
+    /* Улучшаем отступы для indicators в узких экранах */
+    #indicators {
+        gap: 4px;
+    }
+
+    #indicators>* {
+        padding: 4px 8px;
+        font-size: 0.8rem;
+    }
+
+    /* Network Interfaces - карточки на мобилке */
+    #cbi-network-interface table.cbi-section-table {
+        display: block;
+    }
+
+    #cbi-network-interface table.cbi-section-table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    #cbi-network-interface table.cbi-section-table tr {
+        display: flex;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--proton-border);
+        border-radius: var(--proton-radius);
+        padding: 0;
+        margin: 0 0 16px 0;
+        overflow: hidden;
+    }
+
+    #cbi-network-interface table.cbi-section-table tr:last-child {
+        margin-bottom: 0;
+    }
+
+    #cbi-network-interface table.cbi-section-table td {
+        display: block;
+        width: 100% !important;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--proton-border-light);
+    }
+
+    #cbi-network-interface table.cbi-section-table td:last-child {
+        border-bottom: none;
+    }
+
+    /* Ifacebox на мобилке - полная ширина */
+    #cbi-network-interface td[data-name="_ifacebox"] {
+        padding: 0;
+    }
+
+    #cbi-network-interface td[data-name="_ifacebox"] .ifacebox {
+        border: none;
+        border-radius: 0;
+        width: 100%;
+    }
+
+    #cbi-network-interface .ifacebox-head {
+        border-radius: 0;
+        font-size: 0.95rem;
+    }
+
+    #cbi-network-interface .ifacebox-body {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    /* Статистика интерфейса */
+    #cbi-network-interface td[data-name="_ifacestat"] {
+        background: rgba(255, 255, 255, 0.01);
+        font-size: 0.875rem;
+        line-height: 1.6;
+    }
+
+    #cbi-network-interface td[data-name="_ifacestat"] br {
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    /* Кнопки действий */
+    #cbi-network-interface td.cbi-section-actions {
+        display: flex !important;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    #cbi-network-interface td.cbi-section-actions>div {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        width: 100%;
+    }
+
+    #cbi-network-interface td.cbi-section-actions .cbi-button,
+    #cbi-network-interface td.cbi-section-actions .btn,
+    #cbi-network-interface td.cbi-section-actions button {
+        flex: 1 1 auto;
+        min-width: 80px;
+        text-align: center;
+        justify-content: center;
+    }
+
+    /* =====================================================
+       Wireless - элегантные карточки на мобилке
+       ===================================================== */
+    /* Модули радио - тусклые заголовки секций */
+    #cbi-wireless tr[data-section-id^="radio"] {
+        display: flex;
+        flex-direction: column;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--proton-border);
+        border-radius: 0;
+        padding: 0;
+        margin: 20px 0 8px 0;
+        overflow: visible;
+        opacity: 0.7;
+    }
+
+    #cbi-wireless tr[data-section-id^="radio"]:first-child {
+        margin-top: 0;
+    }
+
+    #cbi-wireless tr[data-section-id^="radio"] td[data-name="_badge"] {
+        background: transparent;
+        padding: 8px 0;
+        border: none;
+    }
+
+    #cbi-wireless tr[data-section-id^="radio"] td[data-name="_badge"]::after {
+        display: none;
+    }
+
+    #cbi-wireless tr[data-section-id^="radio"] td[data-name="_badge"] .ifacebadge {
+        background: transparent;
+        padding: 0;
+        border: none;
+        color: var(--proton-muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 600;
+    }
+
+    #cbi-wireless tr[data-section-id^="radio"] td[data-name="_stat"] {
+        padding: 8px 0;
+        background: transparent;
+        border: none;
+        font-size: 0.8rem;
+        color: var(--proton-muted);
+    }
+
+    #cbi-wireless tr[data-section-id^="radio"] td[data-name="_stat"] big {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--proton-muted);
+    }
+
+    #cbi-wireless tr[data-section-id^="radio"] td.cbi-section-actions {
+        padding: 8px 0;
+    }
+
+    #cbi-wireless tr[data-section-id^="radio"] .cbi-button {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+        opacity: 0.8;
+    }
+
+    /* WiFi сети - ЯРКИЕ карточки */
+    #cbi-wireless tr[data-section-id^="wifinet"] {
+        display: flex;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--proton-radius);
+        padding: 0;
+        margin: 0 0 16px 0;
+        overflow: hidden;
+    }
+
+    /* wifinet0 (2.4 GHz) */
+    #cbi-wireless-wifinet0 {
+        border-left: 4px solid #ff9800;
+    }
+
+    #cbi-wireless-wifinet0 td[data-name="_badge"] {
+        background: linear-gradient(135deg, rgba(255, 152, 0, 0.12), rgba(255, 152, 0, 0.04));
+    }
+
+    #cbi-wireless-wifinet0 td[data-name="_badge"] .ifacebadge::after {
+        content: "2.4 GHz";
+        margin-left: 8px;
+        padding: 3px 8px;
+        border-radius: 8px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #ff9800, #ff6f00);
+        color: #fff;
+    }
+
+    /* wifinet1 (5 GHz) */
+    #cbi-wireless-wifinet1 {
+        border-left: 4px solid #00bcd4;
+    }
+
+    #cbi-wireless-wifinet1 td[data-name="_badge"] {
+        background: linear-gradient(135deg, rgba(0, 188, 212, 0.12), rgba(0, 188, 212, 0.04));
+    }
+
+    #cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
+        content: "5 GHz";
+        margin-left: 8px;
+        padding: 3px 8px;
+        border-radius: 8px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #00bcd4, #0097a7);
+        color: #fff;
+    }
+
+    #cbi-wireless tr[data-section-id^="wifinet"] td[data-name="_badge"] {
+        padding: 14px 16px;
+        border: none;
+    }
+
+    #cbi-wireless tr[data-section-id^="wifinet"] td[data-name="_badge"] .ifacebadge {
+        background: transparent;
+        border: none;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    #cbi-wireless tr[data-section-id^="wifinet"] td[data-name="_stat"] {
+        padding: 14px 16px;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        border: none;
+    }
+
+    #cbi-wireless tr[data-section-id^="wifinet"] td[data-name="_stat"] strong {
+        color: var(--proton-fg);
+        font-weight: 600;
+    }
+
+    /* Общие стили для wireless таблиц на мобилке */
+    #cbi-wireless table.cbi-section-table {
+        display: block;
+    }
+
+    #cbi-wireless table.cbi-section-table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    #cbi-wireless table.cbi-section-table td {
+        display: block;
+        width: 100% !important;
+        border-bottom: 1px solid var(--proton-border-light);
+    }
+
+    #cbi-wireless table.cbi-section-table td:last-child {
+        border-bottom: none;
+    }
+
+    /* Wireless actions */
+    #cbi-wireless td.cbi-section-actions {
+        display: flex !important;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    #cbi-wireless td.cbi-section-actions>div {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        width: 100%;
+    }
+
+    #cbi-wireless td.cbi-section-actions .cbi-button,
+    #cbi-wireless td.cbi-section-actions .btn,
+    #cbi-wireless td.cbi-section-actions button {
+        flex: 1 1 auto;
+        min-width: 80px;
+        text-align: center;
+        justify-content: center;
+    }
+
+    /* =====================================================
+       Network Status Table (Wireless radios) - мобильная адаптация
+       ===================================================== */
+    .network-status-table {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .network-status-table>.ifacebox {
+        flex: 1 1 100%;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .network-status-table .ifacebox-body {
+        padding: 10px 12px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+
+    .network-status-table .ifacebox-body .nowrap {
+        white-space: normal !important;
+        word-break: break-word;
+    }
+
+    .network-status-table .ifacebox-body span {
+        font-size: 0.8rem;
+    }
+
+    .network-status-table .ifacebox-body strong {
+        font-size: 0.75rem;
+        color: var(--proton-muted);
+    }
+
+    .network-status-table .ifacebadge {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 12px;
+        margin-top: 8px;
+        font-size: 0.8rem;
+    }
+
+    .network-status-table .ifacebadge>span {
+        font-size: 0.8rem;
+    }
+
+    .network-status-table .ifacebadge img {
+        width: 24px;
+        height: 24px;
+        margin-bottom: 6px;
+    }
+
+    /* =====================================================
+       Associated Stations (assoclist) - карточки на мобилке
+       ===================================================== */
+    table.assoclist,
+    #wifi_assoclist_table {
+        display: block !important;
+    }
+
+    table.assoclist tbody,
+    #wifi_assoclist_table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    table.assoclist tr,
+    #wifi_assoclist_table tr {
+        display: flex !important;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--proton-border);
+        border-radius: var(--proton-radius);
+        padding: 0;
+        margin: 0 0 16px 0;
+        overflow: hidden;
+    }
+
+    table.assoclist tr:last-child,
+    #wifi_assoclist_table tr:last-child {
+        margin-bottom: 0;
+    }
+
+    table.assoclist thead,
+    #wifi_assoclist_table thead {
+        display: none;
+    }
+
+    table.assoclist td,
+    #wifi_assoclist_table td {
+        display: block !important;
+        width: 100% !important;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--proton-border-light);
+        white-space: normal !important;
+        text-overflow: unset;
+        overflow: visible;
+    }
+
+    table.assoclist td:last-child,
+    #wifi_assoclist_table td:last-child {
+        border-bottom: none;
+    }
+
+    /* MAC адрес - выделяем как заголовок карточки */
+    table.assoclist td:first-child,
+    #wifi_assoclist_table td:first-child {
+        background: rgba(255, 255, 255, 0.03);
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--proton-fg);
+        font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+    }
+
+    /* Network badge в assoclist */
+    table.assoclist .ifacebadge,
+    #wifi_assoclist_table .ifacebadge {
+        max-width: 100%;
+        white-space: normal;
+    }
+
+    table.assoclist .ifacebadge>span,
+    #wifi_assoclist_table .ifacebadge>span {
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    /* Signal strength - делаем читабельным */
+    table.assoclist td[data-title*="Signal"],
+    #wifi_assoclist_table td[data-title*="Signal"] {
+        font-weight: 500;
+    }
+
+    /* Actions в assoclist */
+    table.assoclist td.cbi-section-actions,
+    #wifi_assoclist_table td.cbi-section-actions {
+        display: flex !important;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    table.assoclist td.cbi-section-actions .control-group,
+    #wifi_assoclist_table td.cbi-section-actions .control-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        width: 100%;
+    }
+
+    /* =====================================================
+       DHCP Leases Table (#status_leases) - карточки на мобилке
+       ===================================================== */
+    #status_leases {
+        display: block !important;
+    }
+
+    #status_leases tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    #status_leases tr {
+        display: flex !important;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--proton-border);
+        border-radius: var(--proton-radius);
+        padding: 0;
+        margin: 0 0 16px 0;
+        overflow: hidden;
+    }
+
+    #status_leases tr:last-child {
+        margin-bottom: 0;
+    }
+
+    #status_leases thead {
+        display: none;
+    }
+
+    #status_leases td {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        width: 100% !important;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--proton-border-light);
+        white-space: normal !important;
+        text-overflow: unset;
+        overflow: visible;
+    }
+
+    #status_leases td::before {
+        content: attr(data-title);
+        font-weight: 600;
+        color: var(--proton-muted);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        flex-shrink: 0;
+        margin-right: 12px;
+    }
+
+    #status_leases td:last-child {
+        border-bottom: none;
+    }
+
+    /* Hostname - выделяем как заголовок карточки */
+    #status_leases td:first-child {
+        background: rgba(255, 255, 255, 0.03);
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--proton-fg);
+    }
+
+    /* IP адрес */
+    #status_leases td:nth-child(2) {
+        font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+        color: var(--proton-accent);
+    }
+
+    /* MAC адрес */
+    #status_leases td:nth-child(3) {
+        font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+        font-size: 0.9rem;
+        color: var(--proton-fg-secondary);
+    }
+
+    /* Lease time */
+    #status_leases td:nth-child(4) {
+        color: var(--proton-success);
     }
 }
 
@@ -2188,6 +3027,1697 @@ body.modal-overlay-active #modal_overlay {
 .cbi-dropdown>ul>li .hide-close strong {
     color: var(--proton-fg);
     font-weight: 600;
+}
+
+/* =====================================================
+   Package Manager (Software page)
+   ===================================================== */
+
+/* Контейнер списка пакетов - div-based таблица */
+/* =====================================================
+   Package Manager / Software Page Styling
+   ===================================================== */
+
+/* Main table container */
+#packages {
+    width: 100%;
+    border-spacing: 0;
+}
+
+/* =====================================================
+   Controls Panel - Clean Minimal Design
+   ===================================================== */
+#view>.controls:first-of-type {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    margin: 24px 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border-radius: var(--proton-radius-lg);
+    border: 1px solid var(--proton-border);
+    overflow: hidden;
+}
+
+/* Каждый блок - строка */
+#view>.controls:first-of-type>div {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 16px !important;
+    padding: 16px 20px !important;
+    background: var(--proton-bg-secondary);
+    border-bottom: 1px solid var(--proton-border-light);
+    flex-wrap: wrap !important;
+}
+
+#view>.controls:first-of-type>div:last-child {
+    border-bottom: none;
+}
+
+#view>.controls:first-of-type>div:nth-child(odd) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Labels - inline, не колонка */
+#view>.controls:first-of-type>div>label:first-child {
+    font-weight: 600 !important;
+    color: var(--proton-fg) !important;
+    font-size: 0.85rem !important;
+    min-width: 180px !important;
+    flex-shrink: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+/* Disk Space - специальный стиль */
+#view>.controls:first-of-type>div:first-child {
+    flex-wrap: nowrap !important;
+}
+
+#view>.controls .cbi-progressbar {
+    flex: 1 !important;
+    height: 24px !important;
+    background: var(--proton-bg-tertiary) !important;
+    border-radius: var(--proton-radius-sm) !important;
+    overflow: hidden !important;
+    border: 1px solid var(--proton-border) !important;
+    position: relative !important;
+    min-width: 200px !important;
+}
+
+#view>.controls .cbi-progressbar>div {
+    height: 100% !important;
+    background: linear-gradient(90deg, var(--proton-accent) 0%, #4ecdc4 100%) !important;
+    border-radius: 0 !important;
+    transition: width 0.3s ease !important;
+}
+
+/* Показать текст после progress bar */
+#view>.controls .cbi-progressbar::after {
+    content: attr(title);
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8rem;
+    color: var(--proton-fg);
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Control Groups (input + button) */
+#view>.controls .control-group {
+    display: flex !important;
+    gap: 8px !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    flex: 1 !important;
+}
+
+#view>.controls .control-group input[type="text"] {
+    flex: 1 !important;
+    min-width: 150px !important;
+    max-width: 300px !important;
+    padding: 8px 12px !important;
+    background: var(--proton-bg-tertiary) !important;
+    border: 1px solid var(--proton-border) !important;
+    border-radius: var(--proton-radius-sm) !important;
+    color: var(--proton-fg) !important;
+    font-size: 0.9rem !important;
+    transition: var(--proton-transition) !important;
+}
+
+#view>.controls .control-group input[type="text"]:focus {
+    outline: none !important;
+    border-color: var(--proton-accent) !important;
+    box-shadow: 0 0 0 2px var(--proton-accent-glow) !important;
+}
+
+#view>.controls .control-group input[type="text"]::placeholder {
+    color: var(--proton-muted) !important;
+}
+
+/* Buttons in Controls */
+#view>.controls .btn,
+#view>.controls button {
+    padding: 8px 14px !important;
+    border-radius: var(--proton-radius-sm) !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: var(--proton-transition) !important;
+    white-space: nowrap !important;
+    border: 1px solid var(--proton-border) !important;
+    background: var(--proton-bg-tertiary) !important;
+    color: var(--proton-fg) !important;
+}
+
+#view>.controls .btn:hover,
+#view>.controls button:hover {
+    background: var(--proton-bg-hover) !important;
+    border-color: var(--proton-accent) !important;
+}
+
+#view>.controls .cbi-button-positive {
+    background: var(--proton-success) !important;
+    border-color: var(--proton-success) !important;
+    color: #fff !important;
+}
+
+#view>.controls .cbi-button-positive:hover {
+    filter: brightness(1.1) !important;
+}
+
+#view>.controls .cbi-button-action {
+    background: var(--proton-accent) !important;
+    border-color: var(--proton-accent) !important;
+    color: #fff !important;
+}
+
+#view>.controls .cbi-button-action:hover {
+    filter: brightness(1.1) !important;
+}
+
+/* Radio Buttons - inline pills */
+#view>.controls>div>div:has(input[type="radio"]) {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+}
+
+#view>.controls label:has(input[type="radio"]) {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 6px 12px !important;
+    background: var(--proton-bg-tertiary) !important;
+    border: 1px solid var(--proton-border) !important;
+    border-radius: 20px !important;
+    cursor: pointer !important;
+    transition: var(--proton-transition) !important;
+    color: var(--proton-fg-secondary) !important;
+    font-size: 0.85rem !important;
+    font-weight: 400 !important;
+}
+
+#view>.controls label:has(input[type="radio"]):hover {
+    border-color: var(--proton-accent) !important;
+}
+
+#view>.controls label:has(input[type="radio"]:checked) {
+    background: var(--proton-accent) !important;
+    border-color: var(--proton-accent) !important;
+    color: #fff !important;
+}
+
+#view>.controls input[type="radio"] {
+    display: none !important;
+}
+
+/* Actions - кнопки в ряд */
+#view>.controls>div:has([data-command]) .control-group,
+#view>.controls>div:nth-child(4) .control-group {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    flex: 1 !important;
+}
+
+/* Таблица пакетов */
+#packages.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+#packages .tr {
+    display: flex !important;
+    align-items: stretch !important;
+    padding: 0 !important;
+    border-bottom: 1px solid var(--proton-border-light);
+    gap: 0 !important;
+}
+
+#packages .tr:hover {
+    background: var(--proton-bg-hover);
+}
+
+/* Переопределить inline стили из страницы для .td.version и .td.size */
+.td.version,
+.td.size,
+#packages .td.version,
+#packages .td.size {
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+}
+
+/* Заголовки таблицы */
+#packages .tr.cbi-section-table-titles {
+    background: var(--proton-bg-tertiary);
+    border-bottom: 2px solid var(--proton-border);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--proton-muted);
+    padding: 0 !important;
+    sticky: top;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+#packages .tr.cbi-section-table-titles .th {
+    font-weight: 600;
+}
+
+/* Базовые стили ячеек - ПЕРЕНОС ТЕКСТА */
+#packages .td,
+#packages .th {
+    min-width: 0 !important;
+    padding: 12px 16px !important;
+    display: block !important;
+    border-right: 1px solid var(--proton-border-light) !important;
+    word-break: break-word !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+}
+
+#packages .td:last-child,
+#packages .th:last-child {
+    border-right: none !important;
+}
+
+/* Package Name (col-2) - перенос длинных имён */
+#packages .td.col-2:nth-child(1),
+#packages .th.col-2:nth-child(1) {
+    flex: 0 0 180px !important;
+    font-weight: 500;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+
+/* Version (col-2) - перенос длинных версий */
+#packages .td.col-2:nth-child(2),
+#packages .th.col-2:nth-child(2) {
+    flex: 0 0 120px !important;
+    font-family: "Courier New", monospace;
+    font-size: 0.85rem;
+    white-space: normal !important;
+    word-break: break-all !important;
+}
+
+/* Size (col-1) */
+#packages .td.col-1:nth-child(3),
+#packages .th.col-1:nth-child(3) {
+    flex: 0 0 90px !important;
+    text-align: center;
+    color: var(--proton-muted);
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+/* Description (col-10) - ПОЛНЫЙ ТЕКСТ БЕЗ ОБРЕЗАНИЯ */
+#packages .td.col-10,
+#packages .th.col-10,
+#packages .td:nth-child(4),
+#packages .th:nth-child(4) {
+    flex: 1 1 auto !important;
+    min-width: 250px !important;
+    color: var(--proton-fg-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    display: block !important;
+    padding: 12px 16px !important;
+}
+
+/* Action buttons (cbi-section-actions) */
+#packages .td.cbi-section-actions:nth-child(5),
+#packages .th.cbi-section-actions:nth-child(5) {
+    flex: 0 0 130px !important;
+    text-align: right;
+    justify-content: flex-end;
+}
+
+/* Кнопки Install/Remove */
+#packages .cbi-button,
+#packages button {
+    white-space: nowrap !important;
+    padding: 6px 12px !important;
+    font-size: 0.85rem !important;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: var(--proton-transition);
+}
+
+#packages .cbi-button-action,
+#packages .cbi-button-positive {
+    background: var(--proton-success) !important;
+    border-color: var(--proton-success) !important;
+    color: #fff !important;
+}
+
+#packages .cbi-button-action:hover,
+#packages .cbi-button-positive:hover {
+    opacity: 0.9;
+}
+
+#packages .cbi-button-negative {
+    background: rgba(255, 107, 107, 0.15) !important;
+    border-color: rgba(255, 107, 107, 0.3) !important;
+    color: var(--proton-danger) !important;
+}
+
+#packages .cbi-button-negative:hover {
+    background: rgba(255, 107, 107, 0.25) !important;
+}
+
+/* Пагинация - контейнер с кнопками навигации */
+#view>.controls:has(.pager),
+#view>.controls .pager,
+.controls:has(.pager) {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 20px !important;
+    padding: 16px 24px !important;
+    background: var(--proton-bg-secondary);
+    border: 1px solid var(--proton-border);
+    border-radius: var(--proton-radius);
+    margin: 16px 0 !important;
+}
+
+.controls .pager {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 20px !important;
+    width: 100%;
+}
+
+/* Кнопки пагинации < и > */
+.controls .pager button,
+.controls .pager .btn,
+#view>.controls button[aria-label],
+.pager button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    padding: 10px 18px !important;
+    background: var(--proton-bg-tertiary) !important;
+    border: 1px solid var(--proton-border) !important;
+    border-radius: var(--proton-radius-sm) !important;
+    color: var(--proton-fg) !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+    transition: var(--proton-transition);
+    flex-shrink: 0 !important;
+}
+
+.controls .pager button:hover:not([disabled]),
+.controls .pager .btn:hover:not([disabled]),
+.pager button:hover:not([disabled]) {
+    background: var(--proton-accent) !important;
+    border-color: var(--proton-accent) !important;
+    color: #fff !important;
+}
+
+.controls .pager button[disabled],
+.controls .pager .btn[disabled],
+.pager button[disabled] {
+    opacity: 0.3 !important;
+    cursor: not-allowed !important;
+}
+
+/* Текст пагинации "Displaying X of Y" */
+.controls .pager .text,
+.controls .pager>div.text,
+.pager .text {
+    color: var(--proton-fg) !important;
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+    flex: 0 0 auto !important;
+}
+
+/* Табы Available/Installed/Updates */
+#packages .cbi-tabmenu {
+    margin: 20px 0 !important;
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid var(--proton-border);
+}
+
+#packages .cbi-tabmenu li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#packages .cbi-tabmenu li a {
+    display: block;
+    padding: 12px 16px;
+    color: var(--proton-muted);
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    transition: var(--proton-transition);
+}
+
+#packages .cbi-tabmenu li.cbi-tab a,
+#packages .cbi-tabmenu li.active a {
+    color: var(--proton-accent);
+    border-bottom-color: var(--proton-accent);
+}
+
+#packages .cbi-tabmenu li.cbi-tab-disabled a {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* =====================================================
+   Firewall - Traffic Rules Elegant Styling
+   ===================================================== */
+
+/* Firewall container */
+#cbi-firewall {
+    max-width: 100%;
+}
+
+#cbi-firewall>h2 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+#cbi-firewall>.cbi-map-descr {
+    color: var(--proton-muted);
+    font-size: 0.95rem;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+/* Traffic Rules Table */
+#cbi-firewall-rule {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+#cbi-firewall-rule>h3 {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    color: var(--proton-fg);
+}
+
+#cbi-firewall-rule table.cbi-section-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--proton-bg-secondary);
+    border: 1px solid var(--proton-border);
+    border-radius: var(--proton-radius);
+    overflow: hidden;
+}
+
+/* Table Headers */
+#cbi-firewall-rule table.cbi-section-table tr.cbi-section-table-titles {
+    background: var(--proton-bg-tertiary);
+}
+
+#cbi-firewall-rule table.cbi-section-table tr.cbi-section-table-titles th {
+    padding: 14px 16px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--proton-muted);
+    border-bottom: 2px solid var(--proton-border);
+    text-align: left;
+}
+
+/* Table Rows */
+#cbi-firewall-rule table.cbi-section-table tr.cbi-section-table-row {
+    transition: var(--proton-transition);
+}
+
+#cbi-firewall-rule table.cbi-section-table tr.cbi-section-table-row:hover {
+    background: rgba(94, 158, 255, 0.05);
+}
+
+#cbi-firewall-rule table.cbi-section-table tr.cbi-section-table-row:nth-child(even) {
+    background: rgba(255, 255, 255, 0.01);
+}
+
+#cbi-firewall-rule table.cbi-section-table tr.cbi-section-table-row:nth-child(even):hover {
+    background: rgba(94, 158, 255, 0.05);
+}
+
+/* Table Cells */
+#cbi-firewall-rule table.cbi-section-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--proton-border-light);
+    vertical-align: top;
+}
+
+#cbi-firewall-rule table.cbi-section-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Rule Name (data-title attribute) - показать как заголовок строки */
+#cbi-firewall-rule table.cbi-section-table tr[data-title]::before {
+    content: attr(data-title);
+    display: none;
+}
+
+/* Match column styling */
+#cbi-firewall-rule td[data-name="_match"] {
+    min-width: 280px;
+}
+
+#cbi-firewall-rule td[data-name="_match"] small {
+    display: block;
+    line-height: 1.6;
+    color: var(--proton-fg-secondary);
+}
+
+#cbi-firewall-rule td[data-name="_match"] var {
+    color: var(--proton-accent);
+    font-style: normal;
+    font-weight: 500;
+    background: var(--proton-accent-glow);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
+
+/* Zone Badges - красивые бейджи зон */
+#cbi-firewall .zonebadge {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 3px 10px !important;
+    border-radius: 12px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    border: none !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2) !important;
+}
+
+#cbi-firewall .zonebadge strong,
+#cbi-firewall .zonebadge em {
+    font-weight: 600;
+    font-style: normal;
+    color: inherit;
+}
+
+/* Specific zone colors with better contrast */
+#cbi-firewall .zonebadge[style*="240, 144, 144"] {
+    /* WAN - red zone */
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+    color: #fff !important;
+}
+
+#cbi-firewall .zonebadge[style*="144, 240, 144"] {
+    /* LAN - green zone */
+    background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%) !important;
+    color: #fff !important;
+}
+
+#cbi-firewall .zonebadge[style*="238, 238, 238"] {
+    /* This device / any zone - gray */
+    background: linear-gradient(135deg, #6c7a89 0%, #4b5562 100%) !important;
+    color: #fff !important;
+}
+
+/* Action column */
+#cbi-firewall-rule td[data-name="_target"] {
+    min-width: 120px;
+}
+
+#cbi-firewall-rule td[data-name="_target"] var {
+    font-style: normal;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+#cbi-firewall-rule td[data-name="_target"] var[data-tooltip="ACCEPT"] {
+    background: rgba(107, 207, 127, 0.15);
+    color: var(--proton-success);
+    border: 1px solid rgba(107, 207, 127, 0.3);
+}
+
+#cbi-firewall-rule td[data-name="_target"] var[data-tooltip="DROP"],
+#cbi-firewall-rule td[data-name="_target"] var[data-tooltip="REJECT"] {
+    background: rgba(255, 107, 107, 0.15);
+    color: var(--proton-danger);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+/* Enable checkbox column */
+#cbi-firewall-rule td[data-name="enabled"] {
+    text-align: center;
+    width: 80px;
+}
+
+/* Actions column */
+#cbi-firewall-rule td.cbi-section-actions {
+    width: 200px;
+    white-space: nowrap;
+}
+
+#cbi-firewall-rule td.cbi-section-actions>div {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+}
+
+/* Drag handle */
+#cbi-firewall-rule .drag-handle {
+    background: transparent !important;
+    border: none !important;
+    color: var(--proton-muted) !important;
+    font-size: 1.1rem !important;
+    padding: 4px 8px !important;
+    cursor: grab !important;
+    opacity: 0.5;
+    transition: var(--proton-transition);
+}
+
+#cbi-firewall-rule .drag-handle:hover {
+    opacity: 1;
+    color: var(--proton-accent) !important;
+}
+
+#cbi-firewall-rule .drag-handle:active {
+    cursor: grabbing !important;
+}
+
+/* Action buttons */
+#cbi-firewall-rule td.cbi-section-actions .cbi-button,
+#cbi-firewall-rule td.cbi-section-actions .btn {
+    padding: 6px 10px !important;
+    font-size: 0.8rem !important;
+    border-radius: var(--proton-radius-sm) !important;
+}
+
+#cbi-firewall-rule .cbi-button-edit {
+    background: var(--proton-accent) !important;
+    border-color: var(--proton-accent) !important;
+    color: #fff !important;
+}
+
+#cbi-firewall-rule .cbi-button-edit:hover {
+    filter: brightness(1.1);
+}
+
+#cbi-firewall-rule .cbi-button-neutral {
+    background: var(--proton-bg-tertiary) !important;
+    border-color: var(--proton-border) !important;
+    color: var(--proton-fg-secondary) !important;
+}
+
+#cbi-firewall-rule .cbi-button-neutral:hover {
+    border-color: var(--proton-accent) !important;
+    color: var(--proton-fg) !important;
+}
+
+#cbi-firewall-rule .cbi-button-remove {
+    background: rgba(255, 107, 107, 0.1) !important;
+    border-color: rgba(255, 107, 107, 0.3) !important;
+    color: var(--proton-danger) !important;
+}
+
+#cbi-firewall-rule .cbi-button-remove:hover {
+    background: var(--proton-danger) !important;
+    border-color: var(--proton-danger) !important;
+    color: #fff !important;
+}
+
+/* Add button */
+#cbi-firewall-rule .cbi-section-create {
+    padding: 16px;
+    background: var(--proton-bg-secondary);
+    border: 1px solid var(--proton-border);
+    border-top: none;
+    border-radius: 0 0 var(--proton-radius) var(--proton-radius);
+    margin-top: -1px;
+}
+
+#cbi-firewall-rule .cbi-button-add {
+    background: var(--proton-success) !important;
+    border-color: var(--proton-success) !important;
+    color: #fff !important;
+    padding: 10px 20px !important;
+    font-size: 0.9rem !important;
+}
+
+#cbi-firewall-rule .cbi-button-add:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 4px 12px rgba(107, 207, 127, 0.3);
+}
+
+/* =====================================================
+   LED Configuration Page
+   ===================================================== */
+body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-table {
+    background: var(--proton-bg-secondary);
+    border: 1px solid var(--proton-border);
+    border-radius: var(--proton-radius);
+    overflow: hidden;
+}
+
+body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-table-titles {
+    background: var(--proton-bg-tertiary);
+}
+
+body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-table-titles .th {
+    padding: 12px 16px;
+    font-weight: 600;
+    color: var(--proton-fg);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    border-bottom: 1px solid var(--proton-border);
+}
+
+body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-table-row {
+    border-bottom: 1px solid var(--proton-border-subtle);
+    transition: var(--proton-transition);
+}
+
+body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-table-row:hover {
+    background: var(--proton-bg-tertiary);
+}
+
+body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-table-row:last-child {
+    border-bottom: none;
+}
+
+body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-table-row .td {
+    padding: 12px 16px;
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+/* Name field */
+body[data-page="admin-system-leds"] #cbi-system-led .td[data-title="Name"] {
+    font-weight: 600;
+    color: var(--proton-fg);
+}
+
+/* LED Name - monospace with accent */
+body[data-page="admin-system-leds"] #cbi-system-led .td[data-title="LED Name"] {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    color: var(--proton-accent);
+    font-size: 0.85rem;
+}
+
+/* Trigger badge */
+body[data-page="admin-system-leds"] #cbi-system-led .td[data-title="Trigger"] {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    font-size: 0.85rem;
+    color: var(--proton-fg-secondary);
+}
+
+/* Actions column */
+body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-actions {
+    white-space: nowrap;
+}
+
+body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-actions>div {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+/* Drag handle */
+body[data-page="admin-system-leds"] #cbi-system-led .drag-handle {
+    background: transparent !important;
+    border: none !important;
+    color: var(--proton-muted) !important;
+    font-size: 1.1rem !important;
+    padding: 4px 8px !important;
+    cursor: grab !important;
+    opacity: 0.5;
+    transition: var(--proton-transition);
+}
+
+body[data-page="admin-system-leds"] #cbi-system-led .drag-handle:hover {
+    opacity: 1;
+    color: var(--proton-accent) !important;
+}
+
+/* Buttons */
+body[data-page="admin-system-leds"] #cbi-system-led .cbi-button-edit {
+    background: var(--proton-accent) !important;
+    border-color: var(--proton-accent) !important;
+    color: #fff !important;
+    padding: 6px 12px !important;
+    font-size: 0.8rem !important;
+    border-radius: var(--proton-radius-sm) !important;
+}
+
+body[data-page="admin-system-leds"] #cbi-system-led .cbi-button-edit:hover {
+    filter: brightness(1.1);
+}
+
+body[data-page="admin-system-leds"] #cbi-system-led .cbi-button-remove {
+    background: rgba(255, 107, 107, 0.1) !important;
+    border-color: rgba(255, 107, 107, 0.3) !important;
+    color: var(--proton-danger) !important;
+    padding: 6px 12px !important;
+    font-size: 0.8rem !important;
+    border-radius: var(--proton-radius-sm) !important;
+}
+
+body[data-page="admin-system-leds"] #cbi-system-led .cbi-button-remove:hover {
+    background: var(--proton-danger) !important;
+    border-color: var(--proton-danger) !important;
+    color: #fff !important;
+}
+
+/* Add button */
+body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-create {
+    padding: 16px;
+    background: var(--proton-bg-secondary);
+    border: 1px solid var(--proton-border);
+    border-top: none;
+    border-radius: 0 0 var(--proton-radius) var(--proton-radius);
+    margin-top: -1px;
+}
+
+body[data-page="admin-system-leds"] #cbi-system-led .cbi-button-add {
+    background: var(--proton-success) !important;
+    border-color: var(--proton-success) !important;
+    color: #fff !important;
+    padding: 10px 20px !important;
+    font-size: 0.9rem !important;
+}
+
+body[data-page="admin-system-leds"] #cbi-system-led .cbi-button-add:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 4px 12px rgba(107, 207, 127, 0.3);
+}
+
+/* Mobile card layout for LED table */
+@media screen and (max-width: 768px) {
+    body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-table {
+        display: block;
+        border: none;
+        background: transparent;
+    }
+
+    body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-table-titles {
+        display: none;
+    }
+
+    body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-table-row {
+        display: flex;
+        flex-direction: column;
+        background: var(--proton-bg-secondary);
+        border: 1px solid var(--proton-border);
+        border-radius: var(--proton-radius);
+        padding: 16px;
+        margin-bottom: 10px;
+        gap: 10px;
+    }
+
+    body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-table-row:hover {
+        border-color: var(--proton-accent);
+    }
+
+    body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-table-row .td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0;
+        border: none !important;
+    }
+
+    body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-table-row .td::before {
+        content: attr(data-title);
+        font-weight: 600;
+        color: var(--proton-fg-secondary);
+        font-size: 0.8rem;
+        min-width: 80px;
+        flex-shrink: 0;
+    }
+
+    /* Name - first and highlighted */
+    body[data-page="admin-system-leds"] #cbi-system-led .td[data-title="Name"] {
+        order: -2;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--proton-border-subtle) !important;
+        font-size: 1.05rem;
+    }
+
+    body[data-page="admin-system-leds"] #cbi-system-led .td[data-title="Name"]::before {
+        display: none;
+    }
+
+    /* Actions row */
+    body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-actions {
+        order: 10;
+        padding-top: 12px !important;
+        border-top: 1px solid var(--proton-border-subtle) !important;
+        justify-content: flex-end;
+    }
+
+    body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-actions::before {
+        display: none;
+    }
+
+    body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-actions>div {
+        gap: 10px;
+    }
+
+    body[data-page="admin-system-leds"] #cbi-system-led .cbi-button-edit,
+    body[data-page="admin-system-leds"] #cbi-system-led .cbi-button-remove {
+        padding: 10px 16px !important;
+        font-size: 0.85rem !important;
+    }
+
+    /* Hide drag handle on mobile */
+    body[data-page="admin-system-leds"] #cbi-system-led .drag-handle {
+        display: none;
+    }
+
+    /* Add section */
+    body[data-page="admin-system-leds"] #cbi-system-led .cbi-section-create {
+        border-radius: var(--proton-radius);
+        border: 1px solid var(--proton-border);
+    }
+}
+
+/* =====================================================
+   Startup Page - Initscripts Table
+   ===================================================== */
+body[data-page="admin-system-startup"] #view .table {
+    background: var(--proton-bg-secondary);
+    border: 1px solid var(--proton-border);
+    border-radius: var(--proton-radius);
+    overflow: hidden;
+}
+
+body[data-page="admin-system-startup"] #view .table .tr.table-titles {
+    background: var(--proton-bg-tertiary);
+}
+
+body[data-page="admin-system-startup"] #view .table .tr.table-titles .th {
+    padding: 12px 16px;
+    font-weight: 600;
+    color: var(--proton-fg);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    border-bottom: 1px solid var(--proton-border);
+}
+
+body[data-page="admin-system-startup"] #view .table .tr:not(.table-titles) {
+    border-bottom: 1px solid var(--proton-border-subtle);
+    transition: var(--proton-transition);
+}
+
+body[data-page="admin-system-startup"] #view .table .tr:not(.table-titles):hover {
+    background: var(--proton-bg-tertiary);
+}
+
+body[data-page="admin-system-startup"] #view .table .tr:last-child {
+    border-bottom: none;
+}
+
+body[data-page="admin-system-startup"] #view .table .td {
+    padding: 10px 16px;
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+/* Start priority - monospace badge */
+body[data-page="admin-system-startup"] #view .table .td[data-title="Start priority"] {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    font-weight: 700;
+    color: var(--proton-accent);
+    font-size: 0.95rem;
+}
+
+/* Initscript name */
+body[data-page="admin-system-startup"] #view .table .td[data-title="Initscript"] {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    font-weight: 500;
+    color: var(--proton-fg);
+}
+
+/* Actions column */
+body[data-page="admin-system-startup"] #view .table .td.cbi-section-actions {
+    white-space: nowrap;
+}
+
+body[data-page="admin-system-startup"] #view .table .td.cbi-section-actions>div {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+body[data-page="admin-system-startup"] #view .table .td.cbi-section-actions .btn {
+    padding: 6px 12px !important;
+    font-size: 0.75rem !important;
+    border-radius: var(--proton-radius-sm) !important;
+    font-weight: 500;
+}
+
+/* Enabled button - green */
+body[data-page="admin-system-startup"] #view .table .cbi-button-positive {
+    background: rgba(107, 207, 127, 0.15) !important;
+    border-color: rgba(107, 207, 127, 0.4) !important;
+    color: var(--proton-success) !important;
+    min-width: 75px;
+}
+
+body[data-page="admin-system-startup"] #view .table .cbi-button-positive:hover {
+    background: var(--proton-success) !important;
+    color: #fff !important;
+}
+
+/* Disabled button - red */
+body[data-page="admin-system-startup"] #view .table .cbi-button-negative {
+    background: rgba(255, 107, 107, 0.15) !important;
+    border-color: rgba(255, 107, 107, 0.4) !important;
+    color: var(--proton-danger) !important;
+    min-width: 75px;
+}
+
+body[data-page="admin-system-startup"] #view .table .cbi-button-negative:hover {
+    background: var(--proton-danger) !important;
+    color: #fff !important;
+}
+
+/* Action buttons - neutral */
+body[data-page="admin-system-startup"] #view .table .cbi-button-action {
+    background: var(--proton-bg-tertiary) !important;
+    border-color: var(--proton-border) !important;
+    color: var(--proton-fg-secondary) !important;
+}
+
+body[data-page="admin-system-startup"] #view .table .cbi-button-action:hover {
+    background: var(--proton-accent) !important;
+    border-color: var(--proton-accent) !important;
+    color: #fff !important;
+}
+
+/* Mobile card layout for Startup table */
+@media screen and (max-width: 900px) {
+    body[data-page="admin-system-startup"] #view .table {
+        display: block;
+        border: none;
+        background: transparent;
+    }
+
+    body[data-page="admin-system-startup"] #view .table .tr.table-titles {
+        display: none;
+    }
+
+    body[data-page="admin-system-startup"] #view .table .tr:not(.table-titles) {
+        display: flex;
+        flex-direction: column;
+        background: var(--proton-bg-secondary);
+        border: 1px solid var(--proton-border);
+        border-radius: var(--proton-radius);
+        padding: 16px;
+        margin-bottom: 10px;
+        gap: 12px;
+    }
+
+    body[data-page="admin-system-startup"] #view .table .tr:not(.table-titles):hover {
+        border-color: var(--proton-accent);
+    }
+
+    body[data-page="admin-system-startup"] #view .table .td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0;
+        border: none !important;
+    }
+
+    body[data-page="admin-system-startup"] #view .table .td::before {
+        content: attr(data-title);
+        font-weight: 600;
+        color: var(--proton-fg-secondary);
+        font-size: 0.8rem;
+        min-width: 100px;
+        flex-shrink: 0;
+    }
+
+    /* Initscript name - first and highlighted */
+    body[data-page="admin-system-startup"] #view .table .td[data-title="Initscript"] {
+        order: -2;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--proton-border-subtle) !important;
+        font-size: 1rem;
+    }
+
+    body[data-page="admin-system-startup"] #view .table .td[data-title="Initscript"]::before {
+        display: none;
+    }
+
+    /* Priority inline with label */
+    body[data-page="admin-system-startup"] #view .table .td[data-title="Start priority"] {
+        order: -1;
+    }
+
+    /* Actions row */
+    body[data-page="admin-system-startup"] #view .table .td.cbi-section-actions {
+        order: 10;
+        padding-top: 12px !important;
+        border-top: 1px solid var(--proton-border-subtle) !important;
+        justify-content: center;
+    }
+
+    body[data-page="admin-system-startup"] #view .table .td.cbi-section-actions::before {
+        display: none;
+    }
+
+    body[data-page="admin-system-startup"] #view .table .td.cbi-section-actions>div {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    body[data-page="admin-system-startup"] #view .table .td.cbi-section-actions .btn {
+        padding: 8px 14px !important;
+        font-size: 0.8rem !important;
+    }
+
+    /* Enabled/Disabled takes full row on top of actions */
+    body[data-page="admin-system-startup"] #view .table .cbi-button-positive,
+    body[data-page="admin-system-startup"] #view .table .cbi-button-negative {
+        min-width: 100px;
+    }
+}
+
+/* Extra small screens */
+@media screen and (max-width: 480px) {
+    body[data-page="admin-system-startup"] #view .table .tr:not(.table-titles) {
+        padding: 12px;
+    }
+
+    body[data-page="admin-system-startup"] #view .table .td.cbi-section-actions>div {
+        width: 100%;
+    }
+
+    body[data-page="admin-system-startup"] #view .table .td.cbi-section-actions .btn {
+        flex: 1;
+        text-align: center;
+        min-width: unset;
+    }
+
+    /* Stack Enabled button on its own row */
+    body[data-page="admin-system-startup"] #view .table .cbi-button-positive,
+    body[data-page="admin-system-startup"] #view .table .cbi-button-negative {
+        width: 100%;
+        flex: none !important;
+    }
+}
+
+/* =====================================================
+   Routes Page Styling (Status > Routes)
+   ===================================================== */
+body[data-page="admin-status-routes"] #view>h2 {
+    margin-bottom: 8px;
+}
+
+body[data-page="admin-status-routes"] #view>p {
+    color: var(--proton-fg-secondary);
+    margin-bottom: 20px;
+}
+
+/* Section headers */
+body[data-page="admin-status-routes"] .cbi-section h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--proton-fg);
+    margin: 28px 0 16px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--proton-border-subtle);
+}
+
+body[data-page="admin-status-routes"] .cbi-section h3:first-child {
+    margin-top: 0;
+}
+
+/* Tables styling */
+body[data-page="admin-status-routes"] .cbi-section .table {
+    background: var(--proton-bg-secondary);
+    border: 1px solid var(--proton-border);
+    border-radius: var(--proton-radius);
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+body[data-page="admin-status-routes"] .cbi-section .table .tr.table-titles {
+    background: var(--proton-bg-tertiary);
+}
+
+body[data-page="admin-status-routes"] .cbi-section .table .tr.table-titles .th {
+    padding: 12px 16px;
+    font-weight: 600;
+    color: var(--proton-fg);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    border-bottom: 1px solid var(--proton-border);
+}
+
+body[data-page="admin-status-routes"] .cbi-section .table .tr:not(.table-titles) {
+    border-bottom: 1px solid var(--proton-border-subtle);
+    transition: var(--proton-transition);
+}
+
+body[data-page="admin-status-routes"] .cbi-section .table .tr:not(.table-titles):hover {
+    background: var(--proton-bg-tertiary);
+}
+
+body[data-page="admin-status-routes"] .cbi-section .table .tr:last-child {
+    border-bottom: none;
+}
+
+body[data-page="admin-status-routes"] .cbi-section .table .td {
+    padding: 10px 16px;
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+/* IP addresses - monospace */
+body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="IP address"],
+body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="Target"],
+body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="Gateway"],
+body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="Source"] {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    color: var(--proton-accent);
+}
+
+/* MAC addresses */
+body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="MAC address"] {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    color: var(--proton-fg-secondary);
+    font-size: 0.85rem;
+}
+
+/* Interface badges */
+body[data-page="admin-status-routes"] .cbi-section .table .ifacebadge {
+    display: inline-block;
+    padding: 4px 10px;
+    background: var(--proton-bg-tertiary);
+    border: 1px solid var(--proton-border);
+    border-radius: var(--proton-radius-sm);
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--proton-fg);
+}
+
+/* Priority and Metric */
+body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="Priority"],
+body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="Metric"] {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    font-weight: 600;
+}
+
+/* Rule text */
+body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="Rule"] {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    font-size: 0.85rem;
+    color: var(--proton-fg-secondary);
+}
+
+/* Table name */
+body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="Table"] {
+    font-weight: 500;
+}
+
+/* Empty placeholder */
+body[data-page="admin-status-routes"] .cbi-section .table .tr.placeholder .td {
+    padding: 24px 16px;
+    text-align: center;
+    color: var(--proton-muted);
+}
+
+/* Mobile card layout for Routes tables */
+@media screen and (max-width: 800px) {
+    body[data-page="admin-status-routes"] .cbi-section .table {
+        display: block;
+        border: none;
+        background: transparent;
+    }
+
+    body[data-page="admin-status-routes"] .cbi-section .table .tr.table-titles {
+        display: none;
+    }
+
+    body[data-page="admin-status-routes"] .cbi-section .table .tr:not(.table-titles):not(.placeholder) {
+        display: flex;
+        flex-direction: column;
+        background: var(--proton-bg-secondary);
+        border: 1px solid var(--proton-border);
+        border-radius: var(--proton-radius);
+        padding: 14px 16px;
+        margin-bottom: 10px;
+        gap: 8px;
+    }
+
+    body[data-page="admin-status-routes"] .cbi-section .table .tr:not(.table-titles):not(.placeholder):hover {
+        border-color: var(--proton-accent);
+    }
+
+    body[data-page="admin-status-routes"] .cbi-section .table .td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0;
+        border: none !important;
+    }
+
+    body[data-page="admin-status-routes"] .cbi-section .table .td::before {
+        content: attr(data-title);
+        font-weight: 600;
+        color: var(--proton-fg-secondary);
+        font-size: 0.8rem;
+        min-width: 100px;
+        flex-shrink: 0;
+    }
+
+    /* IP address - highlight first */
+    body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="IP address"] {
+        order: -2;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--proton-border-subtle) !important;
+    }
+
+    body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="IP address"]::before {
+        color: var(--proton-fg);
+    }
+
+    /* Device - highlight first for routes */
+    body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="Device"] {
+        order: -2;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--proton-border-subtle) !important;
+    }
+
+    body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="Device"]::before {
+        color: var(--proton-fg);
+    }
+
+    /* Priority - highlight first for rules */
+    body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="Priority"] {
+        order: -2;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--proton-border-subtle) !important;
+    }
+
+    body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="Priority"]::before {
+        color: var(--proton-fg);
+    }
+
+    /* Rule text wrap */
+    body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="Rule"] {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        word-break: break-word;
+    }
+
+    /* Placeholder styling */
+    body[data-page="admin-status-routes"] .cbi-section .table .tr.placeholder {
+        display: block;
+        background: var(--proton-bg-secondary);
+        border: 1px solid var(--proton-border);
+        border-radius: var(--proton-radius);
+        padding: 20px;
+        text-align: center;
+    }
+
+    body[data-page="admin-status-routes"] .cbi-section .table .tr.placeholder .td::before {
+        display: none;
+    }
+}
+
+/* Extra small screens */
+@media screen and (max-width: 480px) {
+    body[data-page="admin-status-routes"] .cbi-section .table .tr:not(.table-titles):not(.placeholder) {
+        padding: 12px;
+    }
+
+    body[data-page="admin-status-routes"] .cbi-section .table .td::before {
+        min-width: 80px;
+        font-size: 0.75rem;
+    }
+
+    body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="IP address"],
+    body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="Target"],
+    body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="Gateway"],
+    body[data-page="admin-status-routes"] .cbi-section .table .td[data-title="MAC address"] {
+        font-size: 0.8rem;
+    }
+}
+
+/* =====================================================
+   Processes Table - Mobile Cards
+   ===================================================== */
+body[data-page="admin-status-processes"] #view>.table {
+    background: var(--proton-bg-secondary);
+    border: 1px solid var(--proton-border);
+    border-radius: var(--proton-radius);
+    overflow: hidden;
+}
+
+body[data-page="admin-status-processes"] #view>.table .tr.table-titles {
+    background: var(--proton-bg-tertiary);
+}
+
+body[data-page="admin-status-processes"] #view>.table .tr.table-titles .th {
+    padding: 12px 16px;
+    font-weight: 600;
+    color: var(--proton-fg);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    border-bottom: 1px solid var(--proton-border);
+}
+
+body[data-page="admin-status-processes"] #view>.table .tr:not(.table-titles) {
+    border-bottom: 1px solid var(--proton-border-subtle);
+    transition: var(--proton-transition);
+}
+
+body[data-page="admin-status-processes"] #view>.table .tr:not(.table-titles):hover {
+    background: var(--proton-bg-tertiary);
+}
+
+body[data-page="admin-status-processes"] #view>.table .tr:last-child {
+    border-bottom: none;
+}
+
+body[data-page="admin-status-processes"] #view>.table .td {
+    padding: 10px 16px;
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+body[data-page="admin-status-processes"] #view>.table .td[data-title="PID"] {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    font-weight: 600;
+    color: var(--proton-accent);
+}
+
+body[data-page="admin-status-processes"] #view>.table .td[data-title="Owner"] {
+    color: var(--proton-fg-secondary);
+}
+
+body[data-page="admin-status-processes"] #view>.table .td[data-title="Command"] {
+    word-break: break-all;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    font-size: 0.8rem;
+    color: var(--proton-fg);
+}
+
+body[data-page="admin-status-processes"] #view>.table .td[data-title="CPU usage (%)"],
+body[data-page="admin-status-processes"] #view>.table .td[data-title="Memory usage (%)"] {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    color: var(--proton-fg-secondary);
+}
+
+/* Action buttons */
+body[data-page="admin-status-processes"] #view>.table .cbi-section-actions {
+    white-space: nowrap;
+}
+
+body[data-page="admin-status-processes"] #view>.table .cbi-section-actions>div {
+    display: flex;
+    gap: 6px;
+    flex-wrap: nowrap;
+}
+
+body[data-page="admin-status-processes"] #view>.table .btn {
+    padding: 5px 10px !important;
+    font-size: 0.75rem !important;
+    border-radius: var(--proton-radius-sm) !important;
+}
+
+/* Mobile card layout for Processes table */
+@media screen and (max-width: 900px) {
+    body[data-page="admin-status-processes"] #view>.table {
+        display: block;
+        border: none;
+        background: transparent;
+    }
+
+    body[data-page="admin-status-processes"] #view>.table .tr.table-titles {
+        display: none;
+    }
+
+    body[data-page="admin-status-processes"] #view>.table .tr:not(.table-titles) {
+        display: flex;
+        flex-direction: column;
+        background: var(--proton-bg-secondary);
+        border: 1px solid var(--proton-border);
+        border-radius: var(--proton-radius);
+        padding: 16px;
+        margin-bottom: 12px;
+        gap: 10px;
+    }
+
+    body[data-page="admin-status-processes"] #view>.table .tr:not(.table-titles):hover {
+        border-color: var(--proton-accent);
+    }
+
+    body[data-page="admin-status-processes"] #view>.table .td {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 0;
+        border: none !important;
+    }
+
+    body[data-page="admin-status-processes"] #view>.table .td::before {
+        content: attr(data-title);
+        font-weight: 600;
+        color: var(--proton-fg-secondary);
+        font-size: 0.8rem;
+        min-width: 100px;
+        flex-shrink: 0;
+    }
+
+    body[data-page="admin-status-processes"] #view>.table .td[data-title="PID"] {
+        order: -2;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--proton-border-subtle) !important;
+        margin-bottom: 4px;
+    }
+
+    body[data-page="admin-status-processes"] #view>.table .td[data-title="PID"]::before {
+        font-size: 0.85rem;
+        color: var(--proton-fg);
+    }
+
+    body[data-page="admin-status-processes"] #view>.table .td[data-title="Command"] {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        font-size: 0.75rem;
+        background: var(--proton-bg-tertiary);
+        padding: 10px !important;
+        border-radius: var(--proton-radius-sm);
+        margin: 4px 0;
+    }
+
+    body[data-page="admin-status-processes"] #view>.table .td[data-title="Command"]::before {
+        margin-bottom: 4px;
+    }
+
+    body[data-page="admin-status-processes"] #view>.table .td[data-title="Command"] span {
+        word-break: break-all;
+        line-height: 1.4;
+    }
+
+    /* CPU and Memory inline */
+    body[data-page="admin-status-processes"] #view>.table .td[data-title="CPU usage (%)"],
+    body[data-page="admin-status-processes"] #view>.table .td[data-title="Memory usage (%)"] {
+        font-size: 0.85rem;
+    }
+
+    /* Actions row */
+    body[data-page="admin-status-processes"] #view>.table .td.cbi-section-actions {
+        order: 10;
+        padding-top: 12px !important;
+        border-top: 1px solid var(--proton-border-subtle) !important;
+        margin-top: 8px;
+        justify-content: flex-end;
+    }
+
+    body[data-page="admin-status-processes"] #view>.table .td.cbi-section-actions::before {
+        display: none;
+    }
+
+    body[data-page="admin-status-processes"] #view>.table .td.cbi-section-actions>div {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    body[data-page="admin-status-processes"] #view>.table .td.cbi-section-actions .btn {
+        padding: 8px 14px !important;
+        font-size: 0.8rem !important;
+    }
+}
+
+/* Extra small screens */
+@media screen and (max-width: 480px) {
+    body[data-page="admin-status-processes"] #view>.table .tr:not(.table-titles) {
+        padding: 12px;
+    }
+
+    body[data-page="admin-status-processes"] #view>.table .td::before {
+        min-width: 80px;
+        font-size: 0.75rem;
+    }
+
+    body[data-page="admin-status-processes"] #view>.table .td[data-title="Command"] {
+        font-size: 0.7rem;
+    }
+
+    body[data-page="admin-status-processes"] #view>.table .td.cbi-section-actions>div {
+        width: 100%;
+    }
+
+    body[data-page="admin-status-processes"] #view>.table .td.cbi-section-actions .btn {
+        flex: 1;
+        text-align: center;
+        padding: 10px 8px !important;
+    }
 }
 
 /* =====================================================

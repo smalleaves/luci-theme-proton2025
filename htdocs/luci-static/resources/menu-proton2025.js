@@ -267,6 +267,11 @@ return baseclass.extend({
     else if (typeof mq.addListener === "function")
       mq.addListener((ev) => this.ensureMenuPlacement(ev.matches));
 
+    // Добавляем кнопку закрытия в мобильное меню
+    if (mq.matches) {
+      this.addMobileMenuCloseButton();
+    }
+
     this.renderModeMenu(node);
 
     if (L.env.dispatchpath.length >= 3) {
@@ -301,6 +306,12 @@ return baseclass.extend({
     // Add hover-to-reveal titles for assoclist (Associated Stations).
     this.installAssoclistTitleObserver();
     this.installAssoclistRowHoverExpand();
+
+    // Setup mobile table data-title attributes
+    this.setupMobileTableTitles();
+
+    // Setup wireless actions dropdown menu (⋮) for desktop
+    this.setupWirelessActionsDropdown();
   },
 
   handleMenuExpand(ev) {
@@ -339,10 +350,7 @@ return baseclass.extend({
       // No submenu - allow normal navigation
       // On mobile, close the sidebar after click
       if (isMobile) {
-        document.querySelector("#mainmenu").classList.remove("active");
-        document
-          .querySelector("#menubar .navigation")
-          .classList.remove("active");
+        this.closeMobileMenu();
       }
       return;
     }
@@ -465,13 +473,230 @@ return baseclass.extend({
   handleSidebarToggle(ev) {
     const btn = ev.currentTarget;
     const bar = document.querySelector("#mainmenu");
+    const overlay = this.getOrCreateOverlay();
 
     if (btn.classList.contains("active")) {
       btn.classList.remove("active");
       bar.classList.remove("active");
+      overlay.classList.remove("active");
+      document.body.style.overflow = "";
     } else {
       btn.classList.add("active");
       bar.classList.add("active");
+      overlay.classList.add("active");
+      document.body.style.overflow = "hidden";
     }
+  },
+
+  getOrCreateOverlay() {
+    let overlay = document.querySelector("#menu-overlay");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "menu-overlay";
+      overlay.addEventListener("click", () => {
+        this.closeMobileMenu();
+      });
+      document.body.appendChild(overlay);
+    }
+    return overlay;
+  },
+
+  closeMobileMenu() {
+    const btn = document.querySelector("#menubar .navigation");
+    const bar = document.querySelector("#mainmenu");
+    const overlay = document.querySelector("#menu-overlay");
+
+    if (btn) btn.classList.remove("active");
+    if (bar) bar.classList.remove("active");
+    if (overlay) overlay.classList.remove("active");
+    document.body.style.overflow = "";
+  },
+
+  addMobileMenuCloseButton() {
+    const mainmenu = document.querySelector("#mainmenu");
+    if (!mainmenu) return;
+
+    // Проверяем, не добавлена ли уже кнопка
+    if (mainmenu.querySelector(".menu-close")) return;
+
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "menu-close";
+    closeBtn.innerHTML = "✕";
+    closeBtn.setAttribute("aria-label", "Close menu");
+    closeBtn.addEventListener("click", () => {
+      this.closeMobileMenu();
+    });
+
+    mainmenu.insertBefore(closeBtn, mainmenu.firstChild);
+  },
+
+  setupMobileTableTitles() {
+    const updateTitles = () => {
+      if (window.innerWidth > 800) return;
+
+      document.querySelectorAll("table").forEach((table) => {
+        // Skip tables that are already processed or empty
+        if (table.classList.contains("mobile-titles-set")) return;
+
+        const headers = [];
+        const headerRow = table.querySelector(
+          "thead tr, tr.cbi-section-table-titles"
+        );
+
+        if (headerRow) {
+          headerRow.querySelectorAll("th").forEach((th) => {
+            headers.push((th.textContent || "").trim());
+          });
+        }
+
+        if (headers.length === 0) return;
+
+        table
+          .querySelectorAll("tbody tr, tr.cbi-section-table-row")
+          .forEach((row) => {
+            const cells = row.querySelectorAll("td");
+            cells.forEach((cell, index) => {
+              if (headers[index] && !cell.hasAttribute("data-title")) {
+                cell.setAttribute("data-title", headers[index]);
+              }
+            });
+          });
+
+        table.classList.add("mobile-titles-set");
+      });
+    };
+
+    // Run initially
+    updateTitles();
+
+    // Run on window resize
+    window.addEventListener("resize", updateTitles);
+
+    // Run on DOM changes (for dynamic content)
+    const observer = new MutationObserver(() => {
+      setTimeout(updateTitles, 100);
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  },
+
+  /**
+   * Wireless actions dropdown menu (⋮) for desktop
+   * Converts action buttons in #cbi-wireless into a compact dropdown
+   */
+  setupWirelessActionsDropdown() {
+    const installDropdowns = () => {
+      // Only on desktop
+      if (window.innerWidth <= 800) return;
+
+      const wirelessSection = document.querySelector("#cbi-wireless");
+      if (!wirelessSection) return;
+
+      // Find all action cells in wireless table
+      const actionCells = wirelessSection.querySelectorAll(
+        "td.cbi-section-actions"
+      );
+
+      actionCells.forEach((cell) => {
+        // Skip if already processed
+        if (cell.classList.contains("actions-dropdown-ready")) return;
+
+        // Buttons are inside a div wrapper
+        const wrapper = cell.querySelector("div");
+        if (!wrapper) return;
+
+        const buttons = Array.from(
+          wrapper.querySelectorAll("button, input[type='button'], .cbi-button")
+        );
+        if (buttons.length === 0) return;
+
+        // Create toggle button (⋮)
+        const toggle = document.createElement("button");
+        toggle.className = "actions-toggle";
+        toggle.innerHTML = "⋮";
+        toggle.setAttribute("aria-label", "Actions menu");
+        toggle.setAttribute("type", "button");
+
+        // Create dropdown container
+        const dropdown = document.createElement("div");
+        dropdown.className = "actions-dropdown";
+
+        // MOVE original buttons into dropdown (not clone!) to preserve event handlers
+        buttons.forEach((btn) => {
+          dropdown.appendChild(btn);
+        });
+
+        // Hide original empty wrapper
+        wrapper.style.display = "none";
+
+        // Toggle dropdown on click
+        toggle.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          ev.preventDefault();
+
+          // Close other open dropdowns
+          document.querySelectorAll(".actions-dropdown.open").forEach((d) => {
+            if (d !== dropdown) d.classList.remove("open");
+          });
+
+          dropdown.classList.toggle("open");
+        });
+
+        // Close dropdown after button click
+        dropdown.addEventListener("click", (ev) => {
+          if (ev.target.matches("button, input[type='button'], .cbi-button")) {
+            setTimeout(() => {
+              dropdown.classList.remove("open");
+            }, 100);
+          }
+        });
+
+        cell.appendChild(toggle);
+        cell.appendChild(dropdown);
+        cell.classList.add("actions-dropdown-ready");
+      });
+    };
+
+    // Close dropdowns on outside click
+    document.addEventListener("click", (ev) => {
+      if (
+        !ev.target.closest(".actions-dropdown") &&
+        !ev.target.closest(".actions-toggle")
+      ) {
+        document.querySelectorAll(".actions-dropdown.open").forEach((d) => {
+          d.classList.remove("open");
+        });
+      }
+    });
+
+    // Close on Escape key
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key === "Escape") {
+        document.querySelectorAll(".actions-dropdown.open").forEach((d) => {
+          d.classList.remove("open");
+        });
+      }
+    });
+
+    // Run initially with delay for LuCI to render
+    setTimeout(installDropdowns, 300);
+
+    // Run on window resize
+    window.addEventListener("resize", installDropdowns);
+
+    // Run on DOM changes (for dynamic content like LuCI updates)
+    const observer = new MutationObserver(() => {
+      setTimeout(installDropdowns, 150);
+    });
+
+    const wirelessContainer =
+      document.querySelector("#cbi-wireless") || document.body;
+    observer.observe(wirelessContainer, {
+      childList: true,
+      subtree: true,
+    });
   },
 });

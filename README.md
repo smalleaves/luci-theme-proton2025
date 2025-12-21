@@ -14,12 +14,26 @@
 
 - 🌙 Тёмный glass/blur дизайн
 - 🎨 Единая система CSS-переменных для кастомизации
-- 📱 Адаптивная вёрстка
+- 📱 Адаптивная вёрстка (мобильные карточки для таблиц)
 - ⚡ Совместимость с LuCI ucode (OpenWrt 23.x+)
 
 ## Установка
 
-### Быстрый тест (без сборки .ipk)
+### 🚀 Быстрая установка (одна команда)
+
+Подключитесь к роутеру по SSH и выполните:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/ChesterGoodiny/luci-theme-proton2025/main/install.sh | sh
+```
+
+Или с curl:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ChesterGoodiny/luci-theme-proton2025/main/install.sh | sh
+```
+
+### Ручная установка
 
 ```bash
 # Скопируй файлы на роутер (замени 192.168.1.1 на IP роутера)
@@ -43,7 +57,15 @@ make menuconfig  # LuCI -> Themes -> luci-theme-proton2025
 make package/luci-theme-proton2025/compile V=s
 ```
 
-## Откат на стандартную тему
+## Удаление
+
+### Быстрое удаление
+
+```bash
+wget -qO- https://raw.githubusercontent.com/ChesterGoodiny/luci-theme-proton2025/main/uninstall.sh | sh
+```
+
+### Откат на стандартную тему (без удаления)
 
 ```sh
 uci set luci.main.mediaurlbase=/luci-static/bootstrap
