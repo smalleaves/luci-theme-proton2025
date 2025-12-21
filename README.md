@@ -6,9 +6,17 @@
 ![LuCI](https://img.shields.io/badge/LuCI-ucode-green)
 ![License](https://img.shields.io/badge/License-Apache%202.0-orange)
 
-## Скриншот
+## Скриншоты
 
-![LuCI Status](docs/status.png)
+### Статус LuCI
+<div align="center">
+  <img src="docs/status.png" alt="LuCI Status" />
+</div>
+
+### Настройки темы
+<div align="center">
+  <img src="docs/settings.png" alt="Theme Settings" />
+</div>
 
 ## Особенности
 
@@ -16,10 +24,25 @@
 - 🎨 Единая система CSS-переменных для кастомизации
 - 📱 Адаптивная вёрстка (мобильные карточки для таблиц)
 - ⚡ Совместимость с LuCI ucode (OpenWrt 23.x+)
+- ⚙️ Встроенные настройки темы (System → System → Language and Style)
+
+## Настройки темы
+
+Тема включает встроенную панель настроек, доступную в разделе **System → System → Language and Style**:
+
+| Настройка         | Описание                                                 |
+| ----------------- | -------------------------------------------------------- |
+| **Accent Color**  | Выбор акцентного цвета: Blue, Purple, Green, Orange, Red |
+| **Border Radius** | Стиль скругления углов: Sharp, Rounded, Extra Rounded    |
+| **Zoom**          | Масштаб интерфейса (75% - 150%), как Ctrl+/- в браузере  |
+| **Animations**    | Включение/отключение анимаций и переходов                |
+| **Transparency**  | Эффект размытия и прозрачности для панели меню           |
+
+Все настройки сохраняются в браузере (localStorage) и применяются автоматически при загрузке страницы.
 
 ## Установка
 
-### 🚀 Быстрая установка (одна команда)
+### 🚀 Быстрая установка (Для теста)
 
 Подключитесь к роутеру по SSH и выполните:
 
@@ -31,20 +54,6 @@ wget -qO- https://raw.githubusercontent.com/ChesterGoodiny/luci-theme-proton2025
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ChesterGoodiny/luci-theme-proton2025/main/install.sh | sh
-```
-
-### Ручная установка
-
-```bash
-# Скопируй файлы на роутер (замени 192.168.1.1 на IP роутера)
-scp -r ./ucode/template/themes/proton2025 root@192.168.1.1:/usr/share/ucode/luci/template/themes/
-scp -r ./htdocs/luci-static/proton2025 root@192.168.1.1:/www/luci-static/
-scp ./htdocs/luci-static/resources/menu-proton2025.js root@192.168.1.1:/www/luci-static/resources/
-
-# Активируй тему
-ssh root@192.168.1.1 "uci set luci.themes.Proton2025=/luci-static/proton2025; \
-  uci set luci.main.mediaurlbase=/luci-static/proton2025; \
-  uci commit luci; /etc/init.d/uhttpd restart"
 ```
 
 ### Сборка .ipk (OpenWrt Buildroot)
@@ -62,7 +71,14 @@ make package/luci-theme-proton2025/compile V=s
 ### Быстрое удаление
 
 ```bash
-wget -qO- https://raw.githubusercontent.com/ChesterGoodiny/luci-theme-proton2025/main/uninstall.sh | sh
+# 1. Скачайте скрипт
+wget -O uninstall.sh https://raw.githubusercontent.com/ChesterGoodiny/luci-theme-proton2025/main/uninstall.sh
+
+# 2. Сделайте его исполняемым (на всякий случай)
+chmod +x uninstall.sh
+
+# 3. Запустите напрямую — теперь он будет интерактивным
+./uninstall.sh
 ```
 
 ### Откат на стандартную тему (без удаления)

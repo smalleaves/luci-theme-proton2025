@@ -15,6 +15,23 @@
 <html lang="{{ dispatcher.lang }}">
 <head>
 <meta charset="utf-8" />
+<script>
+(function() {
+	var isMobile = window.innerWidth <= 800;
+	var defaultZoom = isMobile ? '100' : '80';
+	var z = localStorage.getItem('proton-zoom') || defaultZoom;
+	document.documentElement.style.zoom = z / 100;
+	var t = localStorage.getItem('proton-transparency');
+	if (t !== 'false') document.documentElement.classList.add('proton-transparency');
+	var r = localStorage.getItem('proton-border-radius');
+	if (r === 'sharp') document.documentElement.classList.add('proton-radius-sharp');
+	else if (r === 'extra') document.documentElement.classList.add('proton-radius-extra');
+	var a = localStorage.getItem('proton-accent-color');
+	var c = { purple: '#a78bfa', green: '#34d399', orange: '#fb923c', red: '#f87171' };
+	if (a && c[a]) document.documentElement.style.setProperty('--proton-accent', c[a]);
+	if (localStorage.getItem('proton-animations') === 'false') document.documentElement.classList.add('proton-no-animations');
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#0f1419" />
 <meta name="color-scheme" content="dark" />

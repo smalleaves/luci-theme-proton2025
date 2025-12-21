@@ -5,6 +5,31 @@
 return baseclass.extend({
   __init__() {
     ui.menu.load().then((tree) => this.render(tree));
+
+    // Apply saved theme settings on every page
+    this.loadAndApplyThemeSettings();
+
+    // Initialize theme settings UI on System page
+    document.addEventListener("DOMContentLoaded", () => {
+      this.initThemeSettings();
+    });
+
+    // Also try after a delay in case DOMContentLoaded already fired
+    setTimeout(() => this.initThemeSettings(), 100);
+  },
+
+  loadAndApplyThemeSettings() {
+    const isMobile = window.innerWidth <= 800;
+    const defaultZoom = isMobile ? "100" : "80";
+    const settings = {
+      accentColor: localStorage.getItem("proton-accent-color") || "default",
+      borderRadius: localStorage.getItem("proton-border-radius") || "default",
+      zoom: localStorage.getItem("proton-zoom") || defaultZoom,
+      animations: localStorage.getItem("proton-animations") !== "false",
+      transparency: localStorage.getItem("proton-transparency") !== "false",
+    };
+
+    this.applyThemeSettings(settings);
   },
 
   installAssoclistRowHoverExpand() {
@@ -698,5 +723,244 @@ return baseclass.extend({
       childList: true,
       subtree: true,
     });
+  },
+
+  initThemeSettings() {
+    // Only run on System settings page
+    if (!document.body.dataset.page?.includes("admin-system-system")) return;
+
+    // Wait for page to fully render
+    setTimeout(() => {
+      const designField = document.querySelector('[data-name="_mediaurlbase"]');
+      if (!designField) return;
+
+      // Get the parent container
+      const parentContainer = designField.closest(".cbi-section-node");
+      if (!parentContainer) return;
+
+      // Check if theme settings already exist
+      if (document.getElementById("proton-theme-settings")) return;
+
+      // Load saved settings
+      const isMobile = window.innerWidth <= 800;
+      const defaultZoom = isMobile ? "100" : "80";
+      const settings = {
+        accentColor: localStorage.getItem("proton-accent-color") || "default",
+        borderRadius: localStorage.getItem("proton-border-radius") || "default",
+        zoom: localStorage.getItem("proton-zoom") || defaultZoom,
+        animations: localStorage.getItem("proton-animations") !== "false",
+        transparency: localStorage.getItem("proton-transparency") !== "false",
+      };
+
+      // Create theme settings HTML
+      const settingsHTML = `
+        <div id="proton-theme-settings" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
+          <h4 style="margin: 0 0 1rem 0; font-size: 0.95rem; font-weight: 600; color: var(--proton-accent); opacity: 0.9;">Proton2025 Theme Settings</h4>
+          
+          <div class="cbi-value" style="margin-bottom: 1rem;">
+            <label class="cbi-value-title" for="proton-accent-select">Accent Color</label>
+            <div class="cbi-value-field">
+              <select id="proton-accent-select" class="cbi-input-select">
+                <option value="default" ${
+                  settings.accentColor === "default" ? "selected" : ""
+                }>Blue (Default)</option>
+                <option value="purple" ${
+                  settings.accentColor === "purple" ? "selected" : ""
+                }>Purple</option>
+                <option value="green" ${
+                  settings.accentColor === "green" ? "selected" : ""
+                }>Green</option>
+                <option value="orange" ${
+                  settings.accentColor === "orange" ? "selected" : ""
+                }>Orange</option>
+                <option value="red" ${
+                  settings.accentColor === "red" ? "selected" : ""
+                }>Red</option>
+              </select>
+              <div class="cbi-value-description">Choose theme accent color</div>
+            </div>
+          </div>
+
+          <div class="cbi-value" style="margin-bottom: 1rem;">
+            <label class="cbi-value-title" for="proton-radius-select">Border Radius</label>
+            <div class="cbi-value-field">
+              <select id="proton-radius-select" class="cbi-input-select">
+                <option value="sharp" ${
+                  settings.borderRadius === "sharp" ? "selected" : ""
+                }>Sharp</option>
+                <option value="default" ${
+                  settings.borderRadius === "default" ? "selected" : ""
+                }>Rounded (Default)</option>
+                <option value="extra" ${
+                  settings.borderRadius === "extra" ? "selected" : ""
+                }>Extra Rounded</option>
+              </select>
+              <div class="cbi-value-description">Corner rounding style</div>
+            </div>
+          </div>
+
+          <div class="cbi-value" style="margin-bottom: 1rem;">
+            <label class="cbi-value-title" for="proton-zoom-range">Zoom <span id="proton-zoom-value">${
+              settings.zoom
+            }%</span></label>
+            <div class="cbi-value-field">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <button type="button" id="proton-zoom-minus" class="cbi-button" style="padding: 0.4rem 0.8rem; min-width: auto;">−</button>
+                <input type="range" id="proton-zoom-range" min="75" max="150" step="5" value="${
+                  settings.zoom
+                }" style="flex: 1; accent-color: var(--proton-accent);">
+                <button type="button" id="proton-zoom-plus" class="cbi-button" style="padding: 0.4rem 0.8rem; min-width: auto;">+</button>
+                <button type="button" id="proton-zoom-reset" class="cbi-button" style="padding: 0.4rem 0.8rem; min-width: auto;">Reset</button>
+              </div>
+              <div class="cbi-value-description">Interface scale (75% - 150%)</div>
+            </div>
+          </div>
+
+          <div class="cbi-value" style="margin-bottom: 1rem;">
+            <label class="cbi-value-title" for="proton-animations-check">Animations</label>
+            <div class="cbi-value-field">
+              <div class="cbi-checkbox">
+                <input id="proton-animations-check" type="checkbox" ${
+                  settings.animations ? "checked" : ""
+                }>
+                <label for="proton-animations-check"></label>
+              </div>
+              <div class="cbi-value-description">Enable smooth transitions and effects</div>
+            </div>
+          </div>
+
+          <div class="cbi-value" style="margin-bottom: 0;">
+            <label class="cbi-value-title" for="proton-transparency-check">Transparency</label>
+            <div class="cbi-value-field">
+              <div class="cbi-checkbox">
+                <input id="proton-transparency-check" type="checkbox" ${
+                  settings.transparency ? "checked" : ""
+                }>
+                <label for="proton-transparency-check"></label>
+              </div>
+              <div class="cbi-value-description">Enable blur and transparency effects</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Insert after the design field
+      designField.insertAdjacentHTML("afterend", settingsHTML);
+
+      // Apply current settings
+      this.applyThemeSettings(settings);
+
+      // Add event listeners
+      const accentSelect = document.getElementById("proton-accent-select");
+      const radiusSelect = document.getElementById("proton-radius-select");
+      const fontsizeSelect = document.getElementById("proton-fontsize-select");
+      const animationsCheck = document.getElementById(
+        "proton-animations-check"
+      );
+      const transparencyCheck = document.getElementById(
+        "proton-transparency-check"
+      );
+
+      accentSelect?.addEventListener("change", (e) => {
+        const color = e.target.value;
+        localStorage.setItem("proton-accent-color", color);
+        this.applyAccentColor(color);
+      });
+
+      radiusSelect?.addEventListener("change", (e) => {
+        const radius = e.target.value;
+        localStorage.setItem("proton-border-radius", radius);
+        this.applyBorderRadius(radius);
+      });
+
+      const zoomRange = document.getElementById("proton-zoom-range");
+      const zoomValue = document.getElementById("proton-zoom-value");
+      const zoomMinus = document.getElementById("proton-zoom-minus");
+      const zoomPlus = document.getElementById("proton-zoom-plus");
+      const zoomReset = document.getElementById("proton-zoom-reset");
+
+      const updateZoom = (value) => {
+        value = Math.max(75, Math.min(150, parseInt(value)));
+        zoomRange.value = value;
+        zoomValue.textContent = value + "%";
+        localStorage.setItem("proton-zoom", value);
+        this.applyZoom(value);
+      };
+
+      zoomRange?.addEventListener("input", (e) => updateZoom(e.target.value));
+      zoomMinus?.addEventListener("click", () =>
+        updateZoom(parseInt(zoomRange.value) - 5)
+      );
+      zoomPlus?.addEventListener("click", () =>
+        updateZoom(parseInt(zoomRange.value) + 5)
+      );
+      zoomReset?.addEventListener("click", () => updateZoom(100));
+
+      animationsCheck?.addEventListener("change", (e) => {
+        const enabled = e.target.checked;
+        localStorage.setItem("proton-animations", enabled);
+        this.applyAnimations(enabled);
+      });
+
+      transparencyCheck?.addEventListener("change", (e) => {
+        const enabled = e.target.checked;
+        localStorage.setItem("proton-transparency", enabled);
+        this.applyTransparency(enabled);
+      });
+    }, 500);
+  },
+
+  applyThemeSettings(settings) {
+    this.applyAccentColor(settings.accentColor);
+    this.applyBorderRadius(settings.borderRadius);
+    this.applyZoom(settings.zoom);
+    this.applyAnimations(settings.animations);
+    this.applyTransparency(settings.transparency);
+  },
+
+  applyAccentColor(color) {
+    const colors = {
+      default: "#5e9eff",
+      purple: "#a78bfa",
+      green: "#34d399",
+      orange: "#fb923c",
+      red: "#f87171",
+    };
+
+    const accentColor = colors[color] || colors.default;
+    document.documentElement.style.setProperty("--proton-accent", accentColor);
+  },
+
+  applyBorderRadius(radius) {
+    const root = document.documentElement;
+    root.classList.remove("proton-radius-sharp", "proton-radius-extra");
+
+    if (radius === "sharp") {
+      root.classList.add("proton-radius-sharp");
+    } else if (radius === "extra") {
+      root.classList.add("proton-radius-extra");
+    }
+  },
+
+  applyZoom(zoom) {
+    const scale = parseInt(zoom) / 100;
+    // Use CSS zoom on html element for true browser-like scaling
+    document.documentElement.style.zoom = scale;
+  },
+
+  applyAnimations(enabled) {
+    if (!enabled) {
+      document.documentElement.classList.add("proton-no-animations");
+    } else {
+      document.documentElement.classList.remove("proton-no-animations");
+    }
+  },
+
+  applyTransparency(enabled) {
+    if (enabled) {
+      document.documentElement.classList.add("proton-transparency");
+    } else {
+      document.documentElement.classList.remove("proton-transparency");
+    }
   },
 });

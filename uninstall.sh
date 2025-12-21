@@ -41,6 +41,13 @@ if command -v uci >/dev/null 2>&1; then
     echo "${GREEN}✓${NC} Switched to default theme"
 fi
 
+echo "${BLUE}→${NC} Removing theme from LuCI registry..."
+if command -v uci >/dev/null 2>&1; then
+    uci delete luci.themes.Proton2025 2>/dev/null || true
+    uci commit luci
+    echo "${GREEN}✓${NC} Theme removed from registry"
+fi
+
 echo "${BLUE}→${NC} Removing theme files..."
 
 # Remove static files
