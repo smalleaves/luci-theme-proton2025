@@ -27,6 +27,11 @@ return baseclass.extend({
       zoom: localStorage.getItem("proton-zoom") || defaultZoom,
       animations: localStorage.getItem("proton-animations") !== "false",
       transparency: localStorage.getItem("proton-transparency") !== "false",
+      servicesWidget:
+        localStorage.getItem("proton-services-widget-enabled") !== "false",
+      servicesGrouped:
+        localStorage.getItem("proton-services-grouped") === "true",
+      servicesLog: localStorage.getItem("proton-services-log") === "true",
     };
 
     this.applyThemeSettings(settings);
@@ -89,6 +94,15 @@ return baseclass.extend({
         .replace(/\s+/g, " ");
     };
 
+    const escapeHtml = (value) => {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    };
+
     const buildRowHtml = (tr) => {
       const table = tr.closest("table");
       if (!table) return "";
@@ -111,9 +125,11 @@ return baseclass.extend({
 
         if (!val) continue;
 
-        const k = key ? `<span class="k">${key}:</span>` : "";
+        const k = key ? `<span class="k">${escapeHtml(key)}:</span>` : "";
         parts.push(
-          `<span class="cell">${k}<span class="v">${val}</span></span>`
+          `<span class="cell">${k}<span class="v">${escapeHtml(
+            val
+          )}</span></span>`
         );
       }
 
@@ -750,59 +766,74 @@ return baseclass.extend({
         zoom: localStorage.getItem("proton-zoom") || defaultZoom,
         animations: localStorage.getItem("proton-animations") !== "false",
         transparency: localStorage.getItem("proton-transparency") !== "false",
+        servicesWidget:
+          localStorage.getItem("proton-services-widget-enabled") !== "false",
+        servicesGrouped:
+          localStorage.getItem("proton-services-grouped") === "true",
+        servicesLog: localStorage.getItem("proton-services-log") === "true",
       };
 
       // Create theme settings HTML
       const settingsHTML = `
         <div id="proton-theme-settings" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
-          <h4 style="margin: 0 0 1rem 0; font-size: 0.95rem; font-weight: 600; color: var(--proton-accent); opacity: 0.9;">Proton2025 Theme Settings</h4>
+          <h4 style="margin: 0 0 1rem 0; font-size: 0.95rem; font-weight: 600; color: var(--proton-accent); opacity: 0.9;">${_(
+            "Proton2025 Theme Settings"
+          )}</h4>
           
           <div class="cbi-value" style="margin-bottom: 1rem;">
-            <label class="cbi-value-title" for="proton-accent-select">Accent Color</label>
+            <label class="cbi-value-title" for="proton-accent-select">${_(
+              "Accent Color"
+            )}</label>
             <div class="cbi-value-field">
               <select id="proton-accent-select" class="cbi-input-select">
                 <option value="default" ${
                   settings.accentColor === "default" ? "selected" : ""
-                }>Blue (Default)</option>
+                }>${_("Blue")} (${_("Default")})</option>
                 <option value="purple" ${
                   settings.accentColor === "purple" ? "selected" : ""
-                }>Purple</option>
+                }>${_("Purple")}</option>
                 <option value="green" ${
                   settings.accentColor === "green" ? "selected" : ""
-                }>Green</option>
+                }>${_("Green")}</option>
                 <option value="orange" ${
                   settings.accentColor === "orange" ? "selected" : ""
-                }>Orange</option>
+                }>${_("Orange")}</option>
                 <option value="red" ${
                   settings.accentColor === "red" ? "selected" : ""
-                }>Red</option>
+                }>${_("Red")}</option>
               </select>
-              <div class="cbi-value-description">Choose theme accent color</div>
+              <div class="cbi-value-description">${_(
+                "Choose theme accent color"
+              )}</div>
             </div>
           </div>
 
           <div class="cbi-value" style="margin-bottom: 1rem;">
-            <label class="cbi-value-title" for="proton-radius-select">Border Radius</label>
+            <label class="cbi-value-title" for="proton-radius-select">${_(
+              "Border Radius"
+            )}</label>
             <div class="cbi-value-field">
               <select id="proton-radius-select" class="cbi-input-select">
                 <option value="sharp" ${
                   settings.borderRadius === "sharp" ? "selected" : ""
-                }>Sharp</option>
+                }>${_("Sharp")}</option>
                 <option value="default" ${
                   settings.borderRadius === "default" ? "selected" : ""
-                }>Rounded (Default)</option>
+                }>${_("Rounded")} (${_("Default")})</option>
                 <option value="extra" ${
                   settings.borderRadius === "extra" ? "selected" : ""
-                }>Extra Rounded</option>
+                }>${_("Extra Rounded")}</option>
               </select>
-              <div class="cbi-value-description">Corner rounding style</div>
+              <div class="cbi-value-description">${_(
+                "Corner rounding style"
+              )}</div>
             </div>
           </div>
 
           <div class="cbi-value" style="margin-bottom: 1rem;">
-            <label class="cbi-value-title" for="proton-zoom-range">Zoom <span id="proton-zoom-value">${
-              settings.zoom
-            }%</span></label>
+            <label class="cbi-value-title" for="proton-zoom-range">${_(
+              "Zoom"
+            )} <span id="proton-zoom-value">${settings.zoom}%</span></label>
             <div class="cbi-value-field">
               <div style="display: flex; align-items: center; gap: 12px;">
                 <button type="button" id="proton-zoom-minus" class="cbi-button" style="padding: 0.4rem 0.8rem; min-width: auto;">−</button>
@@ -810,14 +841,20 @@ return baseclass.extend({
                   settings.zoom
                 }" style="flex: 1; accent-color: var(--proton-accent);">
                 <button type="button" id="proton-zoom-plus" class="cbi-button" style="padding: 0.4rem 0.8rem; min-width: auto;">+</button>
-                <button type="button" id="proton-zoom-reset" class="cbi-button" style="padding: 0.4rem 0.8rem; min-width: auto;">Reset</button>
+                <button type="button" id="proton-zoom-reset" class="cbi-button" style="padding: 0.4rem 0.8rem; min-width: auto;">${_(
+                  "Reset"
+                )}</button>
               </div>
-              <div class="cbi-value-description">Interface scale (75% - 150%)</div>
+              <div class="cbi-value-description">${_(
+                "Interface scale"
+              )} (75% - 150%)</div>
             </div>
           </div>
 
           <div class="cbi-value" style="margin-bottom: 1rem;">
-            <label class="cbi-value-title" for="proton-animations-check">Animations</label>
+            <label class="cbi-value-title" for="proton-animations-check">${_(
+              "Animations"
+            )}</label>
             <div class="cbi-value-field">
               <div class="cbi-checkbox">
                 <input id="proton-animations-check" type="checkbox" ${
@@ -825,12 +862,16 @@ return baseclass.extend({
                 }>
                 <label for="proton-animations-check"></label>
               </div>
-              <div class="cbi-value-description">Enable smooth transitions and effects</div>
+              <div class="cbi-value-description">${_(
+                "Enable smooth transitions and effects"
+              )}</div>
             </div>
           </div>
 
-          <div class="cbi-value" style="margin-bottom: 0;">
-            <label class="cbi-value-title" for="proton-transparency-check">Transparency</label>
+          <div class="cbi-value" style="margin-bottom: 1rem;">
+            <label class="cbi-value-title" for="proton-transparency-check">${_(
+              "Transparency"
+            )}</label>
             <div class="cbi-value-field">
               <div class="cbi-checkbox">
                 <input id="proton-transparency-check" type="checkbox" ${
@@ -838,7 +879,60 @@ return baseclass.extend({
                 }>
                 <label for="proton-transparency-check"></label>
               </div>
-              <div class="cbi-value-description">Enable blur and transparency effects</div>
+              <div class="cbi-value-description">${_(
+                "Enable blur and transparency effects"
+              )}</div>
+            </div>
+          </div>
+
+          <div class="cbi-value">
+            <label class="cbi-value-title" for="proton-services-widget-check">${_(
+              "Services Widget"
+            )}</label>
+            <div class="cbi-value-field">
+              <div class="cbi-checkbox">
+                <input id="proton-services-widget-check" type="checkbox" ${
+                  settings.servicesWidget ? "checked" : ""
+                }>
+                <label for="proton-services-widget-check"></label>
+              </div>
+              <div class="cbi-value-description">${_(
+                "Show services monitor on Overview page"
+              )}</div>
+            </div>
+          </div>
+
+          <div class="cbi-value">
+            <label class="cbi-value-title" for="proton-services-grouped-check">${_(
+              "Group Services"
+            )}</label>
+            <div class="cbi-value-field">
+              <div class="cbi-checkbox">
+                <input id="proton-services-grouped-check" type="checkbox" ${
+                  settings.servicesGrouped ? "checked" : ""
+                }>
+                <label for="proton-services-grouped-check"></label>
+              </div>
+              <div class="cbi-value-description">${_(
+                "Group services by category in widget"
+              )}</div>
+            </div>
+          </div>
+
+          <div class="cbi-value" style="margin-bottom: 0;">
+            <label class="cbi-value-title" for="proton-services-log-check">${_(
+              "Widget Log"
+            )}</label>
+            <div class="cbi-value-field">
+              <div class="cbi-checkbox">
+                <input id="proton-services-log-check" type="checkbox" ${
+                  settings.servicesLog ? "checked" : ""
+                }>
+                <label for="proton-services-log-check"></label>
+              </div>
+              <div class="cbi-value-description">${_(
+                "Show activity log under the widget"
+              )}</div>
             </div>
           </div>
         </div>
@@ -907,6 +1001,53 @@ return baseclass.extend({
         localStorage.setItem("proton-transparency", enabled);
         this.applyTransparency(enabled);
       });
+
+      const servicesWidgetCheck = document.getElementById(
+        "proton-services-widget-check"
+      );
+      servicesWidgetCheck?.addEventListener("change", (e) => {
+        const enabled = e.target.checked;
+        localStorage.setItem("proton-services-widget-enabled", enabled);
+        // Показываем уведомление о применении
+        const msg = enabled
+          ? _("Services widget enabled. Visit Status → Overview to see it.")
+          : _("Services widget disabled.");
+        if (typeof L !== "undefined" && L.ui && L.ui.addNotification) {
+          L.ui.addNotification(null, E("p", msg), "info");
+        } else {
+          alert(msg);
+        }
+      });
+
+      const servicesGroupedCheck = document.getElementById(
+        "proton-services-grouped-check"
+      );
+      servicesGroupedCheck?.addEventListener("change", (e) => {
+        const enabled = e.target.checked;
+        localStorage.setItem("proton-services-grouped", enabled);
+        // Показываем уведомление о применении
+        const msg = enabled
+          ? _("Services grouping enabled.")
+          : _("Services grouping disabled.");
+        if (typeof L !== "undefined" && L.ui && L.ui.addNotification) {
+          L.ui.addNotification(null, E("p", msg), "info");
+        } else {
+          alert(msg);
+        }
+      });
+
+      const servicesLogCheck = document.getElementById(
+        "proton-services-log-check"
+      );
+      servicesLogCheck?.addEventListener("change", (e) => {
+        const enabled = e.target.checked;
+        localStorage.setItem("proton-services-log", enabled);
+        // Сразу применяем - показываем/скрываем лог
+        const logEl = document.getElementById("proton-services-log");
+        if (logEl) {
+          logEl.style.display = enabled ? "" : "none";
+        }
+      });
     }, 500);
   },
 
@@ -916,6 +1057,7 @@ return baseclass.extend({
     this.applyZoom(settings.zoom);
     this.applyAnimations(settings.animations);
     this.applyTransparency(settings.transparency);
+    this.applyServicesWidget(settings.servicesWidget);
   },
 
   applyAccentColor(color) {
@@ -961,6 +1103,13 @@ return baseclass.extend({
       document.documentElement.classList.add("proton-transparency");
     } else {
       document.documentElement.classList.remove("proton-transparency");
+    }
+  },
+
+  applyServicesWidget(enabled) {
+    const widget = document.getElementById("proton-services-widget");
+    if (widget) {
+      widget.style.display = enabled ? "" : "none";
     }
   },
 });

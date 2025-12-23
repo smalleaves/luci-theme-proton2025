@@ -9,11 +9,13 @@ An elegant dark theme for LuCI (OpenWrt 23.x+).
 ## Screenshots
 
 ### LuCI Status
+
 <div align="center">
   <img src="docs/status.png" alt="LuCI Status" />
 </div>
 
 ### Theme Settings
+
 <div align="center">
   <img src="docs/settings.png" alt="Theme Settings" />
 </div>
@@ -21,42 +23,45 @@ An elegant dark theme for LuCI (OpenWrt 23.x+).
 ## Features
 
 - 🌙 Dark glass/blur design
-- 🎨 Unified CSS variable system for easy customization
-- 📱 Responsive layout (mobile cards for tables)
+- 🎨 Customizable accent color, border radius, zoom
+- 📱 Responsive layout for mobile devices
 - ⚡ Compatible with LuCI ucode (OpenWrt 23.x+)
-- ⚙️ Built-in theme settings (System → System → Language and Style)
+- 📊 Services monitoring widget on Status → Overview page
+- 🌐 Localization support (i18n)
+
+## Services Widget
+
+The main page (Status → Overview) displays a widget showing system service statuses:
+
+- Status visualization (Running/Stopped)
+- Add services via modal or custom input
+- Settings saved in browser
 
 ## Theme Settings
 
-The theme includes a built-in settings panel available at **System → System → Language and Style**:
+Available at **System → System → Language and Style**:
 
-| Setting            | Description                                                      |
-| ------------------ | ---------------------------------------------------------------- |
-| **Accent Color**   | Select accent color: Blue, Purple, Green, Orange, Red            |
-| **Border Radius**  | Corner style: Sharp, Rounded, Extra Rounded                       |
-| **Zoom**           | Interface scale (75% - 150%), similar to Ctrl+/- in a browser     |
-| **Animations**     | Enable/disable animations and transitions                         |
-| **Transparency**   | Blur and transparency effect for the menu panel                  |
-
-All settings are stored in the browser (localStorage) and applied automatically on page load.
+- Accent color (Blue, Purple, Green, Orange, Red)
+- Border radius
+- Interface zoom
+- Animations and transparency
+- Services widget (enable/disable, grouping, log)
 
 ## Installation
 
-### 🚀 Quick Install (For Testing)
-
-Connect to your router via SSH and run:
+### Quick Install
 
 ```bash
 wget -qO- https://raw.githubusercontent.com/ChesterGoodiny/luci-theme-proton2025/main/install.sh | sh
 ```
 
-Or using curl:
+Or:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ChesterGoodiny/luci-theme-proton2025/main/install.sh | sh
 ```
 
-### Building the .ipk (OpenWrt Buildroot)
+### Building .ipk
 
 ```bash
 cp -r luci-theme-proton2025 ~/openwrt/feeds/luci/themes/
@@ -68,20 +73,13 @@ make package/luci-theme-proton2025/compile V=s
 
 ## Removal
 
-### Quick Removal
-
 ```bash
-# 1. Download the script
 wget -O uninstall.sh https://raw.githubusercontent.com/ChesterGoodiny/luci-theme-proton2025/main/uninstall.sh
-
-# 2. Make it executable (just in case)
 chmod +x uninstall.sh
-
-# 3. Run it directly — it is now interactive
 ./uninstall.sh
 ```
 
-### Revert to the Default Theme (without uninstalling)
+### Revert to Default Theme
 
 ```sh
 uci set luci.main.mediaurlbase=/luci-static/bootstrap
@@ -97,10 +95,13 @@ luci-theme-proton2025/
 ├── htdocs/luci-static/
 │   ├── proton2025/
 │   │   ├── cascade.css
-│   │   ├── logo.svg
-│   │   └── spinner.svg
+│   │   ├── services-widget.js
+│   │   └── logo.svg
 │   └── resources/menu-proton2025.js
-├── root/etc/uci-defaults/30_luci-theme-proton2025
+├── po/                              # Localization
+│   ├── ru/theme-proton2025.po
+│   └── templates/theme-proton2025.pot
+├── root/etc/uci-defaults/
 └── ucode/template/themes/proton2025/
     ├── header.ut
     ├── footer.ut

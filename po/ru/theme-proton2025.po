@@ -1,0 +1,262 @@
+# Russian translations for luci-theme-proton2025
+# Русские переводы для темы Proton2025
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ru\n"
+
+# ==================== Services Widget ====================
+
+msgid "Services Monitor"
+msgstr "Монитор сервисов"
+
+msgid "Add Service"
+msgstr "Добавить сервис"
+
+msgid "Remove"
+msgstr "Удалить"
+
+msgid "Add"
+msgstr "Добавить"
+
+msgid "Added"
+msgstr "Добавлено"
+
+msgid "Removed"
+msgstr "Удалено"
+
+msgid "Search"
+msgstr "Поиск"
+
+# Status
+msgid "Running"
+msgstr "Работает"
+
+msgid "Stopped"
+msgstr "Остановлен"
+
+msgid "Error"
+msgstr "Ошибка"
+
+msgid "Unknown"
+msgstr "Неизвестно"
+
+msgid "Checking..."
+msgstr "Проверка..."
+
+# Categories
+msgid "Network"
+msgstr "Сеть"
+
+msgid "Security"
+msgstr "Безопасность"
+
+msgid "VPN"
+msgstr "VPN"
+
+msgid "Ad Blocking"
+msgstr "Блокировка рекламы"
+
+msgid "System"
+msgstr "Система"
+
+msgid "Other"
+msgstr "Другое"
+
+# Service descriptions
+msgid "DNS and DHCP server"
+msgstr "DNS и DHCP сервер"
+
+msgid "Firewall"
+msgstr "Межсетевой экран"
+
+msgid "Network interfaces"
+msgstr "Сетевые интерфейсы"
+
+msgid "LuCI web server"
+msgstr "Веб-сервер LuCI"
+
+msgid "DHCPv6 server"
+msgstr "DHCPv6 сервер"
+
+msgid "SSH access"
+msgstr "SSH доступ"
+
+msgid "Time sync"
+msgstr "Синхронизация времени"
+
+msgid "Task scheduler"
+msgstr "Планировщик задач"
+
+msgid "VPN service"
+msgstr "VPN сервис"
+
+msgid "Ad blocking"
+msgstr "Блокировка рекламы"
+
+msgid "System service"
+msgstr "Системный сервис"
+
+# Modal
+msgid "Search services..."
+msgstr "Поиск сервисов..."
+
+msgid "Enter custom service name..."
+msgstr "Введите имя сервиса..."
+
+msgid "Available services"
+msgstr "Доступные сервисы"
+
+msgid "No services found"
+msgstr "Сервисы не найдены"
+
+msgid "Not installed"
+msgstr "Не установлен"
+
+# Validation
+msgid "Letters, numbers, dash, underscore only"
+msgstr "Только буквы, цифры, дефис, подчёркивание"
+
+msgid "Name too long (max 64 chars)"
+msgstr "Имя слишком длинное (макс. 64 символа)"
+
+msgid "Invalid characters! Use: a-z, 0-9, -, _"
+msgstr "Недопустимые символы! Используйте: a-z, 0-9, -, _"
+
+msgid "Already in your list"
+msgstr "Уже в вашем списке"
+
+msgid "Found in system"
+msgstr "Найден в системе"
+
+msgid "Custom service (not found in system)"
+msgstr "Пользовательский сервис (не найден в системе)"
+
+msgid "Added successfully!"
+msgstr "Успешно добавлено!"
+
+# Log messages
+msgid "Ready"
+msgstr "Готов"
+
+msgid "Opening service list..."
+msgstr "Открытие списка сервисов..."
+
+msgid "Loading services..."
+msgstr "Загрузка сервисов..."
+
+msgid "Checking services..."
+msgstr "Проверка сервисов..."
+
+msgid "Services loaded"
+msgstr "Сервисы загружены"
+
+msgid "Check complete"
+msgstr "Проверка завершена"
+
+msgid "Warning: init.d list empty"
+msgstr "Внимание: список init.d пуст"
+
+msgid "Waiting for LuCI API..."
+msgstr "Ожидание LuCI API..."
+
+# ==================== Theme Settings ====================
+
+msgid "Proton2025 Theme Settings"
+msgstr "Настройки темы Proton2025"
+
+msgid "Accent Color"
+msgstr "Акцентный цвет"
+
+msgid "Choose theme accent color"
+msgstr "Выберите акцентный цвет темы"
+
+msgid "Blue"
+msgstr "Синий"
+
+msgid "Purple"
+msgstr "Фиолетовый"
+
+msgid "Green"
+msgstr "Зелёный"
+
+msgid "Orange"
+msgstr "Оранжевый"
+
+msgid "Red"
+msgstr "Красный"
+
+msgid "Default"
+msgstr "По умолчанию"
+
+msgid "Border Radius"
+msgstr "Скругление углов"
+
+msgid "Corner rounding style"
+msgstr "Стиль скругления углов"
+
+msgid "Sharp"
+msgstr "Острые"
+
+msgid "Rounded"
+msgstr "Скруглённые"
+
+msgid "Extra Rounded"
+msgstr "Сильно скруглённые"
+
+msgid "Zoom"
+msgstr "Масштаб"
+
+msgid "Reset"
+msgstr "Сброс"
+
+msgid "Interface scale"
+msgstr "Масштаб интерфейса"
+
+msgid "Animations"
+msgstr "Анимации"
+
+msgid "Enable smooth transitions and effects"
+msgstr "Включить плавные переходы и эффекты"
+
+msgid "Transparency"
+msgstr "Прозрачность"
+
+msgid "Enable blur and transparency effects"
+msgstr "Включить эффекты размытия и прозрачности"
+
+msgid "Services Widget"
+msgstr "Виджет сервисов"
+
+msgid "Show services monitor on Overview page"
+msgstr "Показывать монитор сервисов на странице обзора"
+
+msgid "Group Services"
+msgstr "Группировать сервисы"
+
+msgid "Group services by category in widget"
+msgstr "Группировать сервисы по категориям в виджете"
+
+msgid "Widget Log"
+msgstr "Лог виджета"
+
+msgid "Show activity log under the widget"
+msgstr "Показывать лог активности под виджетом"
+
+msgid "Services widget enabled. Visit Status → Overview to see it."
+msgstr "Виджет сервисов включён. Перейдите в Статус → Обзор, чтобы увидеть его."
+
+msgid "Services widget disabled."
+msgstr "Виджет сервисов отключён."
+
+msgid "Services grouping enabled."
+msgstr "Группировка сервисов включена."
+
+msgid "Services grouping disabled."
+msgstr "Группировка сервисов отключена."
+
+# ==================== Footer ====================
+
+msgid "Powered by"
+msgstr "Работает на"

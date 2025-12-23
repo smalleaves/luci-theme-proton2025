@@ -27,8 +27,25 @@ ARCHIVE_URL="${REPO_URL}/archive/refs/heads/${BRANCH}.tar.gz"
 TMP_DIR="/tmp/proton2025-install"
 LUCI_STATIC="/www/luci-static"
 LUCI_RESOURCES="/www/luci-static/resources"
-LUCI_THEMES="/usr/lib/ucode/luci/template/themes"
+LUCI_THEMES=""
 UCI_DEFAULTS="/etc/uci-defaults"
+
+# Detect LuCI ucode template themes directory.
+# Different OpenWrt/LuCI builds may use either /usr/share/... or /usr/lib/...
+detect_luci_themes_dir() {
+    for p in \
+        "/usr/share/ucode/luci/template/themes" \
+        "/usr/lib/ucode/luci/template/themes"; do
+        if [ -d "$p" ]; then
+            LUCI_THEMES="$p"
+            return 0
+        fi
+    done
+
+    # Fallback: prefer /usr/share for arch-independent data
+    LUCI_THEMES="/usr/share/ucode/luci/template/themes"
+    return 0
+}
 
 echo ""
 echo "${BLUE}╔════════════════════════════════════════════════════════════╗${NC}"
@@ -41,12 +58,7 @@ echo ""
 check_openwrt() {
     if [ ! -f /etc/openwrt_release ]; then
         echo "${YELLOW}Warning: This doesn't appear to be an OpenWrt system.${NC}"
-        echo "Continue anyway? (y/n)"
-        read -r answer
-        if [ "$answer" != "y" ] && [ "$answer" != "Y" ]; then
-            echo "${RED}Installation cancelled.${NC}"
-            exit 1
-        fi
+        echo "${YELLOW}Continuing anyway...${NC}"
     else
         . /etc/openwrt_release
         echo "${GREEN}✓${NC} Detected: ${DISTRIB_DESCRIPTION}"
@@ -87,7 +99,7 @@ download_theme() {
     rm -rf "$TMP_DIR"
     mkdir -p "$TMP_DIR"
     
-    cd "$TMP_DIR"
+    cd "$TMP_DIR" || exit 1
     
     if [ "$DOWNLOADER" = "wget" ]; then
         wget -q --no-check-certificate -O theme.tar.gz "$ARCHIVE_URL"
@@ -107,7 +119,7 @@ download_theme() {
 install_theme() {
     echo "${BLUE}→${NC} Installing theme..."
     
-    cd "$TMP_DIR"
+    cd "$TMP_DIR" || exit 1
     
     # Extract archive
     tar -xzf theme.tar.gz
@@ -149,6 +161,57 @@ install_theme() {
         cp -rf "$EXTRACT_DIR/root/etc/uci-defaults/"* "$UCI_DEFAULTS/"
         echo "${GREEN}✓${NC} Installed uci-defaults"
     fi
+    
+    # Install translations if po2lmo is available
+    install_translations "$EXTRACT_DIR"
+}
+
+# Install translations
+install_translations() {
+    EXTRACT_DIR="$1"
+    PO_DIR="$EXTRACT_DIR/po"
+    
+    # Check if po directory exists
+    if [ ! -d "$PO_DIR" ]; then
+        echo "${YELLOW}!${NC} No translations found"
+        return 0
+    fi
+    
+    # Find i18n directory
+    I18N_DIR=""
+    for p in "/usr/share/luci/i18n" "/usr/lib/lua/luci/i18n"; do
+        if [ -d "$p" ]; then
+            I18N_DIR="$p"
+            break
+        fi
+    done
+    
+    if [ -z "$I18N_DIR" ]; then
+        I18N_DIR="/usr/share/luci/i18n"
+        mkdir -p "$I18N_DIR"
+    fi
+    
+    # Check if po2lmo is available
+    if command -v po2lmo >/dev/null 2>&1; then
+        echo "${BLUE}→${NC} Compiling translations..."
+        for lang_dir in "$PO_DIR"/*/; do
+            if [ -d "$lang_dir" ]; then
+                lang=$(basename "$lang_dir")
+                if [ "$lang" != "templates" ]; then
+                    for po_file in "$lang_dir"*.po; do
+                        if [ -f "$po_file" ]; then
+                            lmo_name="theme-proton2025.${lang}.lmo"
+                            po2lmo "$po_file" "$I18N_DIR/$lmo_name"
+                            echo "${GREEN}✓${NC} Installed translation: $lang"
+                        fi
+                    done
+                fi
+            fi
+        done
+    else
+        echo "${YELLOW}!${NC} po2lmo not found, skipping translation compilation"
+        echo "   Install with: opkg install luci-base"
+    fi
 }
 
 # Set theme as active
@@ -189,6 +252,7 @@ clear_cache() {
 main() {
     check_openwrt
     check_dependencies
+    detect_luci_themes_dir
     download_theme
     install_theme
     activate_theme

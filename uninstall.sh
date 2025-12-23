@@ -21,13 +21,8 @@ echo "${BLUE}║${NC}     ${YELLOW}Proton2025 Theme Uninstaller${NC}            
 echo "${BLUE}╚════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
-echo "${YELLOW}Warning: This will remove Proton2025 theme.${NC}"
-echo "Continue? (y/n)"
-read -r answer
-if [ "$answer" != "y" ] && [ "$answer" != "Y" ]; then
-    echo "${RED}Uninstallation cancelled.${NC}"
-    exit 0
-fi
+echo "${YELLOW}Removing Proton2025 theme...${NC}"
+echo ""
 
 echo "${BLUE}→${NC} Switching to default theme..."
 if command -v uci >/dev/null 2>&1; then
@@ -59,12 +54,26 @@ rm -f "/www/luci-static/resources/menu-proton2025.js"
 echo "${GREEN}✓${NC} Removed JavaScript"
 
 # Remove templates
-rm -rf "/usr/lib/ucode/luci/template/themes/$THEME_NAME"
+for p in \
+    "/usr/share/ucode/luci/template/themes" \
+    "/usr/lib/ucode/luci/template/themes"; do
+    if [ -d "$p" ]; then
+        rm -rf "$p/$THEME_NAME" 2>/dev/null || true
+    fi
+done
 echo "${GREEN}✓${NC} Removed templates"
 
 # Remove uci-defaults
 rm -f "/etc/uci-defaults/30_luci-theme-proton2025"
 echo "${GREEN}✓${NC} Removed uci-defaults"
+
+# Remove translations
+for p in "/usr/share/luci/i18n" "/usr/lib/lua/luci/i18n"; do
+    if [ -d "$p" ]; then
+        rm -f "$p/theme-proton2025".*.lmo 2>/dev/null || true
+    fi
+done
+echo "${GREEN}✓${NC} Removed translations"
 
 # Clear cache
 echo "${BLUE}→${NC} Clearing cache..."

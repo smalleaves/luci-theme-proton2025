@@ -94,6 +94,7 @@
 <script src="{{ resource }}/form.js"></script>
 <script src="{{ resource }}/ui.js"></script>
 <script src="{{ resource }}/cbi.js"></script>
+<script src="{{ media }}/services-widget.js" defer></script>
 <title>{{ striptags(`${dispatched ? `${dispatched.title} | ` : ''}${boardinfo.hostname ?? '?'}`) }} | LuCI</title>
 {% if (css): %}
 <style title="text/css">{{ css }}</style>
