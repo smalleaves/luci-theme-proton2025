@@ -245,6 +245,69 @@ return baseclass.extend({
         if (text && text.length >= 10) td.setAttribute("title", text);
       });
     });
+
+    // Обновляем индикаторы сигнала
+    this.updateSignalIndicators();
+  },
+
+  /**
+   * Обновляет индикаторы сигнала в таблице Associated Stations.
+   * Устанавливает data-signal атрибут и CSS переменные для визуализации.
+   */
+  updateSignalIndicators() {
+    // Ищем все ifacebadge которые содержат dBm значения
+    const badges = document.querySelectorAll("table.assoclist .ifacebadge, #wifi_assoclist_table .ifacebadge");
+    
+    badges.forEach((badge) => {
+      const text = (badge.innerText || badge.textContent || "").trim();
+      
+      // Ищем паттерн dBm: -XX dBm или просто -XX
+      const match = text.match(/(-\d+)\s*(?:dBm|дБм)?/i);
+      if (!match) return;
+      
+      const signalValue = parseInt(match[1], 10);
+      if (isNaN(signalValue)) return;
+      
+      // Устанавливаем data-signal атрибут
+      badge.setAttribute("data-signal", signalValue.toString());
+      
+      // Добавляем CSS класс для стилизации
+      badge.classList.add("proton-signal-badge");
+      
+      // Устанавливаем CSS переменные напрямую для надёжности
+      let strength, color;
+      
+      if (signalValue >= -50) {
+        // Отличный сигнал
+        strength = "100%";
+        color = "#4caf50";
+      } else if (signalValue >= -60) {
+        // Хороший сигнал
+        strength = "80%";
+        color = "#8bc34a";
+      } else if (signalValue >= -70) {
+        // Средний сигнал
+        strength = "60%";
+        color = "#ffc107";
+      } else if (signalValue >= -80) {
+        // Плохой сигнал
+        strength = "40%";
+        color = "#ff9800";
+      } else {
+        // Очень плохой сигнал
+        strength = "20%";
+        color = "#f44336";
+      }
+      
+      badge.style.setProperty("--signal-strength", strength);
+      badge.style.setProperty("--signal-color", color);
+      
+      // Добавляем класс на родительскую ячейку td для CSS селекторов
+      const td = badge.closest("td");
+      if (td) {
+        td.classList.add("proton-signal-cell");
+      }
+    });
   },
 
   installAssoclistTitleObserver() {

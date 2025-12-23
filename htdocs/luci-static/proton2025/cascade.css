@@ -1038,12 +1038,12 @@ table.assoclist td[data-title="Host"i] .hide-xs {
 }
 
 /* Signal / Noise - индикатор сигнала без иконки */
+/* Универсальное решение через JavaScript класс .proton-signal-badge */
 
-/* Скрываем иконку сигнала - усиленные правила */
-#wifi_assoclist_table td[data-title="Signal / Noise"i] .ifacebadge img,
-table.assoclist td[data-title="Signal / Noise"i] .ifacebadge img,
-.assoclist .ifacebadge[data-signal] img,
-td[data-title="Signal / Noise"i] img {
+/* Скрываем иконку сигнала */
+.proton-signal-badge img,
+.proton-signal-cell .ifacebadge img,
+.assoclist .ifacebadge[data-signal] img {
     display: none !important;
     visibility: hidden !important;
     width: 0 !important;
@@ -1052,8 +1052,8 @@ td[data-title="Signal / Noise"i] img {
 }
 
 /* Стилизуем ifacebadge как индикатор прогресса */
-#wifi_assoclist_table td[data-title="Signal / Noise"i] .ifacebadge,
-table.assoclist td[data-title="Signal / Noise"i] .ifacebadge {
+.proton-signal-badge,
+.proton-signal-cell .ifacebadge {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -1066,8 +1066,8 @@ table.assoclist td[data-title="Signal / Noise"i] .ifacebadge {
 }
 
 /* Сегменты-границы (4 палочки) */
-#wifi_assoclist_table td[data-title="Signal / Noise"i] .ifacebadge::before,
-table.assoclist td[data-title="Signal / Noise"i] .ifacebadge::before {
+.proton-signal-badge::before,
+.proton-signal-cell .ifacebadge::before {
     content: '';
     position: absolute;
     left: 0;
@@ -1085,8 +1085,8 @@ table.assoclist td[data-title="Signal / Noise"i] .ifacebadge::before {
 }
 
 /* Индикатор сигнала (заполненная часть) */
-#wifi_assoclist_table td[data-title="Signal / Noise"i] .ifacebadge::after,
-table.assoclist td[data-title="Signal / Noise"i] .ifacebadge::after {
+.proton-signal-badge::after,
+.proton-signal-cell .ifacebadge::after {
     content: '';
     position: absolute;
     left: 0;
@@ -1095,70 +1095,30 @@ table.assoclist td[data-title="Signal / Noise"i] .ifacebadge::after {
     width: var(--signal-strength, 50%);
     background: var(--signal-color, #5e9eff);
     opacity: 0.25;
-    border-right: 2px solid var(--signal-color);
+    border-right: 2px solid var(--signal-color, #5e9eff);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1;
     box-shadow:
-        inset -2px 0 8px var(--signal-color),
+        inset -2px 0 8px var(--signal-color, #5e9eff),
         2px 0 6px rgba(0, 0, 0, 0.3);
 }
 
 /* Текст поверх индикатора */
-#wifi_assoclist_table td[data-title="Signal / Noise"i] .ifacebadge>span,
-table.assoclist td[data-title="Signal / Noise"i] .ifacebadge>span {
+.proton-signal-badge>span,
+.proton-signal-cell .ifacebadge>span {
     font-weight: 600;
     font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
     font-size: 0.9rem;
     color: var(--signal-color, var(--proton-success));
     position: relative;
-    z-index: 1;
-}
-
-/* Динамические цвета и ширина индикатора на основе data-signal */
-/* Отличный сигнал: -30 до -50 dBm (зелёный, 100%) */
-#wifi_assoclist_table td[data-title="Signal / Noise"i] .ifacebadge[data-signal^="-3"],
-#wifi_assoclist_table td[data-title="Signal / Noise"i] .ifacebadge[data-signal^="-4"],
-table.assoclist td[data-title="Signal / Noise"i] .ifacebadge[data-signal^="-3"],
-table.assoclist td[data-title="Signal / Noise"i] .ifacebadge[data-signal^="-4"] {
-    --signal-strength: 100%;
-    --signal-color: #4caf50;
-}
-
-/* Хороший сигнал: -50 до -60 dBm (жёлто-зелёный, 70-90%) */
-#wifi_assoclist_table td[data-title="Signal / Noise"i] .ifacebadge[data-signal^="-5"],
-table.assoclist td[data-title="Signal / Noise"i] .ifacebadge[data-signal^="-5"] {
-    --signal-strength: 80%;
-    --signal-color: #8bc34a;
-}
-
-/* Средний сигнал: -60 до -70 dBm (жёлтый, 50-70%) */
-#wifi_assoclist_table td[data-title="Signal / Noise"i] .ifacebadge[data-signal^="-6"],
-table.assoclist td[data-title="Signal / Noise"i] .ifacebadge[data-signal^="-6"] {
-    --signal-strength: 60%;
-    --signal-color: #ffc107;
-}
-
-/* Плохой сигнал: -70 до -80 dBm (оранжевый, 30-50%) */
-#wifi_assoclist_table td[data-title="Signal / Noise"i] .ifacebadge[data-signal^="-7"],
-table.assoclist td[data-title="Signal / Noise"i] .ifacebadge[data-signal^="-7"] {
-    --signal-strength: 40%;
-    --signal-color: #ff9800;
-}
-
-/* Очень плохой сигнал: -80 и хуже (красный, 10-30%) */
-#wifi_assoclist_table td[data-title="Signal / Noise"i] .ifacebadge[data-signal^="-8"],
-#wifi_assoclist_table td[data-title="Signal / Noise"i] .ifacebadge[data-signal^="-9"],
-table.assoclist td[data-title="Signal / Noise"i] .ifacebadge[data-signal^="-8"],
-table.assoclist td[data-title="Signal / Noise"i] .ifacebadge[data-signal^="-9"] {
-    --signal-strength: 20%;
-    --signal-color: #f44336;
+    z-index: 3;
 }
 
 /* RX Rate / TX Rate - моноширинный шрифт */
 #wifi_assoclist_table td[data-title="RX Rate / TX Rate"i],
-table.assoclist td[data-title="RX Rate / TX Rate"i] {
-    /*font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
-    font-size: 0.85rem;*/
+#wifi_assoclist_table td[data-title="Скорость приёма / отправки"i],
+table.assoclist td[data-title="RX Rate / TX Rate"i],
+table.assoclist td[data-title="Скорость приёма / отправки"i] {
     color: var(--proton-fg-secondary);
 }
 
@@ -3103,8 +3063,11 @@ body.modal-overlay-active #modal_overlay {
     }
 
     /* Signal strength - делаем читабельным */
+    .proton-signal-cell,
     table.assoclist td[data-title*="Signal"],
-    #wifi_assoclist_table td[data-title*="Signal"] {
+    table.assoclist td[data-title*="Сигнал"],
+    #wifi_assoclist_table td[data-title*="Signal"],
+    #wifi_assoclist_table td[data-title*="Сигнал"] {
         font-weight: 500;
     }
 
