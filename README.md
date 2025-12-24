@@ -1,67 +1,88 @@
 # luci-theme-proton2025
 
-Элегантная тёмная тема для LuCI (OpenWrt 23.x+).
+An elegant dark theme for LuCI (OpenWrt 23.x+).
 
 ![OpenWrt](https://img.shields.io/badge/OpenWrt-23.x%2B-blue)
 ![LuCI](https://img.shields.io/badge/LuCI-ucode-green)
 ![License](https://img.shields.io/badge/License-Apache%202.0-orange)
 
-## Скриншоты
+## Screenshots
 
-### Статус LuCI
+### LuCI Status
 
 <div align="center">
   <img src="docs/status.png" alt="LuCI Status" />
 </div>
 
-### Настройки темы
+### Theme Settings
 
 <div align="center">
   <img src="docs/settings.png" alt="Theme Settings" />
 </div>
 
-## Особенности
+## Features
 
-- 🌙 Тёмный glass/blur дизайн
-- 🎨 Настраиваемый акцентный цвет, скругление, масштаб
-- 📱 Адаптивная вёрстка для мобильных устройств
-- ⚡ Совместимость с LuCI ucode (OpenWrt 23.x+)
-- 📊 Виджет мониторинга сервисов на странице Status → Overview
-- 🌐 Поддержка локализации (i18n)
+- 🌙 Dark glass/blur design
+- 🎨 Customizable accent color, border radius, zoom
+- 📱 Responsive layout for mobile devices
+- ⚡ Compatible with LuCI ucode (OpenWrt 23.x+)
+- 📊 Services monitoring widget on Status → Overview page
+- 📈 Elegant Load Average visualization with color-coded progress bars
+- 🌐 Localization support (i18n)
 
-## Виджет сервисов
+## Services Widget
 
-На главной странице (Status → Overview) отображается виджет с состоянием системных сервисов:
+The main page (Status → Overview) displays a widget showing system service statuses:
 
-- Визуализация статуса (Running/Stopped)
-- Добавление сервисов через модальное окно или ввод имени
-- Настройки сохраняются в браузере
+- Status visualization (Running/Stopped)
+- Add services via modal or custom input
+- Settings saved in browser
 
-## Настройки темы
+## Theme Settings
 
-Доступны в **System → System → Language and Style**:
+Available at **System → System → Language and Style**:
 
-- Акцентный цвет (Blue, Purple, Green, Orange, Red)
-- Скругление углов
-- Масштаб интерфейса
-- Анимации и прозрачность
-- Виджет сервисов (вкл/выкл, группировка, лог)
+- Accent color (Blue, Purple, Green, Orange, Red)
+- Border radius
+- Interface zoom
+- Animations and transparency
+- Services widget (enable/disable, grouping, log)
 
-## Установка
+## Installation
 
-### Быстрая установка
+### Recommended: Install from IPK Package
+
+Download the latest release for your architecture:
+
+```bash
+# For MediaTek Filogic (aarch64_cortex-a53)
+wget https://github.com/ChesterGoodiny/luci-theme-proton2025/releases/latest/download/luci-theme-proton2025_*_all.ipk
+opkg install luci-theme-proton2025_*_all.ipk
+```
+
+Or download from [GitHub Releases](https://github.com/ChesterGoodiny/luci-theme-proton2025/releases) manually.
+
+**Benefits:**
+
+- ✅ Includes compiled translations
+- ✅ Proper package management (easy updates/removal)
+- ✅ Dependency tracking
+
+### Quick Install (Testing Only)
+
+> ⚠️ **Note:** This method is intended for testing purposes. Translations may not work if the release has not yet been created on GitHub.
 
 ```bash
 wget -qO- https://raw.githubusercontent.com/ChesterGoodiny/luci-theme-proton2025/main/install.sh | sh
 ```
 
-Или:
+Or:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ChesterGoodiny/luci-theme-proton2025/main/install.sh | sh
 ```
 
-### Сборка .ipk
+### Building .ipk from Source
 
 ```bash
 cp -r luci-theme-proton2025 ~/openwrt/feeds/luci/themes/
@@ -71,7 +92,7 @@ make menuconfig  # LuCI -> Themes -> luci-theme-proton2025
 make package/luci-theme-proton2025/compile V=s
 ```
 
-## Удаление
+## Removal
 
 ```bash
 wget -O uninstall.sh https://raw.githubusercontent.com/ChesterGoodiny/luci-theme-proton2025/main/uninstall.sh
@@ -79,7 +100,7 @@ chmod +x uninstall.sh
 ./uninstall.sh
 ```
 
-### Откат на стандартную тему
+### Revert to Default Theme
 
 ```sh
 uci set luci.main.mediaurlbase=/luci-static/bootstrap
@@ -87,7 +108,7 @@ uci commit luci
 /etc/init.d/uhttpd restart
 ```
 
-## Структура
+## Structure
 
 ```
 luci-theme-proton2025/
@@ -98,7 +119,7 @@ luci-theme-proton2025/
 │   │   ├── services-widget.js
 │   │   └── logo.svg
 │   └── resources/menu-proton2025.js
-├── po/                              # Локализация
+├── po/                              # Localization
 │   ├── ru/theme-proton2025.po
 │   └── templates/theme-proton2025.pot
 ├── root/etc/uci-defaults/
@@ -108,6 +129,6 @@ luci-theme-proton2025/
     └── sysauth.ut
 ```
 
-## Лицензия
+## License
 
 Apache-2.0

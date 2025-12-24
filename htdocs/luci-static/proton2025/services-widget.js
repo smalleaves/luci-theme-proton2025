@@ -1046,7 +1046,7 @@
       if (initdCount === 0) {
         this._appendUiLogLine(this._t("Warning: init.d list empty"));
       } else {
-        this._appendUiLogLine(`init.d: ${initdCount}`);
+        this._appendUiLogLine(`${this._t("init.d services")}: ${initdCount}`);
       }
 
       // Известные сервисы (добавляем fromInitd если найден в init.d)
@@ -1432,13 +1432,288 @@
     window.protonServicesWidget.init();
   }
 
+  // =====================================================
+  // Load Average - Элегантная визуализация
+  // =====================================================
+
+  // Функция локализации для Load Average
+  function t(key) {
+    if (window.L && L.tr) {
+      const translated = L.tr(key);
+      if (translated !== key) return translated;
+    }
+    return key;
+  }
+
+  function enhanceLoadAverage() {
+    // Находим ячейку с Load Average
+    const tables = document.querySelectorAll(
+      'body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table, body[data-page=""] .cbi-section:first-of-type table.table'
+    );
+
+    tables.forEach((table) => {
+      const rows = table.querySelectorAll("tr");
+      rows.forEach((row) => {
+        const firstCell = row.querySelector("td:first-child");
+        const secondCell = row.querySelector("td:last-child");
+
+        if (!firstCell || !secondCell) return;
+
+        const cellText = firstCell.textContent.trim();
+
+        // Проверяем, это ли строка Load Average
+        if (
+          cellText.includes("Load Average") ||
+          cellText.includes("Load") ||
+          cellText.includes("Нагрузка") ||
+          cellText.includes("нагрузка")
+        ) {
+          // Получаем значения load average
+          const loadText = secondCell.textContent.trim();
+          const loadValues = loadText.split(/[,\s]+/).filter((v) => v);
+
+          if (loadValues.length >= 3) {
+            const loads = loadValues.slice(0, 3).map((v) => parseFloat(v));
+
+            // Определяем количество ядер CPU (по умолчанию 1)
+            let cpuCores = 1;
+            rows.forEach((r) => {
+              const fc = r.querySelector("td:first-child");
+              if (fc && fc.textContent.includes("CPU")) {
+                const sc = r.querySelector("td:last-child");
+                if (sc) {
+                  const coresMatch = sc.textContent.match(/(\d+)\s*x/i);
+                  if (coresMatch) {
+                    cpuCores = parseInt(coresMatch[1]);
+                  }
+                }
+              }
+            });
+
+            // Функция определения уровня загрузки
+            function getLoadLevel(load, cores) {
+              const normalized = load / cores;
+              if (normalized < 0.7) return "low";
+              if (normalized < 1.2) return "medium";
+              return "high";
+            }
+
+            // Функция расчета процента заполнения бара (максимум = cores * 2)
+            function getBarWidth(load, cores) {
+              return Math.min((load / (cores * 2)) * 100, 100);
+            }
+
+            // Создаем новую разметку
+            const container = document.createElement("div");
+            container.className = "proton-load-average";
+
+            const labels = [t("1 min"), t("5 min"), t("15 min")];
+
+            loads.forEach((load, index) => {
+              const level = getLoadLevel(load, cpuCores);
+              const barWidth = getBarWidth(load, cpuCores);
+
+              const item = document.createElement("div");
+              item.className = "proton-load-item";
+
+              const label = document.createElement("div");
+              label.className = "proton-load-label";
+              label.textContent = labels[index];
+
+              const valueRow = document.createElement("div");
+              valueRow.className = "proton-load-value-row";
+
+              const number = document.createElement("span");
+              number.className = "proton-load-number";
+              number.setAttribute("data-level", level);
+              number.textContent = load.toFixed(2);
+
+              const bar = document.createElement("div");
+              bar.className = "proton-load-bar";
+
+              const fill = document.createElement("div");
+              fill.className = "proton-load-bar-fill";
+              fill.setAttribute("data-level", level);
+              fill.style.width = barWidth + "%";
+
+              bar.appendChild(fill);
+              valueRow.appendChild(number);
+              valueRow.appendChild(bar);
+              item.appendChild(label);
+              item.appendChild(valueRow);
+              container.appendChild(item);
+            });
+
+            // Добавляем информационную иконку с tooltip
+            const infoIcon = document.createElement("div");
+            infoIcon.className = "proton-load-info";
+            infoIcon.innerHTML = "?";
+
+            const tooltip = document.createElement("div");
+            tooltip.className = "proton-load-tooltip";
+
+            tooltip.innerHTML = `
+              <div class="proton-load-tooltip-title">${t(
+                "System Load Average"
+              )}</div>
+              <div class="proton-load-tooltip-text">
+                ${t(
+                  "Shows the average number of processes waiting for CPU execution. Three values represent the last 1, 5, and 15 minutes."
+                )}
+              </div>
+              <div class="proton-load-tooltip-legend">
+                <div class="proton-load-tooltip-legend-item">
+                  <span class="proton-load-tooltip-legend-dot low"></span>
+                  <span>${t("Low load")} (&lt; 0.7 × ${t("cores")})</span>
+                </div>
+                <div class="proton-load-tooltip-legend-item">
+                  <span class="proton-load-tooltip-legend-dot medium"></span>
+                  <span>${t("Medium load")} (0.7-1.2 × ${t("cores")})</span>
+                </div>
+                <div class="proton-load-tooltip-legend-item">
+                  <span class="proton-load-tooltip-legend-dot high"></span>
+                  <span>${t("High load")} (&gt; 1.2 × ${t("cores")})</span>
+                </div>
+              </div>
+            `;
+
+            infoIcon.appendChild(tooltip);
+            container.appendChild(infoIcon);
+
+            secondCell.innerHTML = "";
+            secondCell.appendChild(container);
+          }
+        }
+      });
+    });
+  }
+
+  // Запускаем enhancement после загрузки страницы
+  function initLoadAverageEnhancement() {
+    if (
+      document.body.dataset.page === "admin-status-overview" ||
+      document.body.dataset.page === "" ||
+      window.location.pathname.includes("/admin/status/overview")
+    ) {
+      let observer = null;
+      let lastEnhanceTime = 0;
+      const enhanceThrottle = 200; // Минимальный интервал между обновлениями
+
+      // Функция с защитой от частых вызовов
+      function throttledEnhance() {
+        const now = Date.now();
+        if (now - lastEnhanceTime < enhanceThrottle) {
+          return;
+        }
+        lastEnhanceTime = now;
+
+        // Проверяем, не был ли уже применен enhancement
+        const table = document.querySelector(
+          'body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table, body[data-page=""] .cbi-section:first-of-type table.table'
+        );
+        if (table) {
+          const hasEnhancement = table.querySelector(".proton-load-average");
+          const hasLoadAverage = Array.from(table.querySelectorAll("tr")).some(
+            (row) => {
+              const firstCell = row.querySelector("td:first-child");
+              if (!firstCell) return false;
+              const text = firstCell.textContent.trim();
+              return (
+                text.includes("Load") ||
+                text.includes("load") ||
+                text.includes("Нагрузка") ||
+                text.includes("нагрузка")
+              );
+            }
+          );
+
+          // Применяем enhancement только если есть Load Average и нет нашего enhancement
+          if (hasLoadAverage && !hasEnhancement) {
+            enhanceLoadAverage();
+          }
+        }
+      }
+
+      // Настраиваем наблюдение за изменениями в maincontent
+      function setupObserver() {
+        if (observer) {
+          observer.disconnect();
+        }
+
+        const maincontent = document.getElementById("maincontent");
+        if (!maincontent) return;
+
+        observer = new MutationObserver((mutations) => {
+          // Проверяем, есть ли изменения в содержимом таблицы
+          let shouldCheck = false;
+          for (const mutation of mutations) {
+            if (
+              mutation.type === "childList" ||
+              mutation.type === "characterData"
+            ) {
+              shouldCheck = true;
+              break;
+            }
+          }
+          if (shouldCheck) {
+            throttledEnhance();
+          }
+        });
+
+        observer.observe(maincontent, {
+          childList: true,
+          subtree: true,
+          characterData: true,
+        });
+      }
+
+      // Первоначальная инициализация
+      const initCheck = setInterval(() => {
+        const table = document.querySelector(
+          'body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table, body[data-page=""] .cbi-section:first-of-type table.table'
+        );
+        if (table && table.querySelectorAll("tr").length > 0) {
+          enhanceLoadAverage();
+          clearInterval(initCheck);
+          setupObserver();
+        }
+      }, 100);
+
+      // Таймаут через 10 секунд
+      setTimeout(() => clearInterval(initCheck), 10000);
+
+      // Дополнительно: отслеживаем события hashchange (навигация в LuCI)
+      window.addEventListener("hashchange", () => {
+        setTimeout(() => {
+          throttledEnhance();
+        }, 500);
+      });
+
+      // Отслеживаем возвращение на вкладку
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+          setTimeout(() => {
+            throttledEnhance();
+          }, 300);
+        }
+      });
+    }
+  }
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initWidget);
+    document.addEventListener("DOMContentLoaded", () => {
+      initWidget();
+      initLoadAverageEnhancement();
+    });
   } else {
     if (document.getElementById("maincontent")) {
       initWidget();
+      initLoadAverageEnhancement();
     } else {
-      setTimeout(initWidget, 100);
+      setTimeout(() => {
+        initWidget();
+        initLoadAverageEnhancement();
+      }, 100);
     }
   }
 })();

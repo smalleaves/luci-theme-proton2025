@@ -155,11 +155,6 @@ install_translations() {
     EXTRACT_DIR="$1"
     PO_DIR="$EXTRACT_DIR/po"
     
-    if [ ! -d "$PO_DIR" ]; then
-        warn "No translations found"
-        return 0
-    fi
-    
     I18N_DIR=""
     for p in "/usr/share/luci/i18n" "/usr/lib/lua/luci/i18n"; do
         if [ -d "$p" ]; then
@@ -173,24 +168,51 @@ install_translations() {
         mkdir -p "$I18N_DIR"
     fi
     
-    if command -v po2lmo >/dev/null 2>&1; then
-        info "Compiling translations..."
+    # Download precompiled translations from latest release
+    info "Downloading precompiled translations..."
+    RELEASE_URL="https://github.com/ChesterGoodiny/luci-theme-proton2025/releases/latest/download"
+    TRANSLATIONS_INSTALLED=0
+    
+    if [ -d "$PO_DIR" ]; then
         for lang_dir in "$PO_DIR"/*/; do
             if [ -d "$lang_dir" ]; then
                 lang=$(basename "$lang_dir")
                 if [ "$lang" != "templates" ]; then
-                    po_file="$lang_dir/theme-proton2025.po"
-                    if [ -f "$po_file" ]; then
-                        lmo_file="$I18N_DIR/theme-proton2025.$lang.lmo"
-                        po2lmo "$po_file" "$lmo_file"
-                        ok "Compiled $lang translation"
+                    lmo_file="$I18N_DIR/theme-proton2025.$lang.lmo"
+                    lmo_url="$RELEASE_URL/theme-proton2025.$lang.lmo"
+                    
+                    # Try downloading
+                    DOWNLOAD_SUCCESS=0
+                    if [ "$DOWNLOADER" = "wget" ]; then
+                        if wget -q --no-check-certificate -O "$lmo_file" "$lmo_url" 2>/dev/null; then
+                            DOWNLOAD_SUCCESS=1
+                        fi
+                    else
+                        if curl -fsSL -o "$lmo_file" "$lmo_url" 2>/dev/null; then
+                            DOWNLOAD_SUCCESS=1
+                        fi
+                    fi
+                    
+                    # Verify file size (valid .lmo should be > 100 bytes)
+                    if [ "$DOWNLOAD_SUCCESS" -eq 1 ] && [ -f "$lmo_file" ]; then
+                        FILE_SIZE=$(stat -f%z "$lmo_file" 2>/dev/null || stat -c%s "$lmo_file" 2>/dev/null || echo 0)
+                        if [ "$FILE_SIZE" -gt 100 ]; then
+                            ok "Installed $lang translation"
+                            TRANSLATIONS_INSTALLED=$((TRANSLATIONS_INSTALLED + 1))
+                        else
+                            rm -f "$lmo_file"
+                        fi
                     fi
                 fi
             fi
         done
-    else
-        warn "po2lmo not found, skipping translations"
-        warn "Install with: opkg install luci-base"
+    fi
+    
+    if [ "$TRANSLATIONS_INSTALLED" -eq 0 ]; then
+        warn "Failed to download translations from GitHub Releases"
+        warn "Theme will work, but only in English"
+        warn "To get translations: install IPK package instead"
+        warn "  https://github.com/ChesterGoodiny/luci-theme-proton2025/releases/latest"
     fi
 }
 

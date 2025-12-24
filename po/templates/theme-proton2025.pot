@@ -148,6 +148,9 @@ msgstr ""
 msgid "Warning: init.d list empty"
 msgstr ""
 
+msgid "init.d services"
+msgstr ""
+
 msgid "Waiting for LuCI API..."
 msgstr ""
 
@@ -242,6 +245,33 @@ msgid "Services grouping enabled."
 msgstr ""
 
 msgid "Services grouping disabled."
+msgstr ""
+
+msgid "1 min"
+msgstr ""
+
+msgid "5 min"
+msgstr ""
+
+msgid "15 min"
+msgstr ""
+
+msgid "System Load Average"
+msgstr ""
+
+msgid "Shows the average number of processes waiting for CPU execution. Three values represent the last 1, 5, and 15 minutes."
+msgstr ""
+
+msgid "Low load"
+msgstr ""
+
+msgid "Medium load"
+msgstr ""
+
+msgid "High load"
+msgstr ""
+
+msgid "cores"
 msgstr ""
 
 msgid "Powered by"

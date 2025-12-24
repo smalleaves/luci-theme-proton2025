@@ -17,8 +17,7 @@
 <meta charset="utf-8" />
 <script>
 (function() {
-	var isMobile = window.innerWidth <= 800;
-	var defaultZoom = isMobile ? '100' : '80';
+	var defaultZoom = '100';
 	var z = localStorage.getItem('proton-zoom') || defaultZoom;
 	document.documentElement.style.zoom = z / 100;
 	var t = localStorage.getItem('proton-transparency');

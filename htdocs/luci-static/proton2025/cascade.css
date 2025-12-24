@@ -5266,6 +5266,254 @@ body[data-page=""] .cbi-section:first-of-type table.table td {
     border-bottom: none;
 }
 
+/* =====================================================
+   Load Average - Элегантная визуализация
+   ===================================================== */
+
+/* Контейнер для Load Average */
+body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table tr:has(td:first-child:is([data-title*="Load"], [data-title*="load"], td:contains("Load Average"), td:contains("Нагрузка"))),
+body[data-page=""] .cbi-section:first-of-type table.table tr:has(td:first-child:is([data-title*="Load"], [data-title*="load"])) {
+    background: rgba(94, 158, 255, 0.04);
+}
+
+body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table tr:has(td:first-child:is([data-title*="Load"], [data-title*="load"])):hover,
+body[data-page=""] .cbi-section:first-of-type table.table tr:has(td:first-child:is([data-title*="Load"], [data-title*="load"])):hover {
+    background: rgba(94, 158, 255, 0.1);
+}
+
+/* Load Average значения */
+.proton-load-average {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+/* Информационная иконка */
+.proton-load-info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(94, 158, 255, 0.15);
+    color: var(--proton-accent);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: help;
+    transition: var(--proton-transition);
+    margin-left: auto;
+}
+
+.proton-load-info:hover {
+    background: rgba(94, 158, 255, 0.3);
+    transform: scale(1.1);
+}
+
+/* Tooltip */
+.proton-load-tooltip {
+    position: absolute;
+    bottom: calc(100% + 12px);
+    right: 0;
+    background: rgba(26, 31, 46, 0.98);
+    border: 1px solid var(--proton-border);
+    border-radius: var(--proton-radius-sm);
+    padding: 12px 16px;
+    min-width: 280px;
+    max-width: 320px;
+    box-shadow: var(--proton-shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 1000;
+    backdrop-filter: blur(12px);
+}
+
+.proton-load-info:hover .proton-load-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.proton-load-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    right: 8px;
+    border: 6px solid transparent;
+    border-top-color: rgba(26, 31, 46, 0.98);
+}
+
+.proton-load-tooltip-title {
+    font-weight: 600;
+    color: var(--proton-accent);
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.proton-load-tooltip-text {
+    color: var(--proton-fg-secondary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.proton-load-tooltip-legend {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--proton-border);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.8rem;
+}
+
+.proton-load-tooltip-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.proton-load-tooltip-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.proton-load-tooltip-legend-dot.low {
+    background: var(--proton-success);
+}
+
+.proton-load-tooltip-legend-dot.medium {
+    background: var(--proton-warning);
+}
+
+.proton-load-tooltip-legend-dot.high {
+    background: var(--proton-danger);
+}
+
+.proton-load-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 80px;
+}
+
+.proton-load-label {
+    font-size: 0.75rem;
+    color: var(--proton-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.proton-load-value-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.proton-load-number {
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    min-width: 42px;
+}
+
+/* Цветовая индикация */
+.proton-load-number[data-level="low"] {
+    color: var(--proton-success);
+}
+
+.proton-load-number[data-level="medium"] {
+    color: var(--proton-warning);
+}
+
+.proton-load-number[data-level="high"] {
+    color: var(--proton-danger);
+}
+
+/* Прогресс-бар для визуализации */
+.proton-load-bar {
+    width: 60px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+}
+
+.proton-load-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.proton-load-bar-fill::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+.proton-load-bar-fill[data-level="low"] {
+    background: linear-gradient(90deg, var(--proton-success), rgba(107, 207, 127, 0.6));
+}
+
+.proton-load-bar-fill[data-level="medium"] {
+    background: linear-gradient(90deg, var(--proton-warning), rgba(255, 217, 61, 0.6));
+}
+
+.proton-load-bar-fill[data-level="high"] {
+    background: linear-gradient(90deg, var(--proton-danger), rgba(255, 107, 107, 0.6));
+}
+
+/* Отключаем анимацию для пользователей с prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    .proton-load-bar-fill::after {
+        animation: none;
+    }
+
+    .proton-load-bar-fill,
+    .proton-load-info,
+    .proton-load-tooltip {
+        transition: none;
+    }
+}
+
+/* Для темы без анимаций */
+.proton-no-animations .proton-load-bar-fill::after {
+    animation: none;
+}
+
+.proton-no-animations .proton-load-bar-fill,
+.proton-no-animations .proton-load-info,
+.proton-no-animations .proton-load-tooltip {
+    transition: none;
+}
+
 /* Мобильная адаптация */
 @media only screen and (max-width: 800px) {
 
@@ -5300,6 +5548,25 @@ body[data-page=""] .cbi-section:first-of-type table.table td {
     body[data-page=""] .cbi-section:first-of-type table.table td:last-child {
         font-weight: 500;
         padding-left: 0;
+    }
+
+    /* Load Average на мобильных */
+    .proton-load-average {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .proton-load-item {
+        width: 100%;
+    }
+
+    .proton-load-value-row {
+        justify-content: space-between;
+    }
+
+    .proton-load-bar {
+        flex: 1;
+        max-width: 120px;
     }
 }
 

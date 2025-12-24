@@ -23,6 +23,12 @@ printf "\n"
 info "Removing Proton2025 theme..."
 printf "\n"
 
+# Check if theme is installed
+if [ ! -d "/www/luci-static/$THEME_NAME" ] && [ ! -f "/www/luci-static/resources/menu-proton2025.js" ]; then
+    warn "Theme is not installed"
+    exit 0
+fi
+
 info "Switching to default theme..."
 if command -v uci >/dev/null 2>&1; then
     if [ -d "/www/luci-static/bootstrap" ]; then
@@ -68,7 +74,7 @@ ok "Removed uci-defaults"
 # Remove translations
 for p in "/usr/share/luci/i18n" "/usr/lib/lua/luci/i18n"; do
     if [ -d "$p" ]; then
-        rm -f "$p/theme-proton2025".*.lmo 2>/dev/null || true
+        rm -f "$p"/theme-proton2025.*.lmo 2>/dev/null || true
     fi
 done
 ok "Removed translations"
@@ -79,10 +85,18 @@ rm -rf /tmp/luci-modulecache 2>/dev/null || true
 rm -rf /tmp/luci-indexcache* 2>/dev/null || true
 ok "Cache cleared"
 
+# Restart services
+info "Restarting LuCI services..."
+if command -v /etc/init.d/uhttpd >/dev/null 2>&1; then
+    /etc/init.d/uhttpd restart >/dev/null 2>&1 || true
+    ok "Services restarted"
+fi
+
 printf "\n"
 printf "================================================\n"
 printf "    Uninstallation Complete!\n"
 printf "================================================\n"
 printf "\n"
 printf "  [*] Refresh your browser (Ctrl+F5)\n"
+printf "  [*] Clear browser cache if needed\n"
 printf "\n"

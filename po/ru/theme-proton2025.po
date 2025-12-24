@@ -158,6 +158,9 @@ msgstr "Проверка завершена"
 msgid "Warning: init.d list empty"
 msgstr "Внимание: список init.d пуст"
 
+msgid "init.d services"
+msgstr "Сервисы init.d"
+
 msgid "Waiting for LuCI API..."
 msgstr "Ожидание LuCI API..."
 
@@ -255,6 +258,35 @@ msgstr "Группировка сервисов включена."
 
 msgid "Services grouping disabled."
 msgstr "Группировка сервисов отключена."
+
+# ==================== Load Average ====================
+
+msgid "1 min"
+msgstr "1 мин"
+
+msgid "5 min"
+msgstr "5 мин"
+
+msgid "15 min"
+msgstr "15 мин"
+
+msgid "System Load Average"
+msgstr "Средняя нагрузка системы"
+
+msgid "Shows the average number of processes waiting for CPU execution. Three values represent the last 1, 5, and 15 minutes."
+msgstr "Показывает количество процессов, ожидающих выполнения процессором. Три значения — за последние 1, 5 и 15 минут."
+
+msgid "Low load"
+msgstr "Низкая нагрузка"
+
+msgid "Medium load"
+msgstr "Средняя нагрузка"
+
+msgid "High load"
+msgstr "Высокая нагрузка"
+
+msgid "cores"
+msgstr "ядра"
 
 # ==================== Footer ====================
 

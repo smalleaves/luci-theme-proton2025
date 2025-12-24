@@ -19,8 +19,7 @@ return baseclass.extend({
   },
 
   loadAndApplyThemeSettings() {
-    const isMobile = window.innerWidth <= 800;
-    const defaultZoom = isMobile ? "100" : "80";
+    const defaultZoom = "100";
     const settings = {
       accentColor: localStorage.getItem("proton-accent-color") || "default",
       borderRadius: localStorage.getItem("proton-border-radius") || "default",
@@ -256,27 +255,29 @@ return baseclass.extend({
    */
   updateSignalIndicators() {
     // Ищем все ifacebadge которые содержат dBm значения
-    const badges = document.querySelectorAll("table.assoclist .ifacebadge, #wifi_assoclist_table .ifacebadge");
-    
+    const badges = document.querySelectorAll(
+      "table.assoclist .ifacebadge, #wifi_assoclist_table .ifacebadge"
+    );
+
     badges.forEach((badge) => {
       const text = (badge.innerText || badge.textContent || "").trim();
-      
+
       // Ищем паттерн dBm: -XX dBm или просто -XX
       const match = text.match(/(-\d+)\s*(?:dBm|дБм)?/i);
       if (!match) return;
-      
+
       const signalValue = parseInt(match[1], 10);
       if (isNaN(signalValue)) return;
-      
+
       // Устанавливаем data-signal атрибут
       badge.setAttribute("data-signal", signalValue.toString());
-      
+
       // Добавляем CSS класс для стилизации
       badge.classList.add("proton-signal-badge");
-      
+
       // Устанавливаем CSS переменные напрямую для надёжности
       let strength, color;
-      
+
       if (signalValue >= -50) {
         // Отличный сигнал
         strength = "100%";
@@ -298,10 +299,10 @@ return baseclass.extend({
         strength = "20%";
         color = "#f44336";
       }
-      
+
       badge.style.setProperty("--signal-strength", strength);
       badge.style.setProperty("--signal-color", color);
-      
+
       // Добавляем класс на родительскую ячейку td для CSS селекторов
       const td = badge.closest("td");
       if (td) {
@@ -821,12 +822,11 @@ return baseclass.extend({
       if (document.getElementById("proton-theme-settings")) return;
 
       // Load saved settings
-      const isMobile = window.innerWidth <= 800;
-      const defaultZoom = isMobile ? "100" : "80";
+      const defaultZoom = "100";
       const settings = {
         accentColor: localStorage.getItem("proton-accent-color") || "default",
         borderRadius: localStorage.getItem("proton-border-radius") || "default",
-        zoom: localStorage.getItem("proton-zoom") || defaultZoom,
+        zoom: parseInt(localStorage.getItem("proton-zoom") || defaultZoom),
         animations: localStorage.getItem("proton-animations") !== "false",
         transparency: localStorage.getItem("proton-transparency") !== "false",
         servicesWidget:
@@ -1036,12 +1036,12 @@ return baseclass.extend({
       const zoomPlus = document.getElementById("proton-zoom-plus");
       const zoomReset = document.getElementById("proton-zoom-reset");
 
-      const updateZoom = (value) => {
-        value = Math.max(75, Math.min(150, parseInt(value)));
-        zoomRange.value = value;
-        zoomValue.textContent = value + "%";
-        localStorage.setItem("proton-zoom", value);
-        this.applyZoom(value);
+      const updateZoom = (displayValue) => {
+        displayValue = Math.max(75, Math.min(150, parseInt(displayValue)));
+        zoomRange.value = displayValue;
+        zoomValue.textContent = displayValue + "%";
+        localStorage.setItem("proton-zoom", displayValue);
+        this.applyZoom(displayValue);
       };
 
       zoomRange?.addEventListener("input", (e) => updateZoom(e.target.value));
