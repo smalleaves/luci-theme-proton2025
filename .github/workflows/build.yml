@@ -40,12 +40,10 @@ jobs:
       - name: Install feeds
         working-directory: ./openwrt-sdk
         run: |
-          git config --global http.postBuffer 524288000
-          git config --global core.compression 0
-          for i in 1 2 3; do
-            ./scripts/feeds update -a && break || sleep 10
-          done
-          ./scripts/feeds install -a
+          # Отключаем проблемный feed 'base' - он не нужен для сборки темы
+          sed -i 's/^src-git base/#src-git base/' feeds.conf.default
+          ./scripts/feeds update luci
+          ./scripts/feeds install -a -p luci
 
       - name: Copy theme to SDK
         run: |
