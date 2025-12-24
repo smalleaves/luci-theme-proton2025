@@ -19,7 +19,7 @@ jobs:
         run: |
           git clone https://github.com/openwrt/luci.git --depth=1
           cd luci/modules/luci-base/src
-          make
+          make po2lmo
           sudo cp po2lmo /usr/local/bin/
 
       - name: Compile translations
