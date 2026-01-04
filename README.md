@@ -27,16 +27,29 @@ An elegant dark theme for LuCI (OpenWrt 23.x+).
 - 📱 Responsive layout for mobile devices
 - ⚡ Compatible with LuCI ucode (OpenWrt 23.x+)
 - 📊 Services monitoring widget on Status → Overview page
+- 🌡️ Temperature monitoring widget with thermal sensors
 - 📈 Elegant Load Average visualization with color-coded progress bars
 - 🌐 Localization support (i18n)
 
-## Services Widget
+## Widgets
+
+### Services Widget
 
 The main page (Status → Overview) displays a widget showing system service statuses:
 
 - Status visualization (Running/Stopped)
 - Add services via modal or custom input
 - Settings saved in browser
+
+### Temperature Widget
+
+Real-time temperature monitoring on Status → Overview:
+
+- Reads data from `/sys/class/thermal/` and `/sys/class/hwmon/`
+- Color-coded levels (Normal, Warm, Hot, Critical)
+- Peak temperature tracking
+- Auto-refresh every 5 seconds
+- Built-in ucode RPC module (no external dependencies)
 
 ## Theme Settings
 
@@ -117,12 +130,16 @@ luci-theme-proton2025/
 │   ├── proton2025/
 │   │   ├── cascade.css
 │   │   ├── services-widget.js
+│   │   ├── translations.js
+│   │   ├── icons/
 │   │   └── logo.svg
 │   └── resources/menu-proton2025.js
-├── po/                              # Localization
-│   ├── ru/theme-proton2025.po
-│   └── templates/theme-proton2025.pot
-├── root/etc/uci-defaults/
+├── root/
+│   ├── etc/uci-defaults/
+│   │   └── 30_luci-theme-proton2025
+│   └── usr/share/rpcd/
+│       ├── acl.d/luci-theme-proton2025.json
+│       └── ucode/luci.proton-temp
 └── ucode/template/themes/proton2025/
     ├── header.ut
     ├── footer.ut

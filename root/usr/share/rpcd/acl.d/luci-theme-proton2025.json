@@ -1,0 +1,13 @@
+{
+    "luci-theme-proton2025": {
+        "description": "Proton2025 theme - temperature sensor access",
+        "read": {
+            "ubus": {
+                "luci.proton-temp": [
+                    "getSensors",
+                    "resetPeaks"
+                ]
+            }
+        }
+    }
+}

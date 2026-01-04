@@ -13,6 +13,13 @@
 <html lang="{{ dispatcher.lang }}">
 <head>
 <meta charset="utf-8" />
+<script>
+// Apply theme mode from localStorage
+(function() {
+	var themeMode = localStorage.getItem('proton-theme-mode') || 'dark';
+	document.documentElement.setAttribute('data-theme', themeMode);
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#0f1419" />
 <meta name="color-scheme" content="dark" />
@@ -28,35 +35,68 @@ body.login-page {
 	justify-content: center;
 	min-height: 100vh;
 	padding: 20px;
+	background: var(--proton-bg-primary);
+	transition: background 0.3s ease;
+	/* Reserve space for mobile keyboard */
+	scroll-padding-bottom: 40vh;
 }
 
 .login-container {
 	width: 100%;
-	max-width: 400px;
+	max-width: 420px;
+	animation: fadeInUp 0.6s ease-out;
+	/* Allow scrolling on mobile when keyboard appears */
+	margin: auto;
+}
+
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 .login-card {
 	background: var(--proton-bg-secondary);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
 	border: 1px solid var(--proton-border);
-	border-radius: var(--proton-radius);
-	padding: 32px;
-	box-shadow: var(--proton-shadow);
+	border-radius: 16px;
+	padding: 40px 36px;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+	transition: all 0.3s ease;
+}
+
+:root[data-theme="light"] .login-card {
+	background: rgba(255, 255, 255, 0.95);
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
 }
 
 .login-header {
 	text-align: center;
-	margin-bottom: 32px;
+	margin-bottom: 36px;
 }
 
 .login-header img {
-	height: 48px;
-	margin-bottom: 16px;
+	height: 56px;
+	margin-bottom: 20px;
+	transition: filter 0.3s ease;
+}
+
+:root[data-theme="light"] .login-header img {
+	filter: brightness(0.25);
 }
 
 .login-header h1 {
-	font-size: 1.25rem;
+	font-size: 1.5rem;
+	font-weight: 600;
 	margin: 0 0 8px;
 	color: var(--proton-fg);
+	letter-spacing: -0.02em;
 }
 
 .login-header .hostname {
@@ -70,43 +110,103 @@ body.login-page {
 	margin: 0;
 }
 
+:root[data-theme="light"] .login-header p {
+	color: #6b7280;
+}
+
 .login-form .form-group {
-	margin-bottom: 20px;
+	margin-bottom: 24px;
 }
 
 .login-form label {
 	display: block;
-	margin-bottom: 8px;
+	margin-bottom: 10px;
 	color: var(--proton-fg-secondary);
-	font-size: 0.9rem;
+	font-size: 0.875rem;
 	font-weight: 500;
+	letter-spacing: 0.01em;
+}
+
+:root[data-theme="light"] .login-form label {
+	color: #374151;
 }
 
 .login-form input {
 	width: 100%;
 	max-width: 100%;
-	padding: 12px 16px;
-	font-size: 1rem;
+	padding: 13px 16px;
+	font-size: 0.95rem;
+	background: var(--proton-bg-tertiary);
+	border: 1px solid var(--proton-border);
+	border-radius: 10px;
+	color: var(--proton-fg);
+	transition: all 0.2s ease;
+}
+
+.login-form input:focus {
+	outline: none;
+	border-color: var(--proton-accent);
+	background: var(--proton-bg-secondary);
+	box-shadow: 0 0 0 3px var(--proton-accent-glow);
+}
+
+:root[data-theme="light"] .login-form input {
+	background: rgba(0, 0, 0, 0.03);
+}
+
+:root[data-theme="light"] .login-form input:focus {
+	background: #fff;
+	border-color: var(--proton-accent);
 }
 
 .login-form button {
 	width: 100%;
 	padding: 14px 20px;
 	font-size: 1rem;
+	font-weight: 600;
+	background: var(--proton-accent);
+	color: #fff;
+	border: none;
+	border-radius: 10px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	margin-top: 8px;
+}
+
+.login-form button:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 8px 20px rgba(74, 143, 231, 0.4);
+}
+
+:root[data-theme="light"] .login-form button:hover {
+	box-shadow: 0 8px 20px rgba(74, 143, 231, 0.3);
+}
+
+.login-form button:active {
+	transform: translateY(0);
 }
 
 .login-error {
-	background: rgba(248, 113, 113, 0.1);
+	background: rgba(248, 113, 113, 0.12);
 	border: 1px solid rgba(248, 113, 113, 0.3);
+	border-left: 3px solid var(--proton-danger);
 	color: var(--proton-danger);
-	padding: 12px 16px;
-	border-radius: var(--proton-radius-sm);
-	margin-bottom: 20px;
+	padding: 14px 16px;
+	border-radius: 10px;
+	margin-bottom: 24px;
 	font-size: 0.9rem;
+	line-height: 1.5;
+}
+
+:root[data-theme="light"] .login-error {
+	background: rgba(220, 38, 38, 0.08);
+	border-color: rgba(220, 38, 38, 0.25);
+	border-left-color: #dc2626;
+	color: #991b1b;
 }
 </style>
 </head>
-<body class="login-page lang_{{ dispatcher.lang }}">
+<body class="login-page lang_{{ dispatcher.lang }}" data-lang="{{ dispatcher.lang }}">
 <div class="login-container">
 	<div class="login-card">
 		<div class="login-header">
@@ -137,5 +237,43 @@ body.login-page {
 		</form>
 	</div>
 </div>
+
+<script>
+// Handle mobile keyboard: scroll input into view when focused
+(function() {
+	var inputs = document.querySelectorAll('.login-form input');
+	
+	inputs.forEach(function(input) {
+		input.addEventListener('focus', function() {
+			// Small delay to allow keyboard to start opening
+			setTimeout(function() {
+				// Scroll with some offset for better UX
+				input.scrollIntoView({ 
+					behavior: 'smooth', 
+					block: 'center',
+					inline: 'nearest'
+				});
+			}, 300);
+		});
+	});
+	
+	// Also handle window resize (keyboard open/close)
+	var initialHeight = window.innerHeight;
+	window.addEventListener('resize', function() {
+		// Keyboard opened (viewport height decreased)
+		if (window.innerHeight < initialHeight * 0.8) {
+			var focused = document.activeElement;
+			if (focused && focused.tagName === 'INPUT') {
+				setTimeout(function() {
+					focused.scrollIntoView({ 
+						behavior: 'smooth', 
+						block: 'center' 
+					});
+				}, 100);
+			}
+		}
+	});
+})();
+</script>
 </body>
 </html>

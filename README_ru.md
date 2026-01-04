@@ -27,16 +27,29 @@
 - 📱 Адаптивная вёрстка для мобильных устройств
 - ⚡ Совместимость с LuCI ucode (OpenWrt 23.x+)
 - 📊 Виджет мониторинга сервисов на странице Status → Overview
+- 🌡️ Виджет температуры с мониторингом термодатчиков
 - 📈 Элегантная визуализация Load Average с цветовой индикацией и прогресс-барами
 - 🌐 Поддержка локализации (i18n)
 
-## Виджет сервисов
+## Виджеты
+
+### Виджет сервисов
 
 На главной странице (Status → Overview) отображается виджет с состоянием системных сервисов:
 
 - Визуализация статуса (Running/Stopped)
 - Добавление сервисов через модальное окно или ввод имени
 - Настройки сохраняются в браузере
+
+### Виджет температуры
+
+Мониторинг температуры в реальном времени на Status → Overview:
+
+- Чтение данных из `/sys/class/thermal/` и `/sys/class/hwmon/`
+- Цветовая индикация уровней (Норма, Тепло, Горячо, Критично)
+- Отслеживание пиковой температуры
+- Автообновление каждые 5 секунд
+- Встроенный ucode RPC модуль (без внешних зависимостей)
 
 ## Настройки темы
 
@@ -117,12 +130,16 @@ luci-theme-proton2025/
 │   ├── proton2025/
 │   │   ├── cascade.css
 │   │   ├── services-widget.js
+│   │   ├── translations.js
+│   │   ├── icons/
 │   │   └── logo.svg
 │   └── resources/menu-proton2025.js
-├── po/                              # Локализация
-│   ├── ru/theme-proton2025.po
-│   └── templates/theme-proton2025.pot
-├── root/etc/uci-defaults/
+├── root/
+│   ├── etc/uci-defaults/
+│   │   └── 30_luci-theme-proton2025
+│   └── usr/share/rpcd/
+│       ├── acl.d/luci-theme-proton2025.json
+│       └── ucode/luci.proton-temp
 └── ucode/template/themes/proton2025/
     ├── header.ut
     ├── footer.ut

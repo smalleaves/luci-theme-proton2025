@@ -6,12 +6,35 @@
 (function () {
   "use strict";
 
+  // =====================================================
+  // Утилита: управление видимостью секции виджетов
+  // =====================================================
+  function updateWidgetsSectionVisibility() {
+    const section = document.querySelector(".proton-widgets-section");
+    if (!section) return;
+
+    const servicesWidget = section.querySelector(".proton-services-widget");
+    const tempWidget = section.querySelector(".proton-temp-widget");
+
+    // Проверяем видимость виджетов (display !== 'none' и элемент существует)
+    const servicesVisible =
+      servicesWidget && servicesWidget.style.display !== "none";
+    const tempVisible = tempWidget && tempWidget.style.display !== "none";
+
+    // Скрываем секцию если все виджеты скрыты
+    section.style.display = servicesVisible || tempVisible ? "" : "none";
+  }
+
+  // Делаем функцию доступной глобально для внешних вызовов
+  window.updateWidgetsSectionVisibility = updateWidgetsSectionVisibility;
+
   class ProtonServicesWidget {
     constructor() {
       this.services = this.loadServices();
 
       // Категории сервисов
       this.categories = {
+        custom: { icon: "⭐", priority: 0 },
         network: { icon: "🌐", priority: 1 },
         security: { icon: "🛡️", priority: 2 },
         vpn: { icon: "🔒", priority: 3 },
@@ -266,17 +289,23 @@
     // ==================== Локализация ====================
 
     _t(key) {
-      // Используем LuCI i18n если доступен
+      // Используем глобальную функцию из translations.js
+      if (window.protonT) {
+        return window.protonT(key);
+      }
+
+      // Fallback на LuCI i18n
       if (window.L && L.tr) {
         const translated = L.tr(key);
         if (translated !== key) return translated;
       }
-      // Fallback на английский (ключи уже на английском)
+
       return key;
     }
 
     getCategoryName(category) {
       const names = {
+        custom: this._t("My Services"),
         network: this._t("Network"),
         security: this._t("Security"),
         vpn: this._t("VPN"),
@@ -350,11 +379,12 @@
 
     loadServices() {
       const saved = this._safeGetItem("proton-services-widget");
-      if (!saved) return ["dnsmasq", "dropbear"];
+      // Если ничего не сохранено - показываем дефолтные сервисы
+      if (saved === null || saved === undefined) return ["dnsmasq", "dropbear"];
+      // Если сохранён пустой массив - возвращаем пустой (пользователь специально очистил)
       try {
         const parsed = JSON.parse(saved);
-        const normalized = this._normalizeServiceList(parsed);
-        return normalized.length ? normalized : ["dnsmasq", "dropbear"];
+        return this._normalizeServiceList(parsed);
       } catch (e) {
         return ["dnsmasq", "dropbear"];
       }
@@ -388,6 +418,40 @@
 
       if (!insertPoint) return false;
 
+      // Создаем или находим общий контейнер для виджетов
+      let widgetsContainer = document.getElementById(
+        "proton-widgets-container"
+      );
+      if (!widgetsContainer) {
+        // Создаём секцию с заголовком "Виджеты" и кнопкой настроек
+        const widgetsSection = document.createElement("div");
+        widgetsSection.className = "proton-widgets-section";
+
+        const sectionHeader = document.createElement("div");
+        sectionHeader.className = "proton-widgets-section-header";
+
+        const sectionTitle = document.createElement("h2");
+        sectionTitle.className = "proton-widgets-section-title";
+        sectionTitle.textContent = this._t("Widgets");
+
+        const settingsBtn = document.createElement("button");
+        settingsBtn.className = "proton-widgets-settings-btn";
+        settingsBtn.title = this._t("Widget Settings");
+        settingsBtn.innerHTML = "⚙";
+        settingsBtn.addEventListener("click", () => this.showAddServiceModal());
+
+        sectionHeader.appendChild(sectionTitle);
+        sectionHeader.appendChild(settingsBtn);
+        widgetsSection.appendChild(sectionHeader);
+
+        widgetsContainer = document.createElement("div");
+        widgetsContainer.className = "proton-widgets-container";
+        widgetsContainer.id = "proton-widgets-container";
+        widgetsSection.appendChild(widgetsContainer);
+
+        insertPoint.parentNode.insertBefore(widgetsSection, insertPoint);
+      }
+
       const widget = document.createElement("div");
       widget.className = "proton-services-widget";
       widget.id = "proton-services-widget";
@@ -400,9 +464,6 @@
                     <h3 class="proton-services-title">${this._t(
                       "Services Monitor"
                     )}</h3>
-                    <button class="proton-add-service-btn" title="${this._t(
-                      "Add Service"
-                    )}">+</button>
                 </div>
                 <div class="proton-services-grid" id="proton-services-grid"></div>
                 <div class="proton-services-log" id="proton-services-log" aria-live="polite" style="${
@@ -410,18 +471,9 @@
                 }"></div>
             `;
 
-      insertPoint.parentNode.insertBefore(widget, insertPoint);
+      widgetsContainer.appendChild(widget);
 
       this._mounted = true;
-
-      const addBtn = widget.querySelector(".proton-add-service-btn");
-      if (addBtn) {
-        addBtn.addEventListener("click", () => this.showAddServiceModal());
-
-        if (this.services.length === 0) {
-          setTimeout(() => addBtn.classList.add("pulse"), 500);
-        }
-      }
 
       this.renderServices();
 
@@ -462,6 +514,17 @@
       // Очищаем кэш элементов при полной перерисовке
       this._serviceElements.clear();
       grid.innerHTML = "";
+
+      // Если нет сервисов - показываем минималистичный placeholder
+      if (this.services.length === 0) {
+        const placeholder = document.createElement("div");
+        placeholder.className = "proton-services-empty";
+        placeholder.innerHTML = `<span class="proton-services-empty-hint">${this._t(
+          "Click ⚙ to add services"
+        )}</span>`;
+        grid.appendChild(placeholder);
+        return;
+      }
 
       // Проверяем настройку группировки (по умолчанию выключена)
       const isGrouped = this._safeGetItem("proton-services-grouped") === "true";
@@ -575,39 +638,73 @@
 
     async showAddServiceModal() {
       this._appendUiLogLine(this._t("Opening service list..."));
+
+      // Проверяем текущее состояние виджета температуры
+      const tempWidgetEnabled =
+        localStorage.getItem("proton-temp-widget-enabled") !== "false";
+
       const modal = document.createElement("div");
       modal.className = "proton-service-modal";
       modal.innerHTML = `
                 <div class="proton-service-modal-content">
                     <div class="proton-service-modal-header">
                         <h3 class="proton-service-modal-title">${this._t(
-                          "Add Service"
+                          "Widget Settings"
                         )}</h3>
                         <button class="proton-service-modal-close">×</button>
                     </div>
+                    
+                    <div class="proton-widget-toggles">
+                        <label class="proton-widget-toggle">
+                            <span class="proton-widget-toggle-info">
+                                <span class="proton-widget-toggle-icon">🌡</span>
+                                <span class="proton-widget-toggle-name">${this._t(
+                                  "Temperature Widget"
+                                )}</span>
+                            </span>
+                            <input type="checkbox" id="proton-temp-widget-toggle" ${
+                              tempWidgetEnabled ? "checked" : ""
+                            }>
+                            <span class="proton-widget-toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="proton-service-modal-section-title">${this._t(
+                      "Services"
+                    )}</div>
+                    
                     <div class="proton-service-search">
                         <input type="text" id="proton-service-search-input" 
                                placeholder="${this._t(
-                                 "Search services..."
-                               )}" autocomplete="off">
+                                 "Search or add custom service..."
+                               )}" autocomplete="off" maxlength="64">
                     </div>
-                    <div class="proton-service-list" id="proton-service-list"></div>
-                    <div class="proton-service-custom">
-                        <div class="proton-service-custom-input-wrap">
-                            <input type="text" id="proton-custom-service-input" 
-                                   placeholder="${this._t(
-                                     "Enter custom service name..."
-                                   )}" autocomplete="off" maxlength="64">
-                            <span class="proton-service-custom-hint" id="proton-custom-hint"></span>
+                    <div class="proton-service-list" id="proton-service-list">
+                        <div class="proton-service-loading">
+                            <div class="proton-service-loading-spinner"></div>
+                            <span>${this._t("Loading services...")}</span>
                         </div>
-                        <button type="button" id="proton-custom-service-add" class="proton-service-item-add" disabled>${this._t(
-                          "Add"
-                        )}</button>
                     </div>
                 </div>
             `;
 
       document.body.appendChild(modal);
+
+      // Обработчик переключателя виджета температуры
+      const tempToggle = modal.querySelector("#proton-temp-widget-toggle");
+      tempToggle.addEventListener("change", () => {
+        const enabled = tempToggle.checked;
+        localStorage.setItem("proton-temp-widget-enabled", enabled);
+
+        // Находим виджет температуры и показываем/скрываем
+        const tempWidget = document.querySelector(".proton-temp-widget");
+        if (tempWidget) {
+          tempWidget.style.display = enabled ? "" : "none";
+        }
+
+        // Обновляем видимость секции виджетов
+        updateWidgetsSectionVisibility();
+      });
 
       let onEscape;
       const closeModal = () => {
@@ -634,111 +731,29 @@
       };
       document.addEventListener("keydown", onEscape);
 
-      // Добавление пользовательского сервиса
-      const customInput = modal.querySelector("#proton-custom-service-input");
-      const customAddBtn = modal.querySelector("#proton-custom-service-add");
-      const customHint = modal.querySelector("#proton-custom-hint");
-
-      const validateCustomInput = () => {
-        const value = customInput.value.trim();
-        const name = value.toLowerCase();
-
-        // Сбрасываем состояние
-        customInput.classList.remove("valid", "invalid");
-        customHint.classList.remove("error", "success", "info");
-        customHint.textContent = "";
-        customAddBtn.disabled = true;
-
-        if (!value) {
-          customHint.textContent = this._t(
-            "Letters, numbers, dash, underscore only"
-          );
-          customHint.classList.add("info");
-          return false;
-        }
-
-        if (value.length > 64) {
-          customHint.textContent = this._t("Name too long (max 64 chars)");
-          customHint.classList.add("error");
-          customInput.classList.add("invalid");
-          return false;
-        }
-
-        if (!/^[A-Za-z0-9_-]+$/.test(value)) {
-          customHint.textContent = this._t(
-            "Invalid characters! Use: a-z, 0-9, -, _"
-          );
-          customHint.classList.add("error");
-          customInput.classList.add("invalid");
-          return false;
-        }
-
-        if (this.services.includes(name)) {
-          customHint.textContent = this._t("Already in your list");
-          customHint.classList.add("error");
-          customInput.classList.add("invalid");
-          return false;
-        }
-
-        // Проверяем есть ли в списке доступных
-        const exists = this.availableServices.some((s) => s.name === name);
-        if (exists) {
-          customHint.textContent = "✓ " + this._t("Found in system");
-          customHint.classList.add("success");
-        } else {
-          customHint.textContent = this._t(
-            "Custom service (not found in system)"
-          );
-          customHint.classList.add("info");
-        }
-
-        customInput.classList.add("valid");
-        customAddBtn.disabled = false;
-        return true;
-      };
-
-      const addCustomService = () => {
-        if (!validateCustomInput()) return;
-
-        const name = customInput.value.trim().toLowerCase();
-        this.addService(name);
-        customInput.value = "";
-        customHint.textContent = "✓ " + this._t("Added successfully!");
-        customHint.classList.remove("info");
-        customHint.classList.add("success");
-        customAddBtn.disabled = true;
-
-        setTimeout(() => {
-          customHint.textContent = this._t(
-            "Letters, numbers, dash, underscore only"
-          );
-          customHint.classList.remove("success");
-          customHint.classList.add("info");
-        }, 2000);
-      };
-
-      // Начальная подсказка
-      customHint.textContent = this._t(
-        "Letters, numbers, dash, underscore only"
-      );
-      customHint.classList.add("info");
-
-      customInput.addEventListener("input", validateCustomInput);
-      customAddBtn.addEventListener("click", addCustomService);
-      customInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          addCustomService();
-        }
-      });
-
       await this.refreshAvailableServices();
 
       const list = modal.querySelector("#proton-service-list");
       const searchInput = modal.querySelector("#proton-service-search-input");
 
+      // Функция добавления пользовательского сервиса из поиска
+      const addCustomFromSearch = (name) => {
+        const normalizedName = name.trim().toLowerCase();
+        if (!this._isValidServiceName(normalizedName)) return;
+        if (this.services.includes(normalizedName)) return;
+
+        this.addService(normalizedName);
+        searchInput.value = "";
+        this.renderServiceList(list, "", this, addCustomFromSearch);
+      };
+
       // Рендерим список с группировкой
-      const initialCount = this.renderServiceList(list, "");
+      const initialCount = this.renderServiceList(
+        list,
+        "",
+        this,
+        addCustomFromSearch
+      );
       this._appendUiLogLine(
         `${this._t("Available services")}: ${initialCount}`
       );
@@ -749,7 +764,12 @@
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
           const q = String(e.target.value || "").toLowerCase();
-          const count = this.renderServiceList(list, q);
+          const count = this.renderServiceList(
+            list,
+            q,
+            this,
+            addCustomFromSearch
+          );
           if (q) {
             this._appendUiLogLine(`${this._t("Search")}: "${q}" - ${count}`);
           } else {
@@ -758,19 +778,65 @@
         }, 150);
       });
 
+      // Enter в поле поиска — добавить как custom если валидно
+      searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const q = searchInput.value.trim();
+          if (
+            q &&
+            this._isValidServiceName(q) &&
+            !this.services.includes(q.toLowerCase())
+          ) {
+            addCustomFromSearch(q);
+          }
+        }
+      });
+
       setTimeout(() => {
         modal.classList.add("active");
         searchInput.focus();
       }, 10);
     }
 
-    renderServiceList(container, filter) {
+    renderServiceList(container, filter, widget, addCustomCallback) {
       container.innerHTML = "";
 
       let matchCount = 0;
+      const filterLower = (filter || "").toLowerCase().trim();
 
       // Группируем по категориям
       const grouped = new Map();
+
+      // Сначала добавляем пользовательские сервисы (которых нет в availableServices)
+      const availableNames = new Set(this.availableServices.map((s) => s.name));
+      const customServices = this.services.filter(
+        (name) => !availableNames.has(name)
+      );
+
+      if (customServices.length > 0) {
+        customServices.forEach((serviceName) => {
+          const info = this.getServiceInfo(serviceName);
+
+          // Фильтрация по поиску
+          if (filterLower) {
+            const searchText =
+              `${serviceName} ${info.displayName} ${info.description}`.toLowerCase();
+            if (!searchText.includes(filterLower)) return;
+          }
+
+          if (!grouped.has("custom")) {
+            grouped.set("custom", []);
+          }
+          grouped.get("custom").push({
+            ...info,
+            name: serviceName,
+            installed: false,
+            isCustom: true,
+          });
+          matchCount++;
+        });
+      }
 
       this.availableServices.forEach((service) => {
         const info = this.getServiceInfo(service.name);
@@ -780,10 +846,10 @@
         if (knownInfo && knownInfo.daemon === false) return;
 
         // Фильтрация по поиску
-        if (filter) {
+        if (filterLower) {
           const searchText =
             `${service.name} ${info.displayName} ${info.description}`.toLowerCase();
-          if (!searchText.includes(filter)) return;
+          if (!searchText.includes(filterLower)) return;
         }
 
         if (!grouped.has(info.category)) {
@@ -795,13 +861,70 @@
         matchCount++;
       });
 
-      // Сортируем категории
+      // Сортируем категории (custom первым)
       const sortedCategories = Array.from(grouped.keys()).sort((a, b) => {
+        if (a === "custom") return -1;
+        if (b === "custom") return 1;
         return (
           (this.categories[a]?.priority || 99) -
           (this.categories[b]?.priority || 99)
         );
       });
+
+      // Если ничего не найдено и есть фильтр — предложить добавить как custom
+      if (sortedCategories.length === 0 && filterLower) {
+        const isValid = this._isValidServiceName(filterLower);
+        const alreadyAdded = this.services.includes(filterLower);
+
+        const emptyDiv = document.createElement("div");
+        emptyDiv.className = "proton-service-empty-custom";
+
+        if (!isValid) {
+          emptyDiv.innerHTML = `
+            <div class="proton-service-empty-icon">🔍</div>
+            <div class="proton-service-empty-text">${this._t(
+              "No services found"
+            )}</div>
+            <div class="proton-service-empty-hint">${this._t(
+              "Invalid name. Use only: a-z, 0-9, -, _"
+            )}</div>
+          `;
+        } else if (alreadyAdded) {
+          emptyDiv.innerHTML = `
+            <div class="proton-service-empty-icon">✓</div>
+            <div class="proton-service-empty-text">"${this.escapeHtml(
+              filterLower
+            )}" ${this._t("already added")}</div>
+          `;
+        } else {
+          emptyDiv.innerHTML = `
+            <div class="proton-service-empty-icon">📦</div>
+            <div class="proton-service-empty-text">${this._t(
+              "Service not found in system"
+            )}</div>
+            <button class="proton-service-add-custom-btn" data-name="${this.escapeHtml(
+              filterLower
+            )}">
+              + ${this._t("Add")} "${this.escapeHtml(filterLower)}" ${this._t(
+            "as custom"
+          )}
+            </button>
+            <div class="proton-service-empty-hint">${this._t(
+              "Or press Enter"
+            )}</div>
+          `;
+
+          const btn = emptyDiv.querySelector(".proton-service-add-custom-btn");
+          if (btn && addCustomCallback) {
+            btn.addEventListener("click", () => {
+              addCustomCallback(filterLower);
+            });
+          }
+        }
+
+        container.appendChild(emptyDiv);
+        return 0;
+      }
 
       if (sortedCategories.length === 0) {
         container.innerHTML = `<div class="proton-service-empty">${this._t(
@@ -825,6 +948,7 @@
         services.forEach((service) => {
           const isAdded = this.services.includes(service.name);
           const isInstalled = service.installed === true;
+          const isCustom = service.isCustom === true;
 
           const safeDisplayName = this.escapeHtml(service.displayName);
           const safeDescription = this.escapeHtml(service.description);
@@ -834,21 +958,34 @@
           // Определяем текст и класс кнопки
           let btnClass = "proton-service-item-add";
           let btnText = "+ " + this._t("Add");
-          if (!isInstalled) {
+
+          if (isCustom) {
+            // Пользовательские сервисы всегда показывают "Remove"
+            btnClass += " added";
+            btnText = this._t("Remove");
+          } else if (!isInstalled) {
             btnClass += " not-installed";
             btnText = this._t("Not installed");
           } else if (isAdded) {
             btnClass += " added";
-            btnText = "✓ " + this._t("Added");
+            btnText = this._t("Remove");
           }
 
           const item = document.createElement("div");
-          item.className = "proton-service-item";
+          item.className =
+            "proton-service-item" +
+            (isCustom ? " proton-service-item-custom" : "");
           item.innerHTML = `
                         <div class="proton-service-item-info">
                             <span class="proton-service-item-icon">${safeIcon}</span>
                             <div>
-                                <h4>${safeDisplayName}</h4>
+                                <h4>${safeDisplayName}${
+            isCustom
+              ? ' <span class="proton-custom-badge">' +
+                this._t("custom") +
+                "</span>"
+              : ""
+          }</h4>
                                 <p>${safeDescription}</p>
                             </div>
                         </div>
@@ -857,12 +994,25 @@
                         </button>
                     `;
 
-          if (isInstalled && !isAdded) {
+          if (isCustom || isInstalled) {
             const btn = item.querySelector(".proton-service-item-add");
             btn.addEventListener("click", () => {
-              this.addService(service.name);
-              btn.classList.add("added");
-              btn.textContent = "✓ " + this._t("Added");
+              if (btn.classList.contains("added")) {
+                // Удаляем сервис
+                this.removeService(service.name);
+                if (isCustom) {
+                  // Для custom сервисов — убираем из списка
+                  item.remove();
+                } else {
+                  btn.classList.remove("added");
+                  btn.textContent = "+ " + this._t("Add");
+                }
+              } else {
+                // Добавляем сервис
+                this.addService(service.name);
+                btn.classList.add("added");
+                btn.textContent = this._t("Remove");
+              }
             });
           }
 
@@ -1416,6 +1566,770 @@
     }
   }
 
+  // =====================================================
+  // Temperature Widget - Мониторинг температуры
+  // =====================================================
+
+  class ProtonTemperatureWidget {
+    constructor() {
+      this._mounted = false;
+      this._pollInterval = null;
+      this._pollIntervalMs = 5000; // Обновление каждые 5 секунд
+      this._sensors = [];
+      this._sensorElements = new Map();
+      this._onVisibilityChange = null;
+      this._rpcMethods = null;
+      this._mutationObserver = null; // Для очистки при остановке
+      this._waitTimeout = null; // Для очистки таймаута
+      this._isFirstLoad = true; // Флаг первой загрузки
+      this._emptyAttempts = 0; // Счетчик попыток без датчиков
+      this._maxEmptyAttempts = 3; // Максимум попыток перед показом "Не найдены"
+
+      // Debug mode: localStorage['proton-temp-debug']='1' или window.protonTempDebug=true
+      this._debug =
+        (function () {
+          try {
+            return localStorage.getItem("proton-temp-debug") === "1";
+          } catch (e) {
+            return false;
+          }
+        })() || window.protonTempDebug === true;
+
+      // Пороговые значения температуры (°C)
+      this._thresholds = {
+        warm: 50, // >= 50°C - тёплый
+        hot: 70, // >= 70°C - горячий
+        critical: 85, // >= 85°C - критический
+      };
+    }
+
+    _log(...args) {
+      if (this._debug) {
+        console.log("[ProtonTemp]", ...args);
+      }
+    }
+
+    // Локализация
+    _t(key) {
+      if (window.protonT) {
+        return window.protonT(key);
+      }
+      if (window.L && L.tr) {
+        const translated = L.tr(key);
+        if (translated !== key) return translated;
+      }
+      return key;
+    }
+
+    // Определение типа датчика по имени
+    _getSensorType(name) {
+      const lowerName = name.toLowerCase();
+      if (lowerName.includes("cpu") || lowerName.includes("processor"))
+        return "cpu";
+      if (lowerName.includes("soc")) return "soc";
+      if (
+        lowerName.includes("wifi") ||
+        lowerName.includes("wireless") ||
+        lowerName.includes("wlan")
+      )
+        return "wifi";
+      if (
+        lowerName.includes("ddr") ||
+        lowerName.includes("ram") ||
+        lowerName.includes("memory")
+      )
+        return "ddr";
+      if (lowerName.includes("board") || lowerName.includes("system"))
+        return "board";
+      return "default";
+    }
+
+    // Форматирование имени датчика
+    _formatSensorName(name) {
+      // Убираем технические префиксы/суффиксы
+      let formatted = name
+        .replace(/^thermal_zone\d+_/, "")
+        .replace(/_temp$/, "")
+        .replace(/_input$/, "")
+        .replace(/[-_]/g, " ")
+        .trim();
+
+      // Капитализация первой буквы каждого слова
+      formatted = formatted.replace(/\b\w/g, (c) => c.toUpperCase());
+
+      // Локализация известных имён
+      const translations = {
+        Cpu: this._t("CPU"),
+        Soc: this._t("SoC"),
+        Wifi: this._t("WiFi"),
+        Ddr: this._t("DDR"),
+        Board: this._t("Board"),
+      };
+
+      for (const [key, value] of Object.entries(translations)) {
+        formatted = formatted.replace(new RegExp(`\\b${key}\\b`, "gi"), value);
+      }
+
+      return formatted || this._t("Sensor");
+    }
+
+    // Определение уровня температуры
+    _getTempLevel(temp) {
+      if (temp >= this._thresholds.critical) return "critical";
+      if (temp >= this._thresholds.hot) return "hot";
+      if (temp >= this._thresholds.warm) return "warm";
+      return "normal";
+    }
+
+    // Получение текста статуса
+    _getTempStatusText(level) {
+      const statusTexts = {
+        normal: this._t("Normal"),
+        warm: this._t("Warm"),
+        hot: this._t("Hot"),
+        critical: this._t("Critical"),
+      };
+      return statusTexts[level] || statusTexts.normal;
+    }
+
+    // Расчёт процента для прогресс-бара (динамический диапазон до 100°C)
+    _getTempPercent(temp) {
+      // Используем диапазон 0-100°C, но ограничиваем максимум 100%
+      // Для температур выше 100°C показываем 100%
+      const maxTemp = 100;
+      return Math.min(Math.max((temp / maxTemp) * 100, 0), 100);
+    }
+
+    // Проверка, что мы на странице Overview
+    isOverviewPage() {
+      if (
+        typeof L !== "undefined" &&
+        L.env &&
+        Array.isArray(L.env.dispatchpath)
+      ) {
+        const dp = L.env.dispatchpath;
+        if (dp[0] === "admin" && dp[1] === "status" && dp[2] === "overview") {
+          return true;
+        }
+      }
+      return (
+        document.body.dataset.page === "admin-status-overview" ||
+        window.location.pathname.includes("/admin/status/overview")
+      );
+    }
+
+    // Инициализация виджета
+    init() {
+      // Проверяем настройку отключения виджета
+      try {
+        if (localStorage.getItem("proton-temp-widget-enabled") === "false") {
+          return;
+        }
+      } catch (e) {}
+
+      if (!this.isOverviewPage()) return;
+
+      // Ждём появления виджета сервисов, чтобы вставить температуру после него
+      this._waitForServicesWidget();
+    }
+
+    _waitForServicesWidget() {
+      const tryInject = () => {
+        // Ищем общий контейнер виджетов или виджет сервисов
+        const widgetsContainer = document.getElementById(
+          "proton-widgets-container"
+        );
+        const servicesWidget = document.getElementById(
+          "proton-services-widget"
+        );
+
+        if (widgetsContainer) {
+          // Если контейнер есть, вставляем в него
+          this._injectWidget(widgetsContainer);
+          return true;
+        } else if (servicesWidget) {
+          // Если виджет сервисов есть, но контейнера нет - используем его родителя
+          this._injectWidget(servicesWidget);
+          return true;
+        }
+        return false;
+      };
+
+      if (tryInject()) return;
+
+      // Наблюдаем за появлением виджета сервисов
+      this._mutationObserver = new MutationObserver(() => {
+        if (tryInject()) {
+          this._mutationObserver.disconnect();
+          this._mutationObserver = null;
+        }
+      });
+
+      const maincontent = document.getElementById("maincontent");
+      if (maincontent) {
+        this._mutationObserver.observe(maincontent, {
+          childList: true,
+          subtree: true,
+        });
+      }
+
+      // Таймаут на случай, если виджет сервисов отключен
+      this._waitTimeout = setTimeout(() => {
+        if (this._mutationObserver) {
+          this._mutationObserver.disconnect();
+          this._mutationObserver = null;
+        }
+        // Если виджет сервисов не появился, создаем контейнер и вставляем температуру
+        if (!document.getElementById("proton-temp-widget")) {
+          const maincontent = document.getElementById("maincontent");
+          if (maincontent) {
+            let widgetsContainer = document.getElementById(
+              "proton-widgets-container"
+            );
+            if (!widgetsContainer) {
+              const insertPoint =
+                maincontent.querySelector("h2") ||
+                maincontent.querySelector("h3") ||
+                maincontent.querySelector(".cbi-map") ||
+                maincontent.firstElementChild;
+              if (insertPoint) {
+                // Создаём секцию с заголовком "Виджеты"
+                const widgetsSection = document.createElement("div");
+                widgetsSection.className = "proton-widgets-section";
+
+                const sectionHeader = document.createElement("div");
+                sectionHeader.className = "proton-widgets-section-header";
+
+                const sectionTitle = document.createElement("h2");
+                sectionTitle.className = "proton-widgets-section-title";
+                sectionTitle.textContent = this._t("Widgets");
+                sectionHeader.appendChild(sectionTitle);
+
+                widgetsSection.appendChild(sectionHeader);
+
+                widgetsContainer = document.createElement("div");
+                widgetsContainer.className = "proton-widgets-container";
+                widgetsContainer.id = "proton-widgets-container";
+                widgetsSection.appendChild(widgetsContainer);
+
+                insertPoint.parentNode.insertBefore(
+                  widgetsSection,
+                  insertPoint
+                );
+              }
+            }
+            if (widgetsContainer) {
+              this._injectWidget(widgetsContainer);
+            }
+          }
+        }
+        this._waitTimeout = null;
+      }, 2000);
+    }
+
+    _injectWidget(referenceElement, insertBefore = false) {
+      if (!referenceElement) {
+        this._log("Cannot inject widget: invalid reference element");
+        return;
+      }
+
+      if (document.getElementById("proton-temp-widget")) {
+        this._mounted = true;
+        return;
+      }
+
+      const widget = document.createElement("div");
+      widget.className = "proton-temp-widget";
+      widget.id = "proton-temp-widget";
+
+      widget.innerHTML = `
+        <div class="proton-temp-header">
+          <h3 class="proton-temp-title">
+            ${this._t("Temperature")}
+          </h3>
+          <div class="proton-temp-info">?
+            <div class="proton-temp-tooltip">
+              <div class="proton-temp-tooltip-title">${this._t(
+                "Temperature Monitor"
+              )}</div>
+              <div class="proton-temp-tooltip-text">
+                ${this._t(
+                  "Thermal sensors monitoring. Colors indicate: green - normal, yellow - warm, orange - hot, red - critical."
+                )}
+              </div>
+              <div class="proton-temp-tooltip-legend">
+                <div class="proton-temp-tooltip-legend-item">
+                  <span class="proton-temp-tooltip-legend-dot normal"></span>
+                  <span>${this._t("Normal")} (&lt; ${
+        this._thresholds.warm
+      }°C)</span>
+                </div>
+                <div class="proton-temp-tooltip-legend-item">
+                  <span class="proton-temp-tooltip-legend-dot warm"></span>
+                  <span>${this._t("Warm")} (${this._thresholds.warm}-${
+        this._thresholds.hot - 1
+      }°C)</span>
+                </div>
+                <div class="proton-temp-tooltip-legend-item">
+                  <span class="proton-temp-tooltip-legend-dot hot"></span>
+                  <span>${this._t("Hot")} (${this._thresholds.hot}-${
+        this._thresholds.critical - 1
+      }°C)</span>
+                </div>
+                <div class="proton-temp-tooltip-legend-item">
+                  <span class="proton-temp-tooltip-legend-dot critical"></span>
+                  <span>${this._t("Critical")} (≥ ${
+        this._thresholds.critical
+      }°C)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="proton-temp-grid" id="proton-temp-grid">
+          <div class="proton-temp-empty">
+            ${this._t("Checking...")}
+          </div>
+        </div>
+      `;
+
+      // Если referenceElement - это контейнер виджетов, добавляем в него
+      if (referenceElement.id === "proton-widgets-container") {
+        referenceElement.appendChild(widget);
+      } else if (referenceElement.parentNode) {
+        // Иначе вставляем после элемента
+        if (insertBefore) {
+          referenceElement.parentNode.insertBefore(widget, referenceElement);
+        } else {
+          referenceElement.parentNode.insertBefore(
+            widget,
+            referenceElement.nextSibling
+          );
+        }
+      }
+
+      this._mounted = true;
+      this._startMonitoring();
+    }
+
+    // Запуск мониторинга температуры
+    _startMonitoring() {
+      // При первой загрузке даем небольшую задержку для инициализации RPC
+      if (this._isFirstLoad) {
+        setTimeout(() => {
+          if (this._mounted) {
+            this._updateTemperatures();
+          }
+        }, 300); // 300ms задержка для первой загрузки
+      } else {
+        // Первоначальное обновление
+        this._updateTemperatures();
+      }
+
+      // Периодическое обновление
+      this._pollInterval = setInterval(() => {
+        if (document.hidden) return;
+        this._updateTemperatures();
+      }, this._pollIntervalMs);
+
+      // Обработка видимости вкладки
+      this._onVisibilityChange = () => {
+        if (!document.hidden && this._mounted) {
+          this._updateTemperatures();
+        }
+      };
+      document.addEventListener("visibilitychange", this._onVisibilityChange);
+    }
+
+    // Получение данных о температуре
+    async _updateTemperatures() {
+      if (!this._mounted) return;
+
+      try {
+        const sensors = await this._fetchSensorData();
+        this._log("Fetched sensors:", sensors);
+
+        if (!sensors || sensors.length === 0) {
+          this._log("No sensors found, attempt:", this._emptyAttempts + 1);
+          this._emptyAttempts++;
+
+          // Если это первая загрузка или еще не достигли максимума попыток - показываем загрузку
+          if (
+            this._isFirstLoad ||
+            this._emptyAttempts < this._maxEmptyAttempts
+          ) {
+            this._renderLoading();
+            // Очищаем старые датчики только если это не первая попытка
+            if (!this._isFirstLoad) {
+              this._sensors = [];
+            }
+            return;
+          }
+
+          // После нескольких попыток показываем "Не найдены"
+          this._log("No sensors found after", this._emptyAttempts, "attempts");
+          this._renderEmpty();
+          this._sensors = [];
+          this._isFirstLoad = false;
+          return;
+        }
+
+        // Датчики найдены - сбрасываем счетчики
+        this._emptyAttempts = 0;
+        this._isFirstLoad = false;
+
+        // Обновляем список датчиков
+        this._sensors = sensors;
+        this._renderSensors();
+      } catch (e) {
+        console.debug("[ProtonTemperatureWidget] Error fetching temps:", e);
+        this._emptyAttempts++;
+
+        // При ошибке на первой загрузке показываем загрузку
+        if (this._isFirstLoad || this._emptyAttempts < this._maxEmptyAttempts) {
+          this._renderLoading();
+          return;
+        }
+
+        // После нескольких ошибок показываем пустое состояние, но не очищаем существующие датчики
+        // чтобы не было мерцания при временных ошибках сети
+        if (this._sensors.length === 0) {
+          this._renderEmpty();
+        }
+      }
+    }
+
+    // Кэшируем RPC-декларации для повторного использования
+    _getRpcMethods() {
+      if (!this._rpcMethods && window.L && L.rpc) {
+        this._log("Initializing RPC methods");
+        this._rpcMethods = {
+          // Наш собственный RPC модуль (требует установки темы)
+          getSensors: L.rpc.declare({
+            object: "luci.proton-temp",
+            method: "getSensors",
+            expect: { sensors: [] },
+          }),
+          // Fallback: стандартный file.list для проверки директорий
+          list: L.rpc.declare({
+            object: "file",
+            method: "list",
+            params: ["path"],
+          }),
+        };
+      }
+      return this._rpcMethods;
+    }
+
+    // Нормализация ответа RPC list - может быть массив или объект с entries
+    _normalizeEntries(result) {
+      if (Array.isArray(result)) {
+        return result;
+      }
+      if (result && Array.isArray(result.entries)) {
+        return result.entries;
+      }
+      return [];
+    }
+
+    // Нормализация ответа RPC read - может быть строка или объект с data
+    _normalizeData(result) {
+      if (typeof result === "string") {
+        return result;
+      }
+      if (result && typeof result.data === "string") {
+        return result.data;
+      }
+      return "";
+    }
+
+    // Получение данных с датчиков через наш ucode RPC модуль
+    async _fetchSensorData() {
+      const sensors = [];
+      this._log("Starting sensor scan...");
+      const rpc = this._getRpcMethods();
+
+      if (!rpc) {
+        console.debug("[ProtonTemperatureWidget] RPC not available");
+        return sensors;
+      }
+
+      try {
+        // Используем наш RPC модуль luci.proton-temp
+        // expect: { sensors: [] } автоматически извлекает поле sensors
+        const result = await L.resolveDefault(rpc.getSensors(), []);
+        this._log("RPC getSensors result:", result);
+
+        // result уже является массивом sensors благодаря expect
+        if (result && Array.isArray(result)) {
+          for (const sensor of result) {
+            if (sensor.temp !== undefined && !isNaN(sensor.temp)) {
+              const tempC = Math.round(sensor.temp / 1000); // милли°C -> °C
+              const peakC =
+                sensor.peak !== undefined
+                  ? Math.round(sensor.peak / 1000)
+                  : tempC;
+              sensors.push({
+                name: sensor.name || "Sensor",
+                temp: tempC,
+                peak: peakC,
+                path: sensor.path || "",
+              });
+            }
+          }
+        }
+
+        // Если наш RPC не вернул данные, пробуем альтернативный метод
+        if (sensors.length === 0) {
+          this._log("No sensors from proton-temp RPC, trying alternative...");
+
+          // Проверяем есть ли thermal zones через file.list
+          const thermalResult = await L.resolveDefault(
+            rpc.list("/sys/class/thermal"),
+            []
+          );
+          const thermalEntries = this._normalizeEntries(thermalResult);
+          this._log("thermal entries (alt):", thermalEntries);
+
+          // Если thermal zones есть но данных нет - значит RPC модуль не установлен
+          if (
+            thermalEntries.some(
+              (e) => e.name && e.name.startsWith("thermal_zone")
+            )
+          ) {
+            this._log(
+              "Thermal zones exist but RPC module not available. Please reinstall theme."
+            );
+          }
+        }
+      } catch (e) {
+        console.debug("[ProtonTemperatureWidget] RPC error:", e);
+      }
+
+      this._log("Final sensors:", sensors);
+      return sensors;
+    }
+
+    // Рендеринг датчиков
+    _renderSensors() {
+      const grid = document.getElementById("proton-temp-grid");
+      if (!grid) return;
+
+      // Проверяем, нужно ли пересоздать карточки
+      const needsRecreate =
+        grid.querySelector(".proton-temp-empty") ||
+        grid.children.length !== this._sensors.length ||
+        // Проверяем, изменились ли пути датчиков (новые датчики или удаленные)
+        Array.from(grid.children).some((child, index) => {
+          const sensor = this._sensors[index];
+          if (!sensor) return true;
+          const cardSensor = child.dataset.sensor;
+          return cardSensor !== (sensor.path || sensor.name);
+        });
+
+      if (needsRecreate) {
+        grid.innerHTML = "";
+        this._sensorElements.clear();
+
+        for (const sensor of this._sensors) {
+          const card = this._createSensorCard(sensor);
+          grid.appendChild(card);
+        }
+      } else {
+        // Обновляем существующие карточки
+        for (const sensor of this._sensors) {
+          this._updateSensorCard(sensor);
+        }
+      }
+    }
+
+    // Создание карточки датчика
+    _createSensorCard(sensor) {
+      const card = document.createElement("div");
+      card.className = "proton-temp-card";
+      card.dataset.sensor = sensor.path || sensor.name;
+
+      const level = this._getTempLevel(sensor.temp);
+      card.dataset.level = level;
+
+      // Используем peak из ответа сервера (хранится на роутере)
+      const peak = sensor.peak || sensor.temp;
+
+      const formattedName = this._formatSensorName(sensor.name);
+      const statusText = this._getTempStatusText(level);
+      const percent = this._getTempPercent(sensor.temp);
+
+      card.innerHTML = `
+        <div class="proton-temp-value-container">
+          <div class="proton-temp-value-wrapper">
+            <span class="proton-temp-value">${sensor.temp}</span>
+            <span class="proton-temp-unit">°C</span>
+          </div>
+          <h4 class="proton-temp-sensor-name" title="${
+            sensor.name
+          }">${formattedName}</h4>
+        </div>
+        <div class="proton-temp-bar-container">
+          <div class="proton-temp-bar" style="width: ${percent}%"></div>
+        </div>
+        <div class="proton-temp-status">
+          <span class="proton-temp-status-dot"></span>
+          <span class="proton-temp-status-text">${statusText}</span>
+          <span class="proton-temp-peak">${this._t("Peak")}: ${peak}°C</span>
+        </div>
+      `;
+
+      // Кэшируем элементы для быстрого обновления
+      this._sensorElements.set(sensor.path || sensor.name, {
+        card: card,
+        value: card.querySelector(".proton-temp-value"),
+        bar: card.querySelector(".proton-temp-bar"),
+        statusText: card.querySelector(".proton-temp-status-text"),
+        peak: card.querySelector(".proton-temp-peak"),
+      });
+
+      return card;
+    }
+
+    // Обновление карточки датчика
+    _updateSensorCard(sensor) {
+      const elements = this._sensorElements.get(sensor.path || sensor.name);
+      if (!elements) return;
+
+      const level = this._getTempLevel(sensor.temp);
+      const statusText = this._getTempStatusText(level);
+      const percent = this._getTempPercent(sensor.temp);
+
+      // Используем peak из ответа сервера
+      const peak = sensor.peak || sensor.temp;
+
+      elements.card.dataset.level = level;
+      elements.value.textContent = sensor.temp;
+      elements.bar.style.width = `${percent}%`;
+      elements.statusText.textContent = statusText;
+      elements.peak.textContent = `${this._t("Peak")}: ${peak}°C`;
+    }
+
+    // Рендеринг состояния загрузки
+    _renderLoading() {
+      const grid = document.getElementById("proton-temp-grid");
+      if (!grid) return;
+
+      // Не перерисовываем, если уже показываем загрузку
+      if (grid.querySelector(".proton-temp-loading")) return;
+
+      grid.innerHTML = `
+        <div class="proton-temp-loading">
+          ${this._t("Checking...")}
+        </div>
+      `;
+    }
+
+    // Рендеринг пустого состояния (датчики не найдены)
+    _renderEmpty() {
+      const grid = document.getElementById("proton-temp-grid");
+      if (!grid) return;
+
+      grid.innerHTML = `
+        <div class="proton-temp-empty">
+          ${this._t("No temperature sensors found")}
+        </div>
+      `;
+    }
+
+    // Остановка виджета
+    stop() {
+      this._mounted = false;
+
+      if (this._pollInterval) {
+        clearInterval(this._pollInterval);
+        this._pollInterval = null;
+      }
+
+      if (this._onVisibilityChange) {
+        document.removeEventListener(
+          "visibilitychange",
+          this._onVisibilityChange
+        );
+        this._onVisibilityChange = null;
+      }
+
+      // Очищаем MutationObserver
+      if (this._mutationObserver) {
+        this._mutationObserver.disconnect();
+        this._mutationObserver = null;
+      }
+
+      // Очищаем таймаут
+      if (this._waitTimeout) {
+        clearTimeout(this._waitTimeout);
+        this._waitTimeout = null;
+      }
+
+      this._sensorElements.clear();
+      // Очищаем пиковые температуры при остановке (опционально - можно оставить для истории)
+      // this._peakTemps.clear();
+    }
+  }
+
+  function initChannelAnalysisEnhancements() {
+    const tryMove = () => {
+      // Ограничиваемся страницей анализа каналов
+      if (!document.querySelector('[id="channel_graph"]')) return false;
+
+      const tabMenu = document.querySelector("ul.cbi-tabmenu");
+      if (!tabMenu) return false;
+
+      const button = document.querySelector(
+        ".cbi-title-section .cbi-title-buttons > button.cbi-button.cbi-button-edit"
+      );
+      if (!button) return false;
+
+      // Уже перемещено
+      if (tabMenu.contains(button)) return true;
+
+      tabMenu.appendChild(button);
+      tabMenu.classList.add("proton-has-tabmenu-button");
+      button.classList.add("proton-tabmenu-refresh");
+
+      // Компактная кнопка: оставляем подсказку/доступность
+      const label =
+        button.textContent && button.textContent.trim()
+          ? button.textContent.trim()
+          : "Обновить данные";
+      button.textContent = "↻";
+      if (!button.getAttribute("title")) button.setAttribute("title", label);
+      if (!button.getAttribute("aria-label"))
+        button.setAttribute("aria-label", label);
+
+      const titleButtons = document.querySelector(
+        ".cbi-title-section .cbi-title-buttons"
+      );
+      if (titleButtons && titleButtons.children.length === 0)
+        titleButtons.remove();
+
+      return true;
+    };
+
+    if (tryMove()) return;
+
+    // LuCI может дорисовывать view асинхронно — ловим появление элементов
+    const root =
+      document.getElementById("view") || document.getElementById("maincontent");
+    if (!root) return;
+
+    const observer = new MutationObserver(() => {
+      if (tryMove()) observer.disconnect();
+    });
+
+    observer.observe(root, { childList: true, subtree: true });
+
+    // Фоллбек: попытка через небольшой таймер
+    setTimeout(() => {
+      tryMove();
+    }, 250);
+  }
+
   // Инициализация
   function initWidget() {
     // Avoid duplicate instances and timers
@@ -1432,12 +2346,37 @@
     window.protonServicesWidget.init();
   }
 
+  // Инициализация виджета температуры
+  function initTemperatureWidget() {
+    // Avoid duplicate instances
+    if (
+      window.protonTemperatureWidget &&
+      window.protonTemperatureWidget._mounted
+    ) {
+      return;
+    }
+    if (
+      window.protonTemperatureWidget &&
+      typeof window.protonTemperatureWidget.stop === "function"
+    ) {
+      window.protonTemperatureWidget.stop();
+    }
+    window.protonTemperatureWidget = new ProtonTemperatureWidget();
+    window.protonTemperatureWidget.init();
+  }
+
   // =====================================================
   // Load Average - Элегантная визуализация
   // =====================================================
 
   // Функция локализации для Load Average
   function t(key) {
+    // Сначала пробуем наш словарь переводов
+    if (window.protonT) {
+      const translated = window.protonT(key);
+      if (translated !== key) return translated;
+    }
+    // Затем LuCI
     if (window.L && L.tr) {
       const translated = L.tr(key);
       if (translated !== key) return translated;
@@ -1700,20 +2639,23 @@
     }
   }
 
+  // Инициализация всех виджетов и обновление видимости секции
+  function initAllWidgets() {
+    initWidget();
+    initTemperatureWidget();
+    initLoadAverageEnhancement();
+    initChannelAnalysisEnhancements();
+    // Отложенно проверяем видимость секции (после инжекта виджетов)
+    setTimeout(updateWidgetsSectionVisibility, 500);
+  }
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-      initWidget();
-      initLoadAverageEnhancement();
-    });
+    document.addEventListener("DOMContentLoaded", initAllWidgets);
   } else {
     if (document.getElementById("maincontent")) {
-      initWidget();
-      initLoadAverageEnhancement();
+      initAllWidgets();
     } else {
-      setTimeout(() => {
-        initWidget();
-        initLoadAverageEnhancement();
-      }, 100);
+      setTimeout(initAllWidgets, 100);
     }
   }
 })();

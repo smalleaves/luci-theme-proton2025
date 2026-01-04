@@ -71,13 +71,10 @@ ok "Removed templates"
 rm -f "/etc/uci-defaults/30_luci-theme-proton2025"
 ok "Removed uci-defaults"
 
-# Remove translations
-for p in "/usr/share/luci/i18n" "/usr/lib/lua/luci/i18n"; do
-    if [ -d "$p" ]; then
-        rm -f "$p"/theme-proton2025.*.lmo 2>/dev/null || true
-    fi
-done
-ok "Removed translations"
+# Remove RPC module and ACL
+rm -f "/usr/share/rpcd/ucode/luci.proton-temp"
+rm -f "/usr/share/rpcd/acl.d/luci-theme-proton2025.json"
+ok "Removed RPC module"
 
 # Clear cache
 info "Clearing cache..."
@@ -87,10 +84,13 @@ ok "Cache cleared"
 
 # Restart services
 info "Restarting LuCI services..."
+if command -v /etc/init.d/rpcd >/dev/null 2>&1; then
+    /etc/init.d/rpcd restart >/dev/null 2>&1 || true
+fi
 if command -v /etc/init.d/uhttpd >/dev/null 2>&1; then
     /etc/init.d/uhttpd restart >/dev/null 2>&1 || true
-    ok "Services restarted"
 fi
+ok "Services restarted"
 
 printf "\n"
 printf "================================================\n"

@@ -147,73 +147,28 @@ install_theme() {
         ok "Installed uci-defaults"
     fi
     
-    install_translations "$EXTRACT_DIR"
+    # Install RPC module for temperature widget
+    if [ -d "$EXTRACT_DIR/root/usr/share/rpcd" ]; then
+        mkdir -p /usr/share/rpcd/acl.d
+        mkdir -p /usr/share/rpcd/ucode
+        if [ -f "$EXTRACT_DIR/root/usr/share/rpcd/ucode/luci.proton-temp" ]; then
+            cp -f "$EXTRACT_DIR/root/usr/share/rpcd/ucode/luci.proton-temp" /usr/share/rpcd/ucode/
+            ok "Installed temperature RPC module"
+        fi
+        if [ -f "$EXTRACT_DIR/root/usr/share/rpcd/acl.d/luci-theme-proton2025.json" ]; then
+            cp -f "$EXTRACT_DIR/root/usr/share/rpcd/acl.d/luci-theme-proton2025.json" /usr/share/rpcd/acl.d/
+            ok "Installed ACL configuration"
+        fi
+    fi
+    
+    install_translations
 }
 
 # Install translations
 install_translations() {
-    EXTRACT_DIR="$1"
-    PO_DIR="$EXTRACT_DIR/po"
-    
-    I18N_DIR=""
-    for p in "/usr/share/luci/i18n" "/usr/lib/lua/luci/i18n"; do
-        if [ -d "$p" ]; then
-            I18N_DIR="$p"
-            break
-        fi
-    done
-    
-    if [ -z "$I18N_DIR" ]; then
-        I18N_DIR="/usr/share/luci/i18n"
-        mkdir -p "$I18N_DIR"
-    fi
-    
-    # Download precompiled translations from latest release
-    info "Downloading precompiled translations..."
-    RELEASE_URL="https://github.com/ChesterGoodiny/luci-theme-proton2025/releases/latest/download"
-    TRANSLATIONS_INSTALLED=0
-    
-    if [ -d "$PO_DIR" ]; then
-        for lang_dir in "$PO_DIR"/*/; do
-            if [ -d "$lang_dir" ]; then
-                lang=$(basename "$lang_dir")
-                if [ "$lang" != "templates" ]; then
-                    lmo_file="$I18N_DIR/theme-proton2025.$lang.lmo"
-                    lmo_url="$RELEASE_URL/theme-proton2025.$lang.lmo"
-                    
-                    # Try downloading
-                    DOWNLOAD_SUCCESS=0
-                    if [ "$DOWNLOADER" = "wget" ]; then
-                        if wget -q --no-check-certificate -O "$lmo_file" "$lmo_url" 2>/dev/null; then
-                            DOWNLOAD_SUCCESS=1
-                        fi
-                    else
-                        if curl -fsSL -o "$lmo_file" "$lmo_url" 2>/dev/null; then
-                            DOWNLOAD_SUCCESS=1
-                        fi
-                    fi
-                    
-                    # Verify file size (valid .lmo should be > 100 bytes)
-                    if [ "$DOWNLOAD_SUCCESS" -eq 1 ] && [ -f "$lmo_file" ]; then
-                        FILE_SIZE=$(stat -f%z "$lmo_file" 2>/dev/null || stat -c%s "$lmo_file" 2>/dev/null || echo 0)
-                        if [ "$FILE_SIZE" -gt 100 ]; then
-                            ok "Installed $lang translation"
-                            TRANSLATIONS_INSTALLED=$((TRANSLATIONS_INSTALLED + 1))
-                        else
-                            rm -f "$lmo_file"
-                        fi
-                    fi
-                fi
-            fi
-        done
-    fi
-    
-    if [ "$TRANSLATIONS_INSTALLED" -eq 0 ]; then
-        warn "Failed to download translations from GitHub Releases"
-        warn "Theme will work, but only in English"
-        warn "To get translations: install IPK package instead"
-        warn "  https://github.com/ChesterGoodiny/luci-theme-proton2025/releases/latest"
-    fi
+    # Translations are now embedded in JavaScript (translations.js)
+    # No need to download separate .lmo files
+    ok "Translations included in theme files"
 }
 
 # Register theme
@@ -229,6 +184,12 @@ register_theme() {
         uci set luci.main.mediaurlbase="/luci-static/$THEME_NAME"
         uci commit luci
         ok "Set as default theme"
+    fi
+    
+    # Restart rpcd to load temperature RPC module
+    if [ -x /etc/init.d/rpcd ]; then
+        /etc/init.d/rpcd restart 2>/dev/null || true
+        ok "Restarted rpcd service"
     fi
 }
 

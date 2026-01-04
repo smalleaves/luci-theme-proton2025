@@ -1,6 +1,52 @@
 "use strict";
 "require baseclass";
 "require ui";
+"require dom";
+
+var defined_E =
+  typeof E !== "undefined"
+    ? E
+    : function (tag, attr, children) {
+        return dom.create(tag, attr, children);
+      };
+
+// Helper function for translations - проверяем каждый раз при вызове
+var translate = function (s) {
+  if (!s) return s;
+
+  // 1. Используем L.tr() из LuCI (основной способ для меню)
+  if (window.L && typeof window.L.tr === "function") {
+    try {
+      const translated = window.L.tr(s);
+      // L.tr() возвращает переведенный текст или оригинал, если перевод не найден
+      if (translated && translated !== s) {
+        return translated;
+      }
+    } catch (e) {
+      // Игнорируем ошибки
+    }
+  }
+
+  // 2. Используем глобальную функцию _() из LuCI если доступна
+  if (typeof window._ !== "undefined" && typeof window._ === "function") {
+    try {
+      const translated = window._(s);
+      // Проверяем, что это не просто заглушка (которая вернет оригинал)
+      if (translated && translated !== s) {
+        return translated;
+      }
+    } catch (e) {
+      // Игнорируем ошибки
+    }
+  }
+
+  // 3. Возвращаем оригинал если переводы недоступны
+  return s;
+};
+
+// Use safe wrappers
+var E = defined_E;
+var _ = translate;
 
 return baseclass.extend({
   __init__() {
@@ -21,17 +67,23 @@ return baseclass.extend({
   loadAndApplyThemeSettings() {
     const defaultZoom = "100";
     const settings = {
-      accentColor: localStorage.getItem("proton-accent-color") || "default",
+      themeMode: localStorage.getItem("proton-theme-mode") || "dark",
+      accentColor: localStorage.getItem("proton-accent-color") || "blue",
       borderRadius: localStorage.getItem("proton-border-radius") || "default",
       zoom: localStorage.getItem("proton-zoom") || defaultZoom,
       animations: localStorage.getItem("proton-animations") !== "false",
       transparency: localStorage.getItem("proton-transparency") !== "false",
       servicesWidget:
         localStorage.getItem("proton-services-widget-enabled") !== "false",
+      temperatureWidget:
+        localStorage.getItem("proton-temp-widget-enabled") !== "false",
       servicesGrouped:
         localStorage.getItem("proton-services-grouped") === "true",
       servicesLog: localStorage.getItem("proton-services-log") === "true",
     };
+
+    // Apply theme mode
+    document.documentElement.setAttribute("data-theme", settings.themeMode);
 
     this.applyThemeSettings(settings);
   },
@@ -689,14 +741,107 @@ return baseclass.extend({
   },
 
   /**
-   * Wireless actions dropdown menu (⋮) for desktop
+   * WiFi frequency detection based on real data from radio rows
+   * Adds data-freq attribute to wifinet rows for CSS styling
+   */
+  markWifiFrequencies() {
+    const wirelessTable = document.querySelector("#cbi-wireless");
+    if (!wirelessTable) return;
+
+    // Map to store radio frequencies: radio0 -> "2.4", radio1 -> "5", etc.
+    const radioFreqMap = new Map();
+
+    // Step 1: Parse radio rows to get their frequencies
+    const radioRows = wirelessTable.querySelectorAll(
+      'tr[data-section-id^="radio"]'
+    );
+    radioRows.forEach((row) => {
+      const radioId = row.getAttribute("data-section-id"); // e.g., "radio0"
+      const text = row.textContent || "";
+
+      // Detect frequency from text content
+      // 2.4 GHz: "2.412 GHz", "2.437 ГГц", "Channel 1 (2412 MHz)", etc.
+      // 5 GHz: "5.180 GHz", "5.745 ГГц", "Channel 36 (5180 MHz)", etc.
+      // 6 GHz: "6.xxx GHz", etc.
+
+      let freq = null;
+      if (
+        /\b2[.,]\d{3}\s*(ГГц|GHz|MHz)/i.test(text) ||
+        /\b24[0-4]\d\s*MHz/i.test(text)
+      ) {
+        freq = "2.4";
+      } else if (
+        /\b5[.,]\d{3}\s*(ГГц|GHz|MHz)/i.test(text) ||
+        /\b5[0-9]{3}\s*MHz/i.test(text)
+      ) {
+        freq = "5";
+      } else if (
+        /\b6[.,]\d{3}\s*(ГГц|GHz|MHz)/i.test(text) ||
+        /\b6[0-9]{3}\s*MHz/i.test(text)
+      ) {
+        freq = "6";
+      }
+
+      if (freq && radioId) {
+        radioFreqMap.set(radioId, freq);
+        row.setAttribute("data-freq", freq);
+      }
+    });
+
+    // Step 2: Assign frequencies to wifinet rows based on their parent radio
+    const wifinetRows = wirelessTable.querySelectorAll(
+      'tr[data-section-id^="wifinet"]'
+    );
+    wifinetRows.forEach((row) => {
+      // Skip if already processed
+      if (row.hasAttribute("data-freq")) return;
+
+      // Find parent radio by looking at preceding rows or DOM structure
+      // Method 1: Check the section structure - wifinet rows are usually after their radio
+      let currentRow = row.previousElementSibling;
+      let parentRadio = null;
+
+      while (currentRow) {
+        const sectionId = currentRow.getAttribute("data-section-id");
+        if (sectionId && sectionId.startsWith("radio")) {
+          parentRadio = sectionId;
+          break;
+        }
+        // If we hit another wifinet, continue searching up
+        if (sectionId && sectionId.startsWith("wifinet")) {
+          currentRow = currentRow.previousElementSibling;
+          continue;
+        }
+        currentRow = currentRow.previousElementSibling;
+      }
+
+      // Method 2: Check row's own data attributes if available
+      if (!parentRadio) {
+        // Sometimes LuCI stores device info in data attributes or nested elements
+        const deviceCell = row.querySelector('[data-name="_badge"]');
+        if (deviceCell) {
+          const badgeText = deviceCell.textContent || "";
+          // Look for "radio0", "radio1" in the badge
+          const radioMatch = badgeText.match(/radio(\d+)/i);
+          if (radioMatch) {
+            parentRadio = "radio" + radioMatch[1];
+          }
+        }
+      }
+
+      // Apply frequency from parent radio
+      if (parentRadio && radioFreqMap.has(parentRadio)) {
+        row.setAttribute("data-freq", radioFreqMap.get(parentRadio));
+      }
+    });
+  },
+
+  /**
+   * Wireless actions dropdown menu (⋮)
    * Converts action buttons in #cbi-wireless into a compact dropdown
    */
   setupWirelessActionsDropdown() {
     const installDropdowns = () => {
-      // Only on desktop
-      if (window.innerWidth <= 800) return;
-
       const wirelessSection = document.querySelector("#cbi-wireless");
       if (!wirelessSection) return;
 
@@ -795,6 +940,8 @@ return baseclass.extend({
     // Run on DOM changes (for dynamic content like LuCI updates)
     const observer = new MutationObserver(() => {
       setTimeout(installDropdowns, 150);
+      // Also update WiFi frequencies when table changes
+      this.markWifiFrequencies();
     });
 
     const wirelessContainer =
@@ -803,98 +950,130 @@ return baseclass.extend({
       childList: true,
       subtree: true,
     });
+
+    // Initial frequency marking
+    setTimeout(() => this.markWifiFrequencies(), 350);
   },
 
   initThemeSettings() {
     // Only run on System settings page
     if (!document.body.dataset.page?.includes("admin-system-system")) return;
 
-    // Wait for page to fully render
-    setTimeout(() => {
+    // Ensure we attach only once per page
+    if (this._themeSettingsInit) return;
+    this._themeSettingsInit = true;
+
+    const tryMount = () => {
+      if (document.getElementById("proton-theme-settings")) return true;
       const designField = document.querySelector('[data-name="_mediaurlbase"]');
-      if (!designField) return;
+      if (!designField) return false;
 
       // Get the parent container
       const parentContainer = designField.closest(".cbi-section-node");
-      if (!parentContainer) return;
-
-      // Check if theme settings already exist
-      if (document.getElementById("proton-theme-settings")) return;
+      if (!parentContainer) return false;
 
       // Load saved settings
       const defaultZoom = "100";
       const settings = {
-        accentColor: localStorage.getItem("proton-accent-color") || "default",
+        themeMode: localStorage.getItem("proton-theme-mode") || "dark",
+        accentColor: localStorage.getItem("proton-accent-color") || "blue",
         borderRadius: localStorage.getItem("proton-border-radius") || "default",
         zoom: parseInt(localStorage.getItem("proton-zoom") || defaultZoom),
         animations: localStorage.getItem("proton-animations") !== "false",
         transparency: localStorage.getItem("proton-transparency") !== "false",
         servicesWidget:
           localStorage.getItem("proton-services-widget-enabled") !== "false",
+        temperatureWidget:
+          localStorage.getItem("proton-temp-widget-enabled") !== "false",
         servicesGrouped:
           localStorage.getItem("proton-services-grouped") === "true",
         servicesLog: localStorage.getItem("proton-services-log") === "true",
       };
 
+      // Helper function for translations
+      const t = (key) => (window.protonT ? window.protonT(key) : key);
+
       // Create theme settings HTML
       const settingsHTML = `
         <div id="proton-theme-settings" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
-          <h4 style="margin: 0 0 1rem 0; font-size: 0.95rem; font-weight: 600; color: var(--proton-accent); opacity: 0.9;">${_(
+          <h4 style="margin: 0 0 1rem 0; font-size: 0.95rem; font-weight: 600; color: var(--proton-accent); opacity: 0.9;">${t(
             "Proton2025 Theme Settings"
           )}</h4>
           
-          <div class="cbi-value" style="margin-bottom: 1rem;">
-            <label class="cbi-value-title" for="proton-accent-select">${_(
+          <div class="cbi-value">
+            <label class="cbi-value-title" for="proton-mode-select">${t(
+              "Theme Mode"
+            )}</label>
+            <div class="cbi-value-field">
+              <select id="proton-mode-select" class="cbi-input-select">
+                <option value="dark" ${
+                  settings.themeMode === "dark" ? "selected" : ""
+                }>${t("Dark")} (${t("Default")})</option>
+                <option value="light" ${
+                  settings.themeMode === "light" ? "selected" : ""
+                }>${t("Light")}</option>
+              </select>
+              <div class="cbi-value-description">${t(
+                "Choose light or dark theme"
+              )}</div>
+            </div>
+          </div>
+
+          <div class="cbi-value">
+            <label class="cbi-value-title" for="proton-accent-select">${t(
               "Accent Color"
             )}</label>
             <div class="cbi-value-field">
               <select id="proton-accent-select" class="cbi-input-select">
                 <option value="default" ${
                   settings.accentColor === "default" ? "selected" : ""
-                }>${_("Blue")} (${_("Default")})</option>
+                }>${t("Neutral")}</option>
+                <option value="blue" ${
+                  settings.accentColor === "blue" ? "selected" : ""
+                }>${t("Blue")} (${t("Default")})</option>
                 <option value="purple" ${
                   settings.accentColor === "purple" ? "selected" : ""
-                }>${_("Purple")}</option>
+                }>${t("Purple")}</option>
                 <option value="green" ${
                   settings.accentColor === "green" ? "selected" : ""
-                }>${_("Green")}</option>
+                }>${t("Green")}</option>
                 <option value="orange" ${
                   settings.accentColor === "orange" ? "selected" : ""
-                }>${_("Orange")}</option>
+                }>${t("Orange")}</option>
                 <option value="red" ${
                   settings.accentColor === "red" ? "selected" : ""
-                }>${_("Red")}</option>
+                }>${t("Red")}</option>
               </select>
-              <div class="cbi-value-description">${_(
+              <div class="cbi-value-description">${t(
                 "Choose theme accent color"
               )}</div>
             </div>
           </div>
 
-          <div class="cbi-value" style="margin-bottom: 1rem;">
-            <label class="cbi-value-title" for="proton-radius-select">${_(
+          <div class="cbi-value">
+            <label class="cbi-value-title" for="proton-radius-select">${t(
               "Border Radius"
             )}</label>
             <div class="cbi-value-field">
               <select id="proton-radius-select" class="cbi-input-select">
                 <option value="sharp" ${
                   settings.borderRadius === "sharp" ? "selected" : ""
-                }>${_("Sharp")}</option>
+                }>${t("Sharp")}</option>
                 <option value="default" ${
                   settings.borderRadius === "default" ? "selected" : ""
-                }>${_("Rounded")} (${_("Default")})</option>
+                }>${t("Rounded")} (${t("Default")})</option>
                 <option value="extra" ${
                   settings.borderRadius === "extra" ? "selected" : ""
-                }>${_("Extra Rounded")}</option>
+                }>${t("Extra Rounded")}</option>
               </select>
-              <div class="cbi-value-description">${_(
+              <div class="cbi-value-description">${t(
                 "Corner rounding style"
               )}</div>
             </div>
           </div>
 
-          <div class="cbi-value" style="margin-bottom: 1rem;">
-            <label class="cbi-value-title" for="proton-zoom-range">${_(
+          <div class="cbi-value">
+            <label class="cbi-value-title" for="proton-zoom-range">${t(
               "Zoom"
             )} <span id="proton-zoom-value">${settings.zoom}%</span></label>
             <div class="cbi-value-field">
@@ -904,18 +1083,18 @@ return baseclass.extend({
                   settings.zoom
                 }" style="flex: 1; accent-color: var(--proton-accent);">
                 <button type="button" id="proton-zoom-plus" class="cbi-button" style="padding: 0.4rem 0.8rem; min-width: auto;">+</button>
-                <button type="button" id="proton-zoom-reset" class="cbi-button" style="padding: 0.4rem 0.8rem; min-width: auto;">${_(
+                <button type="button" id="proton-zoom-reset" class="cbi-button" style="padding: 0.4rem 0.8rem; min-width: auto;">${t(
                   "Reset"
                 )}</button>
               </div>
-              <div class="cbi-value-description">${_(
+              <div class="cbi-value-description">${t(
                 "Interface scale"
               )} (75% - 150%)</div>
             </div>
           </div>
 
-          <div class="cbi-value" style="margin-bottom: 1rem;">
-            <label class="cbi-value-title" for="proton-animations-check">${_(
+          <div class="cbi-value">
+            <label class="cbi-value-title" for="proton-animations-check">${t(
               "Animations"
             )}</label>
             <div class="cbi-value-field">
@@ -925,14 +1104,14 @@ return baseclass.extend({
                 }>
                 <label for="proton-animations-check"></label>
               </div>
-              <div class="cbi-value-description">${_(
+              <div class="cbi-value-description">${t(
                 "Enable smooth transitions and effects"
               )}</div>
             </div>
           </div>
 
-          <div class="cbi-value" style="margin-bottom: 1rem;">
-            <label class="cbi-value-title" for="proton-transparency-check">${_(
+          <div class="cbi-value">
+            <label class="cbi-value-title" for="proton-transparency-check">${t(
               "Transparency"
             )}</label>
             <div class="cbi-value-field">
@@ -942,14 +1121,14 @@ return baseclass.extend({
                 }>
                 <label for="proton-transparency-check"></label>
               </div>
-              <div class="cbi-value-description">${_(
+              <div class="cbi-value-description">${t(
                 "Enable blur and transparency effects"
               )}</div>
             </div>
           </div>
 
           <div class="cbi-value">
-            <label class="cbi-value-title" for="proton-services-widget-check">${_(
+            <label class="cbi-value-title" for="proton-services-widget-check">${t(
               "Services Widget"
             )}</label>
             <div class="cbi-value-field">
@@ -959,14 +1138,31 @@ return baseclass.extend({
                 }>
                 <label for="proton-services-widget-check"></label>
               </div>
-              <div class="cbi-value-description">${_(
+              <div class="cbi-value-description">${t(
                 "Show services monitor on Overview page"
               )}</div>
             </div>
           </div>
 
           <div class="cbi-value">
-            <label class="cbi-value-title" for="proton-services-grouped-check">${_(
+            <label class="cbi-value-title" for="proton-temp-widget-check">${t(
+              "Temperature Widget"
+            )}</label>
+            <div class="cbi-value-field">
+              <div class="cbi-checkbox">
+                <input id="proton-temp-widget-check" type="checkbox" ${
+                  settings.temperatureWidget ? "checked" : ""
+                }>
+                <label for="proton-temp-widget-check"></label>
+              </div>
+              <div class="cbi-value-description">${t(
+                "Show temperature monitor on Overview page"
+              )}</div>
+            </div>
+          </div>
+
+          <div class="cbi-value">
+            <label class="cbi-value-title" for="proton-services-grouped-check">${t(
               "Group Services"
             )}</label>
             <div class="cbi-value-field">
@@ -976,14 +1172,14 @@ return baseclass.extend({
                 }>
                 <label for="proton-services-grouped-check"></label>
               </div>
-              <div class="cbi-value-description">${_(
+              <div class="cbi-value-description">${t(
                 "Group services by category in widget"
               )}</div>
             </div>
           </div>
 
-          <div class="cbi-value" style="margin-bottom: 0;">
-            <label class="cbi-value-title" for="proton-services-log-check">${_(
+          <div class="cbi-value">
+            <label class="cbi-value-title" for="proton-services-log-check">${t(
               "Widget Log"
             )}</label>
             <div class="cbi-value-field">
@@ -993,7 +1189,7 @@ return baseclass.extend({
                 }>
                 <label for="proton-services-log-check"></label>
               </div>
-              <div class="cbi-value-description">${_(
+              <div class="cbi-value-description">${t(
                 "Show activity log under the widget"
               )}</div>
             </div>
@@ -1008,6 +1204,7 @@ return baseclass.extend({
       this.applyThemeSettings(settings);
 
       // Add event listeners
+      const modeSelect = document.getElementById("proton-mode-select");
       const accentSelect = document.getElementById("proton-accent-select");
       const radiusSelect = document.getElementById("proton-radius-select");
       const fontsizeSelect = document.getElementById("proton-fontsize-select");
@@ -1017,6 +1214,12 @@ return baseclass.extend({
       const transparencyCheck = document.getElementById(
         "proton-transparency-check"
       );
+
+      modeSelect?.addEventListener("change", (e) => {
+        const mode = e.target.value;
+        localStorage.setItem("proton-theme-mode", mode);
+        document.documentElement.setAttribute("data-theme", mode);
+      });
 
       accentSelect?.addEventListener("change", (e) => {
         const color = e.target.value;
@@ -1036,12 +1239,32 @@ return baseclass.extend({
       const zoomPlus = document.getElementById("proton-zoom-plus");
       const zoomReset = document.getElementById("proton-zoom-reset");
 
+      // Update slider fill (progress indicator)
+      const updateSliderFill = (slider) => {
+        if (!slider) return;
+        const min = parseFloat(slider.min) || 0;
+        const max = parseFloat(slider.max) || 100;
+        const val = parseFloat(slider.value) || 0;
+        const percent = ((val - min) / (max - min)) * 100;
+        const isLight =
+          document.documentElement.getAttribute("data-theme") === "light";
+        const fillColor = isLight ? "#4a8fe7" : "#5e9eff";
+        const trackColor = isLight
+          ? "rgba(0,0,0,0.12)"
+          : "rgba(255,255,255,0.05)";
+        slider.style.background = `linear-gradient(to right, ${fillColor} 0%, ${fillColor} ${percent}%, ${trackColor} ${percent}%, ${trackColor} 100%)`;
+      };
+
+      // Initial fill update
+      if (zoomRange) updateSliderFill(zoomRange);
+
       const updateZoom = (displayValue) => {
         displayValue = Math.max(75, Math.min(150, parseInt(displayValue)));
         zoomRange.value = displayValue;
         zoomValue.textContent = displayValue + "%";
         localStorage.setItem("proton-zoom", displayValue);
         this.applyZoom(displayValue);
+        updateSliderFill(zoomRange);
       };
 
       zoomRange?.addEventListener("input", (e) => updateZoom(e.target.value));
@@ -1082,6 +1305,23 @@ return baseclass.extend({
         }
       });
 
+      const tempWidgetCheck = document.getElementById(
+        "proton-temp-widget-check"
+      );
+      tempWidgetCheck?.addEventListener("change", (e) => {
+        const enabled = e.target.checked;
+        localStorage.setItem("proton-temp-widget-enabled", enabled);
+        // Показываем уведомление о применении
+        const msg = enabled
+          ? _("Temperature widget enabled. Visit Status → Overview to see it.")
+          : _("Temperature widget disabled.");
+        if (typeof L !== "undefined" && L.ui && L.ui.addNotification) {
+          L.ui.addNotification(null, E("p", msg), "info");
+        } else {
+          alert(msg);
+        }
+      });
+
       const servicesGroupedCheck = document.getElementById(
         "proton-services-grouped-check"
       );
@@ -1111,7 +1351,21 @@ return baseclass.extend({
           logEl.style.display = enabled ? "" : "none";
         }
       });
-    }, 500);
+
+      return true;
+    };
+
+    // Fallbacks: immediate + delayed attempts + observer for dynamic LuCI renders
+    const root = document.getElementById("maincontent") || document.body;
+    const observer = new MutationObserver(() => {
+      if (tryMount()) observer.disconnect();
+    });
+    observer.observe(root, { childList: true, subtree: true });
+
+    // Immediate and delayed attempts
+    tryMount();
+    setTimeout(tryMount, 300);
+    setTimeout(tryMount, 800);
   },
 
   applyThemeSettings(settings) {
@@ -1125,15 +1379,45 @@ return baseclass.extend({
 
   applyAccentColor(color) {
     const colors = {
-      default: "#5e9eff",
-      purple: "#a78bfa",
-      green: "#34d399",
-      orange: "#fb923c",
-      red: "#f87171",
+      default: {
+        accent: "#4b5563",
+        hover: "#374151",
+        glow: "rgba(75, 85, 99, 0.22)",
+      },
+      blue: {
+        accent: "#5e9eff",
+        hover: "#7db2ff",
+        glow: "rgba(94, 158, 255, 0.18)",
+      },
+      purple: {
+        accent: "#a78bfa",
+        hover: "#c3b4ff",
+        glow: "rgba(167, 139, 250, 0.22)",
+      },
+      green: {
+        accent: "#34d399",
+        hover: "#2fb885",
+        glow: "rgba(52, 211, 153, 0.18)",
+      },
+      orange: {
+        accent: "#fb923c",
+        hover: "#f47c1f",
+        glow: "rgba(251, 146, 60, 0.20)",
+      },
+      red: {
+        accent: "#f87171",
+        hover: "#f04c4c",
+        glow: "rgba(248, 113, 113, 0.20)",
+      },
     };
 
-    const accentColor = colors[color] || colors.default;
-    document.documentElement.style.setProperty("--proton-accent", accentColor);
+    const c = colors[color] || colors.default;
+    document.documentElement.style.setProperty("--proton-accent", c.accent);
+    document.documentElement.style.setProperty(
+      "--proton-accent-hover",
+      c.hover
+    );
+    document.documentElement.style.setProperty("--proton-accent-glow", c.glow);
   },
 
   applyBorderRadius(radius) {

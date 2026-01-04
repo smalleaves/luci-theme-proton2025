@@ -22,7 +22,7 @@
     /* Accent Colors */
     --proton-accent: #5e9eff;
     --proton-accent-hover: #7db2ff;
-    --proton-accent-glow: rgba(94, 158, 255, 0.15);
+    --proton-accent-glow: rgba(94, 158, 255, 0.18);
 
     /* Status Colors */
     --proton-success: #6bcf7f;
@@ -58,6 +58,107 @@
 }
 
 /* =====================================================
+   CSS Variables - Proton Light Theme
+   ===================================================== */
+:root[data-theme="light"] {
+    /* Primary Colors - Elegant Light */
+    --proton-bg: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    --proton-bg-solid: #ffffff;
+    --proton-bg-secondary: rgba(0, 0, 0, 0.03);
+    --proton-bg-tertiary: rgba(0, 0, 0, 0.02);
+    --proton-bg-hover: rgba(0, 0, 0, 0.06);
+
+    /* Text Colors */
+    --proton-fg: #1a1d29;
+    --proton-fg-secondary: #4a5568;
+    --proton-muted: #5a6270;
+
+    /* Accent Colors - Neutral default */
+    --proton-accent: #4b5563;
+    --proton-accent-hover: #374151;
+    --proton-accent-glow: rgba(75, 85, 99, 0.22);
+
+    /* Status Colors - Darker for better contrast */
+    --proton-success: #38a169;
+    --proton-warning: #c05621;
+    --proton-danger: #e53e3e;
+
+    /* Borders & Shadows */
+    --proton-border: rgba(0, 0, 0, 0.12);
+    --proton-border-light: rgba(0, 0, 0, 0.06);
+    --proton-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    --proton-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --proton-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+    --proton-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+
+    /* Legacy compatibility */
+    --main-bright-color: #4b5563;
+    --main-dark-color: #ffffff;
+    --secondary-bright-color: #1a1d29;
+    --secondary-dark-color: #f8f9fa;
+
+    color-scheme: light;
+}
+
+/* =====================================================
+   Light Theme Global Text Color Override
+   Override hardcoded #fff to dark text in light mode
+   ===================================================== */
+:root[data-theme="light"] .cbi-button-positive,
+:root[data-theme="light"] .cbi-button-apply,
+:root[data-theme="light"] .cbi-button-action,
+:root[data-theme="light"] .cbi-button-add,
+:root[data-theme="light"] #view>.controls .cbi-button-positive,
+:root[data-theme="light"] #view>.controls .cbi-button-action,
+:root[data-theme="light"] #packages .cbi-button-action,
+:root[data-theme="light"] #packages .cbi-button-positive,
+:root[data-theme="light"] #cbi-wireless tr[data-freq] td[data-name="_badge"] .ifacebadge::after,
+:root[data-theme="light"] .cbi-dynlist>.item::after,
+:root[data-theme="light"] .ifacebox-head.active,
+:root[data-theme="light"] #view>.controls label:has(input[type="radio"]:checked) {
+    color: #fff;
+}
+
+/* Light Theme - Package Manager Improvements */
+:root[data-theme="light"] #view>.controls:first-of-type {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+:root[data-theme="light"] #view>.controls .cbi-progressbar {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.01) 100%) !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+:root[data-theme="light"] #view>.controls .cbi-progressbar>div {
+    box-shadow: 0 0 20px rgba(74, 143, 231, 0.35);
+}
+
+:root[data-theme="light"] #view>.controls .control-group input[type="text"] {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme="light"] #view>.controls .control-group input[type="text"]:focus {
+    background: #ffffff !important;
+    box-shadow: 0 0 0 3px var(--proton-accent-glow), 0 4px 12px rgba(74, 143, 231, 0.2) !important;
+}
+
+:root[data-theme="light"] #packages .tr:hover {
+    box-shadow: -4px 0 0 var(--proton-accent), 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme="light"] #view>.controls .btn,
+:root[data-theme="light"] #view>.controls button {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+:root[data-theme="light"] #view>.controls .btn:hover,
+:root[data-theme="light"] #view>.controls button:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+/* =====================================================
    Base Reset & Typography
    ===================================================== */
 * {
@@ -71,7 +172,7 @@ html {
     width: 100%;
     font-size: 16px;
     -webkit-text-size-adjust: none;
-    color-scheme: dark;
+    color-scheme: inherit;
 }
 
 body {
@@ -91,6 +192,14 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: 0.01em;
+}
+
+/* Light theme background gradients */
+:root[data-theme="light"] body {
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(74, 143, 231, 0.04) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(72, 187, 120, 0.03) 0%, transparent 50%),
+        var(--proton-bg);
 }
 
 /* Center the initial LuCI "Loading view…" placeholder as early as possible */
@@ -153,6 +262,10 @@ a:active {
     padding: 0;
 }
 
+:root[data-theme="light"] #menubar {
+    background: rgba(255, 255, 255, 0.92);
+}
+
 #menubar-inner {
     display: flex;
     align-items: center;
@@ -191,6 +304,20 @@ a:active {
     transform: scale(1.02);
 }
 
+:root[data-theme="light"] #menubar-inner .hostname a {
+    color: #1a1d29;
+}
+
+:root[data-theme="light"] #menubar-inner .hostname a:hover {
+    color: #f47c1f;
+}
+
+#menubar-inner .hostname a:focus-visible {
+    outline: 2px solid #f47c1f;
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+
 #menubar .distversion {
     color: var(--proton-muted);
     font-size: 0.85rem;
@@ -220,6 +347,10 @@ a:active {
 
 #indicators>*:hover {
     background: rgba(94, 158, 255, 0.25);
+}
+
+:root[data-theme="light"] #indicators>*:hover {
+    background: rgba(74, 143, 231, 0.2);
 }
 
 /* Avoid global link lift effect in header/menu */
@@ -281,7 +412,7 @@ a:active {
 #mainmenu {
     width: 240px;
     flex-shrink: 0;
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--proton-bg-secondary);
     border-right: 1px solid var(--proton-border);
     padding: 16px 0;
     overflow-y: auto;
@@ -352,11 +483,13 @@ a:active {
 
 #mainmenu .mainmenu.l2>li>a:hover {
     color: var(--proton-fg);
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--proton-bg-secondary);
 }
 
 #mainmenu .mainmenu.l2>li.selected>a {
     color: var(--proton-accent);
+    background: var(--proton-accent-glow);
+    opacity: 0.7;
     font-weight: 500;
 }
 
@@ -369,8 +502,10 @@ a:active {
     max-width: var(--proton-page-max-width);
     margin: 0 auto;
     padding: 24px var(--proton-page-gutter);
+    padding-bottom: 120px;
     min-width: 0;
     overflow-x: auto;
+    overflow-y: visible;
     animation: fadeIn 0.4s ease-out;
 }
 
@@ -511,7 +646,7 @@ button+button, .btn+.btn, .cbi-button+.cbi-button {
     padding: 8px 16px;
     border: 1px solid var(--proton-border);
     border-radius: var(--proton-radius-sm);
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--proton-bg-tertiary);
     color: var(--proton-fg);
     font-size: 13px;
     font-weight: 500;
@@ -521,11 +656,22 @@ button+button, .btn+.btn, .cbi-button+.cbi-button {
     transform: none;
 }
 
+:root[data-theme="light"] .cbi-button {
+    background: rgba(0, 0, 0, 0.04);
+    color: #374151;
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
 .cbi-button:hover {
-    background: rgba(255, 255, 255, 0.06);
+    background: var(--proton-bg-hover);
     border-color: var(--proton-accent);
     box-shadow: none;
     transform: none;
+}
+
+:root[data-theme="light"] .cbi-button:hover {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: var(--proton-accent);
 }
 
 .cbi-button-apply, .cbi-button-positive {
@@ -534,9 +680,24 @@ button+button, .btn+.btn, .cbi-button+.cbi-button {
     color: #fff;
 }
 
+:root[data-theme="light"] .cbi-button-apply,
+:root[data-theme="light"] .cbi-button-positive {
+    background: var(--proton-success);
+    border-color: var(--proton-success);
+    color: #fff;
+}
+
 .cbi-button-apply:hover, .cbi-button-positive:hover {
-    background: rgba(52, 211, 153, 0.9);
-    border-color: rgba(52, 211, 153, 0.9);
+    background: var(--proton-success);
+    border-color: var(--proton-success);
+    opacity: 0.9;
+}
+
+:root[data-theme="light"] .cbi-button-apply:hover,
+:root[data-theme="light"] .cbi-button-positive:hover {
+    background: #2f855a;
+    border-color: #2f855a;
+    opacity: 1;
 }
 
 .cbi-button-remove, .cbi-button-negative {
@@ -545,15 +706,35 @@ button+button, .btn+.btn, .cbi-button+.cbi-button {
     color: var(--proton-danger);
 }
 
+:root[data-theme="light"] .cbi-button-remove,
+:root[data-theme="light"] .cbi-button-negative {
+    background: rgba(245, 101, 101, 0.15);
+    border-color: rgba(245, 101, 101, 0.4);
+    color: #c53030;
+}
+
 .cbi-button-remove:hover, .cbi-button-negative:hover {
     background: rgba(255, 107, 107, 0.2);
     border-color: var(--proton-danger);
+}
+
+:root[data-theme="light"] .cbi-button-remove:hover,
+:root[data-theme="light"] .cbi-button-negative:hover {
+    background: rgba(245, 101, 101, 0.25);
+    border-color: #e53e3e;
+    color: #c53030;
 }
 
 .cbi-button-reset, .cbi-button-neutral {
     background: var(--proton-bg-tertiary);
     color: var(--proton-fg);
     border: 1px solid var(--proton-border);
+}
+
+:root[data-theme="light"] .cbi-button-reset,
+:root[data-theme="light"] .cbi-button-neutral {
+    background: rgba(0, 0, 0, 0.04);
+    color: #2d3748;
 }
 
 .cbi-button-reset:hover, .cbi-button-neutral:hover {
@@ -577,9 +758,49 @@ button.important, .btn.important {
     color: var(--proton-accent);
 }
 
+:root[data-theme="light"] button.important,
+:root[data-theme="light"] .btn.important {
+    background: rgba(74, 143, 231, 0.08);
+    border-color: var(--proton-accent);
+}
+
+/* Important overrides should not affect colored buttons */
+.cbi-button-action.important,
+.cbi-button-save.important {
+    background: var(--proton-accent) !important;
+    border-color: var(--proton-accent) !important;
+    color: #fff !important;
+}
+
+.cbi-button-negative.important {
+    background: rgba(255, 107, 107, 0.1) !important;
+    border-color: rgba(255, 107, 107, 0.3) !important;
+    color: var(--proton-danger) !important;
+}
+
+:root[data-theme="light"] .cbi-button-negative.important {
+    background: rgba(245, 101, 101, 0.15) !important;
+    border-color: rgba(245, 101, 101, 0.4) !important;
+    color: #c53030 !important;
+}
+
 .cbi-button-save, .cbi-button-action {
     background: var(--proton-accent);
     border-color: var(--proton-accent);
+    color: #fff;
+}
+
+:root[data-theme="light"] .cbi-button-save,
+:root[data-theme="light"] .cbi-button-action {
+    background: var(--proton-accent);
+    border-color: var(--proton-accent);
+    color: #fff;
+}
+
+:root[data-theme="light"] .cbi-button-save:hover,
+:root[data-theme="light"] .cbi-button-action:hover {
+    background: var(--proton-accent-hover);
+    border-color: var(--proton-accent-hover);
     color: #fff;
 }
 
@@ -590,10 +811,69 @@ button.important, .btn.important {
     box-shadow: none;
 }
 
+:root[data-theme="light"] .cbi-button-edit {
+    background: rgba(0, 0, 0, 0.03);
+    color: #374151;
+}
+
 .cbi-button-edit:hover {
     background: var(--proton-bg-hover);
     border-color: var(--proton-accent);
-    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+    box-shadow: var(--proton-shadow-sm);
+}
+
+:root[data-theme="light"] .cbi-button-edit:hover {
+    background: rgba(74, 143, 231, 0.08);
+}
+
+/* .btn variant for table actions */
+.btn.cbi-button-action {
+    background: var(--proton-accent);
+    border-color: var(--proton-accent);
+    color: #fff;
+}
+
+.btn.cbi-button-edit {
+    background: var(--proton-bg-secondary);
+    border-color: var(--proton-border);
+    color: var(--proton-fg);
+}
+
+:root[data-theme="light"] .btn.cbi-button-edit {
+    background: rgba(0, 0, 0, 0.03);
+    color: #374151;
+}
+
+.btn.cbi-button-edit:hover {
+    background: var(--proton-bg-hover);
+    border-color: var(--proton-accent);
+}
+
+:root[data-theme="light"] .btn.cbi-button-edit:hover {
+    background: rgba(74, 143, 231, 0.08);
+}
+
+.btn.cbi-button-negative {
+    background: rgba(255, 107, 107, 0.1);
+    border-color: rgba(255, 107, 107, 0.3);
+    color: var(--proton-danger);
+}
+
+:root[data-theme="light"] .btn.cbi-button-negative {
+    background: rgba(245, 101, 101, 0.15);
+    border-color: rgba(245, 101, 101, 0.4);
+    color: #c53030;
+}
+
+.btn.cbi-button-negative:hover {
+    background: rgba(255, 107, 107, 0.2);
+    border-color: var(--proton-danger);
+}
+
+:root[data-theme="light"] .btn.cbi-button-negative:hover {
+    background: rgba(245, 101, 101, 0.25);
+    border-color: #e53e3e;
+    color: #c53030;
 }
 
 .cbi-button-add {
@@ -607,6 +887,11 @@ button.important, .btn.important {
     border-color: rgba(107, 207, 127, 0.9);
 }
 
+:root[data-theme="light"] .cbi-button-add:hover {
+    background: #2f855a;
+    border-color: #2f855a;
+}
+
 .cbi-button-link, .cbi-button-link:hover {
     background: transparent;
     box-shadow: none;
@@ -617,6 +902,7 @@ button.important, .btn.important {
 
 .cbi-section-actions {
     text-align: right;
+    position: relative;
 }
 
 .cbi-section-actions>div {
@@ -650,8 +936,7 @@ textarea {
 input:hover,
 select:hover,
 textarea:hover {
-    border-color: rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--proton-border);
 }
 
 input:focus,
@@ -659,15 +944,14 @@ select:focus,
 textarea:focus {
     outline: none;
     border-color: var(--proton-accent);
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--proton-bg-hover);
     box-shadow: 0 0 0 3px var(--proton-accent-glow);
 }
 
 input:hover:not([disabled]),
 select:hover:not([disabled]),
 textarea:hover:not([disabled]) {
-    border-color: rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--proton-bg-hover);
 }
 
 input[disabled], select[disabled], textarea[disabled] {
@@ -678,12 +962,27 @@ input[disabled], select[disabled], textarea[disabled] {
 select {
     cursor: pointer;
     -webkit-appearance: none;
+    -moz-appearance: none;
     appearance: none;
     color-scheme: dark;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 12px center;
     padding-right: 36px;
+}
+
+:root[data-theme="light"] select {
+    -webkit-appearance: menulist;
+    -moz-appearance: menulist;
+    appearance: menulist;
+    color-scheme: light;
+    background-image: none;
+    background-color: rgba(0, 0, 0, 0.02);
+    padding-right: 12px;
+}
+
+:root[data-theme="light"] select:hover:not([disabled]) {
+    background-color: rgba(0, 0, 0, 0.04);
 }
 
 /* Native <select> popup styling (browser support varies) */
@@ -708,6 +1007,51 @@ input[type="radio"] {
     cursor: pointer;
 }
 
+:root[data-theme="light"] input[type="checkbox"],
+:root[data-theme="light"] input[type="radio"] {
+    color-scheme: light;
+    accent-color: var(--proton-accent);
+}
+
+/* Custom checkbox to control checkmark color */
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    border: 1px solid var(--proton-border);
+    border-radius: 4px;
+    background: var(--proton-bg-secondary);
+    transition: var(--proton-transition);
+}
+
+input[type="checkbox"]:hover {
+    border-color: var(--proton-accent);
+}
+
+input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--proton-accent);
+    outline-offset: 2px;
+}
+
+input[type="checkbox"]:checked {
+    background: var(--proton-accent);
+    border-color: var(--proton-accent);
+}
+
+input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 6px;
+    width: 4px;
+    height: 9px;
+    border: 2px solid var(--proton-bg-solid);
+    border-top: 0;
+    border-left: 0;
+    transform: rotate(45deg);
+    box-sizing: border-box;
+}
+
 /* =====================================================
    CBI Form Layouts
    ===================================================== */
@@ -728,7 +1072,7 @@ input[type="radio"] {
 }
 
 .cbi-section {
-    background: rgba(255, 255, 255, 0.025);
+    background: var(--proton-bg-tertiary);
     border: 1px solid var(--proton-border);
     border-radius: var(--proton-radius);
     padding: 20px;
@@ -737,9 +1081,20 @@ input[type="radio"] {
     transition: var(--proton-transition);
 }
 
+:root[data-theme="light"] .cbi-section {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
 .cbi-section:hover {
-    border-color: rgba(255, 255, 255, 0.12);
+    border-color: var(--proton-border);
     box-shadow: var(--proton-shadow-md);
+}
+
+:root[data-theme="light"] .cbi-section:hover {
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .cbi-section>h3,
@@ -757,6 +1112,10 @@ input[type="radio"] {
     color: var(--proton-muted);
     font-size: 0.9rem;
     margin-bottom: 16px;
+}
+
+:root[data-theme="light"] .cbi-section-descr {
+    color: #6b7280;
 }
 
 .cbi-value {
@@ -854,8 +1213,13 @@ table {
     margin-bottom: 24px;
 }
 
+/* Разрешить overflow для таблиц с dropdown меню */
+table:has(.cbi-section-actions) {
+    overflow: visible;
+}
+
 th {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--proton-bg-secondary);
     color: var(--proton-fg-secondary);
     font-weight: 600;
     text-align: left;
@@ -877,7 +1241,7 @@ tr:last-child td {
 }
 
 tr:hover {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--proton-bg-tertiary);
 }
 
 tr:hover td {
@@ -1014,6 +1378,13 @@ table.assoclist td.cbi-section-actions button {
     white-space: nowrap;
 }
 
+/* Overview sometimes injects inline icon size (e.g. style="width:32px;height:32px");
+   override it for consistent row height */
+#wifi_assoclist_table .ifacebadge img {
+    width: 22px !important;
+    height: 22px !important;
+}
+
 /* MAC address - моноширинный шрифт, акцентный цвет */
 #wifi_assoclist_table td[data-title="MAC address"i],
 table.assoclist td[data-title="MAC address"i] {
@@ -1058,8 +1429,8 @@ table.assoclist td[data-title="Host"i] .hide-xs {
     align-items: center;
     gap: 12px;
     padding: 8px 14px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--proton-bg-secondary);
+    border: 1px solid var(--proton-border);
     border-radius: var(--proton-radius-sm);
     position: relative;
     overflow: hidden;
@@ -1076,8 +1447,8 @@ table.assoclist td[data-title="Host"i] .hide-xs {
     right: 0;
     background-image:
         repeating-linear-gradient(90deg,
-            rgba(255, 255, 255, 0.15) 0px,
-            rgba(255, 255, 255, 0.15) 1px,
+            var(--proton-border) 0px,
+            var(--proton-border) 1px,
             transparent 1px,
             transparent 25%);
     z-index: 2;
@@ -1130,81 +1501,283 @@ table.assoclist td[data-title="Скорость приёма / отправки"
 }
 
 /* =====================================================
-   Wireless - элегантное разделение модулей и сетей
+   Channel Analysis - Анализ каналов
    ===================================================== */
-/* Модули радио (radio0, radio1) - тусклые заголовки секций */
+
+/* График анализа каналов */
+[id="channel_graph"] {
+    background: var(--proton-bg-secondary) !important;
+    border: 1px solid var(--proton-border) !important;
+    border-radius: var(--proton-radius);
+    overflow: hidden;
+}
+
+/* Текстовые метки в SVG */
+[id="channel_graph"] text {
+    fill: var(--proton-fg) !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Линии сетки */
+[id="channel_graph"] line {
+    stroke: var(--proton-border) !important;
+}
+
+/* Таблица списка сетей под графиком */
+[data-tab] [id="channel_graph"]~table.table {
+    table-layout: fixed;
+}
+
+[data-tab] [id="channel_graph"]~table.table td {
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Строка загрузки ("Сканирование беспроводных сетей...") - не сжимаем в одну колонку */
+[data-tab] [id="channel_graph"]~table.table tr.placeholder td {
+    display: block;
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: center;
+}
+
+[data-tab] [id="channel_graph"]~table.table tr.placeholder td em.spinning {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+/* Сигнал в таблице (1-я колонка) */
+[data-tab] [id="channel_graph"]~table.table tr:not(.placeholder) td:nth-child(1) .ifacebadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* SSID с цветными точками (2-я колонка) */
+[data-tab] [id="channel_graph"]~table.table tr:not(.placeholder) td:nth-child(2) span[style*="color"] {
+    font-weight: 600;
+}
+
+/* BSSID - моноширинный (6-я колонка) */
+[data-tab] [id="channel_graph"]~table.table tr:not(.placeholder) td:nth-child(6) {
+    font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+    font-size: 0.9rem;
+    color: var(--proton-fg-secondary);
+}
+
+/* Канал - по центру (3-я колонка) */
+[data-tab] [id="channel_graph"]~table.table tr:not(.placeholder) td:nth-child(3) {
+    text-align: center;
+    font-weight: 600;
+    color: var(--proton-accent);
+}
+
+/* Светлая тема */
+:root[data-theme="light"] [id="channel_graph"] {
+    background: #ffffff !important;
+    border-color: #e0e0e0 !important;
+}
+
+:root[data-theme="light"] [id="channel_graph"] text {
+    fill: #333333 !important;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.8) !important;
+}
+
+:root[data-theme="light"] [id="channel_graph"] line {
+    stroke: #cccccc !important;
+}
+
+/* Channel Analysis tabs - особый метод скрытия для корректного рендеринга SVG графиков
+   Используем height:0 + overflow:hidden + visibility вместо display:none, чтобы графики
+   правильно рассчитывали ширину (width остаётся 100% от родителя) */
+[data-initialized]>[data-tab]:has([id="channel_graph"]) {
+    display: block !important;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+[data-initialized]>[data-tab][data-tab-active="true"]:has([id="channel_graph"]) {
+    visibility: visible;
+    height: auto;
+    overflow: visible;
+    pointer-events: auto;
+}
+
+/* =====================================================
+   Wireless - Карточки радио с вложенными сетями
+   ===================================================== */
+
+/* Контейнер для группы radio + его сетей */
+#cbi-wireless .cbi-section-table {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* Радио модули - заголовки карточек */
 #cbi-wireless tr[data-section-id^="radio"] {
-    background: transparent;
-    border-left: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    background: var(--proton-bg-secondary);
+    border: 1px solid var(--proton-border);
+    border-radius: var(--proton-radius) var(--proton-radius) 0 0;
     margin-top: 24px;
-    opacity: 0.7;
+    margin-bottom: 0;
+    padding: 12px 16px;
+    gap: 16px;
 }
 
 #cbi-wireless tr[data-section-id^="radio"]:first-child {
     margin-top: 0;
 }
 
+/* Цветовая полоса слева для radio по частоте */
+#cbi-wireless tr[data-freq="2.4"][data-section-id^="radio"] {
+    border-left: 4px solid #ff9800;
+}
+
+#cbi-wireless tr[data-freq="5"][data-section-id^="radio"] {
+    border-left: 4px solid #00bcd4;
+}
+
+#cbi-wireless tr[data-freq="6"][data-section-id^="radio"] {
+    border-left: 4px solid #a78bfa;
+}
+
 #cbi-wireless tr[data-section-id^="radio"] td {
-    padding-top: 10px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--proton-border);
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+
+#cbi-wireless tr[data-section-id^="radio"] td[data-name="_badge"] {
+    flex: 0 0 auto;
 }
 
 #cbi-wireless tr[data-section-id^="radio"] td[data-name="_badge"] .ifacebadge {
-    background: transparent;
-    color: var(--proton-muted);
-    font-weight: 500;
-    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--proton-bg-tertiary);
+    border: 1px solid var(--proton-border);
+    border-radius: var(--proton-radius-sm);
+    padding: 6px 12px;
+    color: var(--proton-fg);
+    font-weight: 600;
+    font-size: 0.85rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    opacity: 0.8;
+    letter-spacing: 0.03em;
 }
 
 #cbi-wireless tr[data-section-id^="radio"] td[data-name="_badge"] .ifacebadge img {
-    opacity: 0.5;
-}
-
-#cbi-wireless tr[data-section-id^="radio"] td[data-name="_stat"] big {
-    color: var(--proton-muted);
-    font-size: 0.85rem;
-    font-weight: 500;
+    width: 22px;
+    height: 22px;
+    opacity: 0.85;
 }
 
 #cbi-wireless tr[data-section-id^="radio"] td[data-name="_stat"] {
-    color: var(--proton-muted);
-    font-size: 0.85rem;
+    flex: 1 1 auto;
+}
+
+#cbi-wireless tr[data-section-id^="radio"] td[data-name="_stat"] big {
+    display: block;
+    color: var(--proton-fg);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+#cbi-wireless tr[data-section-id^="radio"] td[data-name="_stat"] big strong {
+    font-weight: 600;
+}
+
+#cbi-wireless tr[data-section-id^="radio"] td[data-name="_stat"] div {
+    color: var(--proton-fg-secondary);
+    font-size: 0.8rem;
+}
+
+#cbi-wireless tr[data-section-id^="radio"] td.cbi-section-actions {
+    flex: 0 0 auto;
 }
 
 #cbi-wireless tr[data-section-id^="radio"] .cbi-section-actions .cbi-button {
-    opacity: 0.7;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     padding: 6px 12px;
 }
 
-/* WiFi сети (wifinet0, wifinet1) - ЯРКИЕ карточки с цветом частоты */
+/* WiFi сети - вложенные карточки */
 #cbi-wireless tr[data-section-id^="wifinet"] {
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: var(--proton-radius);
-    margin: 8px 0 8px 0;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    /*background: var(--proton-bg);*/
+    border: 1px solid var(--proton-border);
+    border-top: none;
+    margin: 0;
+    padding: 14px 16px 14px 28px;
+    gap: 16px;
     transition: all 0.2s ease;
 }
 
+/* Последняя сеть в группе - закругляем низ */
+#cbi-wireless tr[data-section-id^="wifinet"]:has(+ tr[data-section-id^="radio"]),
+#cbi-wireless tr[data-section-id^="wifinet"]:last-child {
+    border-radius: 0 0 var(--proton-radius) var(--proton-radius);
+    margin-bottom: 0;
+}
+
 #cbi-wireless tr[data-section-id^="wifinet"]:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--proton-bg-hover);
 }
 
 #cbi-wireless tr[data-section-id^="wifinet"] td {
-    padding: 14px 16px;
+    padding: 0;
+    border: none;
+    background: transparent;
 }
 
-/* wifinet0 под radio0 (2.4 GHz) - оранжевый акцент */
-/* Применяется только к строкам таблицы (tr), не к модальным окнам */
-tr#cbi-wireless-wifinet0 {
+#cbi-wireless tr[data-section-id^="wifinet"] td[data-name="_badge"] {
+    flex: 0 0 auto;
+    align-self: center;
+}
+
+#cbi-wireless tr[data-section-id^="wifinet"] td[data-name="_stat"] {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+#cbi-wireless tr[data-section-id^="wifinet"] td[data-name="_stat"]>* {
+    display: block;
+}
+
+#cbi-wireless tr[data-section-id^="wifinet"] td[data-name="_stat"] br {
+    display: block;
+    content: "";
+    margin: 0;
+}
+
+#cbi-wireless tr[data-section-id^="wifinet"] td[data-name="_stat"] strong {
+    color: var(--proton-fg);
+}
+
+#cbi-wireless tr[data-section-id^="wifinet"] td.cbi-section-actions {
+    flex: 0 0 auto;
+    align-self: center;
+    margin-left: auto;
+}
+
+/* WiFi 2.4 GHz - оранжевый акцент (по data-freq атрибуту) */
+#cbi-wireless tr[data-freq="2.4"][data-section-id^="wifinet"] {
     border-left: 4px solid #ff9800;
-    box-shadow: inset 0 0 0 1px rgba(255, 152, 0, 0.15);
 }
 
-tr#cbi-wireless-wifinet0 td[data-name="_badge"] .ifacebadge {
+#cbi-wireless tr[data-freq="2.4"][data-section-id^="wifinet"] td[data-name="_badge"] .ifacebadge {
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -1214,7 +1787,7 @@ tr#cbi-wireless-wifinet0 td[data-name="_badge"] .ifacebadge {
     padding: 8px 12px;
 }
 
-tr#cbi-wireless-wifinet0 td[data-name="_badge"] .ifacebadge::after {
+#cbi-wireless tr[data-freq="2.4"][data-section-id^="wifinet"] td[data-name="_badge"] .ifacebadge::after {
     content: "2.4 GHz";
     padding: 4px 10px;
     border-radius: 10px;
@@ -1225,14 +1798,12 @@ tr#cbi-wireless-wifinet0 td[data-name="_badge"] .ifacebadge::after {
     white-space: nowrap;
 }
 
-/* wifinet1 под radio1 (5 GHz) - голубой акцент */
-/* Применяется только к строкам таблицы (tr), не к модальным окнам */
-tr#cbi-wireless-wifinet1 {
+/* WiFi 5 GHz - голубой акцент (по data-freq атрибуту) */
+#cbi-wireless tr[data-freq="5"][data-section-id^="wifinet"] {
     border-left: 4px solid #00bcd4;
-    box-shadow: inset 0 0 0 1px rgba(0, 188, 212, 0.15);
 }
 
-tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge {
+#cbi-wireless tr[data-freq="5"][data-section-id^="wifinet"] td[data-name="_badge"] .ifacebadge {
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -1242,7 +1813,7 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge {
     padding: 8px 12px;
 }
 
-tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
+#cbi-wireless tr[data-freq="5"][data-section-id^="wifinet"] td[data-name="_badge"] .ifacebadge::after {
     content: "5 GHz";
     padding: 4px 10px;
     border-radius: 10px;
@@ -1253,126 +1824,183 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
     white-space: nowrap;
 }
 
-#cbi-wireless tr[data-section-id^="wifinet"] td[data-name="_stat"] strong {
-    color: var(--proton-fg);
+/* WiFi 6 GHz - фиолетовый акцент (по data-freq атрибуту) */
+#cbi-wireless tr[data-freq="6"][data-section-id^="wifinet"] {
+    border-left: 4px solid #a78bfa;
 }
 
-#cbi-wireless tr[data-section-id^="wifinet"] td[data-name="_stat"] {
-    font-size: 0.9rem;
-    line-height: 1.6;
+#cbi-wireless tr[data-freq="6"][data-section-id^="wifinet"] td[data-name="_badge"] .ifacebadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.15), rgba(167, 139, 250, 0.05));
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    border-radius: var(--proton-radius-sm);
+    padding: 8px 12px;
+}
+
+#cbi-wireless tr[data-freq="6"][data-section-id^="wifinet"] td[data-name="_badge"] .ifacebadge::after {
+    content: "6 GHz";
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+    color: #fff;
+    white-space: nowrap;
 }
 
 /* =====================================================
-   Wireless Actions - Dropdown меню (⋮) на ПК
+   Wireless Actions - Dropdown меню (⋮)
    ===================================================== */
-@media (min-width: 801px) {
-    #cbi-wireless .cbi-section-actions {
-        position: relative;
-        overflow: visible !important;
+#cbi-wireless .cbi-section-actions {
+    position: relative;
+    overflow: visible !important;
+}
+
+#cbi-wireless .cbi-section-table {
+    overflow: visible !important;
+}
+
+#cbi-wireless .cbi-section-table-row {
+    overflow: visible !important;
+}
+
+/* Скрываем оригинальные кнопки - предотвращаем мерцание при обновлении */
+#cbi-wireless .cbi-section-actions>.cbi-button,
+#cbi-wireless .cbi-section-actions>button:not(.actions-toggle),
+#cbi-wireless .cbi-section-actions>div:not(.actions-dropdown) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    pointer-events: none !important;
+}
+
+/* Кнопка три точки */
+#cbi-wireless .cbi-section-actions .actions-toggle {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--proton-bg-hover);
+    border: 1px solid var(--proton-border);
+    border-radius: var(--proton-radius-sm);
+    cursor: pointer;
+    transition: var(--proton-transition);
+    color: var(--proton-fg-secondary);
+    font-size: 1.3rem;
+    line-height: 1;
+    letter-spacing: 2px;
+    font-weight: bold;
+}
+
+#cbi-wireless .cbi-section-actions .actions-toggle:hover {
+    background: var(--proton-bg-hover);
+    color: var(--proton-fg);
+    border-color: var(--proton-border);
+}
+
+/* Dropdown контейнер - скрыт по умолчанию */
+#cbi-wireless .cbi-section-actions .actions-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    min-width: 160px;
+    padding: 6px;
+    background: #1a1f28 !important;
+    border: 1px solid var(--proton-border);
+    border-radius: var(--proton-radius);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: none;
+}
+
+:root[data-theme="light"] #cbi-wireless .cbi-section-actions .actions-dropdown {
+    background: #ffffff !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Открытый dropdown */
+#cbi-wireless .cbi-section-actions .actions-dropdown.open {
+    display: block;
+}
+
+/* Кнопки внутри dropdown */
+#cbi-wireless .cbi-section-actions .actions-dropdown .cbi-button,
+#cbi-wireless .cbi-section-actions .actions-dropdown button {
+    display: flex !important;
+    width: 100%;
+    justify-content: flex-start;
+    padding: 10px 14px;
+    margin: 2px 0;
+    border-radius: var(--proton-radius-sm);
+    font-size: 0.875rem;
+    background: transparent !important;
+    border: none !important;
+    color: var(--proton-fg-secondary) !important;
+    cursor: pointer;
+    transition: var(--proton-transition);
+    text-align: left;
+    box-shadow: none !important;
+}
+
+/* Сброс стилей для cbi-button-action внутри dropdown */
+#cbi-wireless .cbi-section-actions .actions-dropdown .cbi-button-action,
+#cbi-wireless .cbi-section-actions .actions-dropdown .cbi-button-positive,
+#cbi-wireless .cbi-section-actions .actions-dropdown .cbi-button-negative {
+    background: transparent !important;
+    border: none !important;
+    color: var(--proton-fg-secondary) !important;
+    box-shadow: none !important;
+}
+
+#cbi-wireless .cbi-section-actions .actions-dropdown .cbi-button:hover,
+#cbi-wireless .cbi-section-actions .actions-dropdown button:hover {
+    background: var(--proton-bg-hover) !important;
+    color: var(--proton-fg) !important;
+}
+
+#cbi-wireless .cbi-section-actions .actions-dropdown .cbi-button-negative:hover {
+    background: rgba(255, 107, 107, 0.15) !important;
+    color: var(--proton-danger) !important;
+}
+
+:root[data-theme="light"] #cbi-wireless .cbi-section-actions .actions-dropdown .cbi-button-negative:hover {
+    background: rgba(245, 101, 101, 0.2) !important;
+    color: #c53030 !important;
+}
+
+#cbi-wireless .cbi-section-actions .actions-dropdown .cbi-button-action:hover {
+    background: rgba(94, 158, 255, 0.15) !important;
+    color: var(--proton-accent) !important;
+}
+
+:root[data-theme="light"] #cbi-wireless .cbi-section-actions .actions-dropdown .cbi-button-action:hover {
+    background: rgba(74, 143, 231, 0.2) !important;
+    color: var(--proton-accent) !important;
+}
+
+/* =====================================================
+   Wireless - Мобильный горизонтальный скролл (как на ПК)
+   Просто добавляем скролл, desktop стили остаются
+   ===================================================== */
+@media (max-width: 800px) {
+
+    /* Контейнер секции - скролл */
+    #cbi-wireless-wifi-device {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
     }
 
-    #cbi-wireless .cbi-section-table {
-        overflow: visible !important;
-    }
-
-    #cbi-wireless .cbi-section-table-row {
-        overflow: visible !important;
-    }
-
-    /* Скрываем оригинальные кнопки - предотвращаем мерцание при обновлении */
-    #cbi-wireless .cbi-section-actions>.cbi-button,
-    #cbi-wireless .cbi-section-actions>button:not(.actions-toggle),
-    #cbi-wireless .cbi-section-actions>div:not(.actions-dropdown) {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        width: 0 !important;
-        height: 0 !important;
-        overflow: hidden !important;
-        position: absolute !important;
-        pointer-events: none !important;
-    }
-
-    /* Кнопка три точки */
-    #cbi-wireless .cbi-section-actions .actions-toggle {
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--proton-border);
-        border-radius: var(--proton-radius-sm);
-        cursor: pointer;
-        transition: var(--proton-transition);
-        color: var(--proton-fg-secondary);
-        font-size: 1.3rem;
-        line-height: 1;
-        letter-spacing: 2px;
-        font-weight: bold;
-    }
-
-    #cbi-wireless .cbi-section-actions .actions-toggle:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: var(--proton-fg);
-        border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    /* Dropdown контейнер - скрыт по умолчанию */
-    #cbi-wireless .cbi-section-actions .actions-dropdown {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        margin-top: 4px;
-        min-width: 160px;
-        padding: 6px;
-        background: rgba(20, 25, 35, 0.98);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid var(--proton-border);
-        border-radius: var(--proton-radius);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-        z-index: 9999;
-        display: none;
-    }
-
-    /* Открытый dropdown */
-    #cbi-wireless .cbi-section-actions .actions-dropdown.open {
-        display: block;
-    }
-
-    /* Кнопки внутри dropdown */
-    #cbi-wireless .cbi-section-actions .actions-dropdown .cbi-button,
-    #cbi-wireless .cbi-section-actions .actions-dropdown button {
-        display: flex !important;
-        width: 100%;
-        justify-content: flex-start;
-        padding: 10px 14px;
-        margin: 2px 0;
-        border-radius: var(--proton-radius-sm);
-        font-size: 0.875rem;
-        background: transparent;
-        border: none;
-        color: var(--proton-fg-secondary);
-        cursor: pointer;
-        transition: var(--proton-transition);
-        text-align: left;
-    }
-
-    #cbi-wireless .cbi-section-actions .actions-dropdown .cbi-button:hover,
-    #cbi-wireless .cbi-section-actions .actions-dropdown button:hover {
-        background: rgba(255, 255, 255, 0.08);
-        color: var(--proton-fg);
-    }
-
-    #cbi-wireless .cbi-section-actions .actions-dropdown .cbi-button-negative:hover {
-        background: rgba(255, 107, 107, 0.15);
-        color: var(--proton-danger);
-    }
-
-    #cbi-wireless .cbi-section-actions .actions-dropdown .cbi-button-action:hover {
-        background: rgba(94, 158, 255, 0.15);
-        color: var(--proton-accent);
+    /* Таблица - минимальная ширина для активации скролла */
+    #cbi-wireless-wifi-device>table.cbi-section-table {
+        min-width: 700px;
     }
 }
 
@@ -1448,7 +2076,7 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
 #cbi-network-interface .ifacebox {
     border: 1px solid var(--proton-border);
     border-radius: var(--proton-radius);
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--proton-bg-secondary);
     max-width: 100%;
 }
 
@@ -1511,7 +2139,7 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
     max-width: min(820px, 92vw);
     padding: 10px 12px;
     background: rgba(20, 25, 35, 0.98);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid var(--proton-border);
     border-radius: var(--proton-radius);
     box-shadow: var(--proton-shadow-md);
     color: var(--proton-fg);
@@ -1601,7 +2229,7 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
 }
 
 .cbi-dynlist>.item:hover {
-    border-color: rgba(255, 255, 255, 0.12);
+    border-color: var(--proton-border);
     box-shadow: var(--proton-shadow-md);
 }
 
@@ -1671,7 +2299,7 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
 
 .cbi-tabmenu>li>a {
     display: block;
-    padding: 12px 20px;
+    padding: 8px 10px;
     color: var(--proton-fg-secondary);
     font-weight: 500;
     border-bottom: 2px solid transparent;
@@ -1691,6 +2319,27 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
     background: var(--proton-accent-glow);
 }
 
+/* Кнопка внутри tabmenu (например, "Обновить данные" в Анализе каналов) */
+.cbi-tabmenu>button.cbi-button {
+    margin-left: auto;
+    align-self: center;
+}
+
+/* Специально для кнопки "↻" в табах: при .spinning показываем только спиннер */
+.cbi-tabmenu>button.cbi-button.proton-tabmenu-refresh {
+    line-height: 1;
+}
+
+.cbi-tabmenu>button.cbi-button.proton-tabmenu-refresh.spinning {
+    padding-left: 0 !important;
+    color: transparent !important;
+}
+
+.cbi-tabmenu>button.cbi-button.proton-tabmenu-refresh.spinning::before {
+    left: 50%;
+    margin-left: -0.6em;
+}
+
 /* Legacy LuCI tabs */
 #tabmenu {
     display: flex;
@@ -1706,7 +2355,7 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
 
 #tabmenu a {
     display: block;
-    padding: 12px 20px;
+    padding: 8px 10px;
     color: var(--proton-muted);
     border-bottom: 2px solid transparent;
     margin-bottom: -1px;
@@ -1717,7 +2366,7 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
 
 #tabmenu a:hover {
     color: var(--proton-fg);
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--proton-bg-secondary);
 }
 
 #tabmenu a.active {
@@ -1745,6 +2394,15 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
     display: block;
 }
 
+/* Generic LuCI tabs: some views use plain wrappers with data-initialized */
+[data-initialized]>[data-tab] {
+    display: none;
+}
+
+[data-initialized]>[data-tab][data-tab-active="true"] {
+    display: block;
+}
+
 /* =====================================================
    Dropdowns
    ===================================================== */
@@ -1757,6 +2415,12 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
     background: var(--proton-bg-tertiary);
     border: 1px solid var(--proton-border);
     border-radius: var(--proton-radius-sm);
+}
+
+:root[data-theme="light"] .cbi-dropdown {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.15);
+    color: #1a1d29;
 }
 
 .cbi-dropdown>ul {
@@ -1811,17 +2475,36 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
     top: 100%;
     left: 0;
     right: 0;
-    background: rgba(15, 20, 25, 0.96);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid var(--proton-border);
+    background: #1e2530 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: var(--proton-radius-sm);
     box-shadow: var(--proton-shadow);
-    z-index: 1000;
+    z-index: 10000;
     max-height: 300px;
     overflow-y: auto;
     min-width: 100%;
     width: auto;
+}
+
+:root[data-theme="light"] .cbi-dropdown[open]>ul.dropdown {
+    background: #ffffff !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+:root[data-theme="light"] .cbi-dropdown[open]>ul.dropdown>li {
+    color: #1a1d29;
+    background: #ffffff !important;
+}
+
+:root[data-theme="light"] .cbi-dropdown[open]>ul.dropdown>li:hover {
+    background: #f0f0f0 !important;
+    color: #1a1d29;
+}
+
+:root[data-theme="light"] .cbi-dropdown[open]>ul.dropdown>li[selected] {
+    background: #e8e8e8 !important;
+    color: var(--proton-accent);
 }
 
 .cbi-dropdown[open]>ul.dropdown>li {
@@ -1829,6 +2512,7 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
     padding: 10px 14px;
     border-bottom: 1px solid var(--proton-border-light);
     transition: var(--proton-transition);
+    background: #1e2530 !important;
 }
 
 .cbi-dropdown[open]>ul.dropdown>li .hide-open {
@@ -1840,11 +2524,11 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
 }
 
 .cbi-dropdown[open]>ul.dropdown>li:hover {
-    background: var(--proton-bg-hover);
+    background: #2a3441 !important;
 }
 
 .cbi-dropdown[open]>ul.dropdown>li[selected] {
-    background: var(--proton-accent-glow);
+    background: #252f3d !important;
     color: var(--proton-accent);
 }
 
@@ -1874,6 +2558,12 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
     color: #ffeb99;
 }
 
+:root[data-theme="light"] .alert-message.warning {
+    background: rgba(192, 86, 33, 0.1);
+    border-color: rgba(192, 86, 33, 0.3);
+    color: #9c4221;
+}
+
 .alert-message.danger {
     background: rgba(255, 107, 107, 0.08);
     border: 1px solid rgba(255, 107, 107, 0.2);
@@ -1881,11 +2571,23 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
     color: #ffa5a5;
 }
 
+:root[data-theme="light"] .alert-message.danger {
+    background: rgba(197, 48, 48, 0.1);
+    border-color: rgba(197, 48, 48, 0.3);
+    color: #c53030;
+}
+
 .alert-message.success {
     background: rgba(107, 207, 127, 0.08);
     border: 1px solid rgba(107, 207, 127, 0.2);
     border-left-color: var(--proton-success);
     color: #a3e7b5;
+}
+
+:root[data-theme="light"] .alert-message.success {
+    background: rgba(39, 103, 73, 0.1);
+    border-color: rgba(39, 103, 73, 0.3);
+    color: #276749;
 }
 
 .alert-message.info {
@@ -1918,11 +2620,22 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
     min-width: 200px;
 }
 
+:root[data-theme="light"] .cbi-progressbar {
+    background: rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
 .cbi-progressbar>div {
     height: 100%;
     background: linear-gradient(90deg, var(--proton-accent), var(--proton-accent-hover));
     border-radius: 12px;
     transition: width 0.3s ease;
+    box-shadow: 0 0 12px rgba(74, 143, 231, 0.3);
+}
+
+:root[data-theme="light"] .cbi-progressbar>div {
+    box-shadow: 0 0 8px rgba(74, 143, 231, 0.2);
 }
 
 .cbi-progressbar::after {
@@ -1936,6 +2649,12 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
     font-weight: 500;
     color: var(--proton-fg);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+:root[data-theme="light"] .cbi-progressbar::after {
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+    color: #1a1d29;
+    font-weight: 600;
 }
 
 /* =====================================================
@@ -2007,6 +2726,10 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
     pointer-events: none;
 }
 
+:root[data-theme="light"] .cbi-tooltip {
+    background: rgba(255, 255, 255, 0.95);
+}
+
 .cbi-tooltip-container:hover .cbi-tooltip:not(:empty) {
     opacity: 1;
 }
@@ -2020,15 +2743,24 @@ tr#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(4px);
     z-index: 10000;
-    display: flex;
-    align-items: center;
+    display: none;
+    align-items: flex-start;
     justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
     opacity: 0;
     visibility: hidden;
     transition: all 0.2s ease;
 }
 
+:root[data-theme="light"] #modal_overlay {
+    background: rgba(0, 0, 0, 0.4);
+}
+
 body.modal-overlay-active #modal_overlay {
+    display: flex;
     opacity: 1;
     visibility: visible;
 }
@@ -2040,15 +2772,32 @@ body.modal-overlay-active #modal_overlay {
     box-shadow: var(--proton-shadow-md);
     width: 90%;
     max-width: 800px;
-    max-height: 85vh;
-    overflow-y: auto;
+    max-height: none;
+    margin: auto 0;
+    overflow-y: visible;
+    overflow-x: hidden;
     padding: 28px;
+    flex-shrink: 0;
+}
+
+:root[data-theme="light"] #modal_overlay>.modal {
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: var(--proton-shadow-md);
 }
 
 /* Большие модальные окна для редактирования (Edit) */
 #modal_overlay>.modal:has(.cbi-section),
 #modal_overlay>.modal:has(.cbi-value) {
     max-width: 900px;
+}
+
+/* Wi-Fi edit modal: avoid nested "section cards" inside values (double padding/border) */
+#modal_overlay #cbi-wireless.cbi-map .cbi-value>.cbi-section {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
 }
 
 .modal>h4:first-child {
@@ -2141,12 +2890,28 @@ body.modal-overlay-active #modal_overlay {
     border-top: 1px solid var(--proton-border);
     width: 100%;
     text-align: right;
+    position: relative;
+    overflow: visible;
 }
 
 .cbi-page-actions .cbi-button,
 .cbi-page-actions .btn,
 .cbi-page-actions button {
     display: inline-flex;
+}
+
+.cbi-page-actions ul,
+.cbi-page-actions ul li {
+    color: var(--proton-fg) !important;
+}
+
+:root[data-theme="light"] .cbi-page-actions {
+    border-top-color: rgba(0, 0, 0, 0.18);
+}
+
+:root[data-theme="light"] .cbi-page-actions ul,
+:root[data-theme="light"] .cbi-page-actions ul li {
+    color: #1a1d29 !important;
 }
 
 .button-row {
@@ -2203,14 +2968,15 @@ body.modal-overlay-active #modal_overlay {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     z-index: 998;
     opacity: 0;
     transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
 }
 
 #menu-overlay.active {
@@ -2228,7 +2994,7 @@ body.modal-overlay-active #modal_overlay {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--proton-bg-hover);
     border: 1px solid var(--proton-border);
     border-radius: 8px;
     color: var(--proton-fg-secondary);
@@ -2239,9 +3005,9 @@ body.modal-overlay-active #modal_overlay {
 }
 
 #mainmenu .menu-close:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--proton-bg-hover);
     color: var(--proton-fg);
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: var(--proton-border);
 }
 
 #mainmenu .menu-close:active {
@@ -2254,12 +3020,16 @@ body.modal-overlay-active #modal_overlay {
 @media only screen and (max-width: 800px) {
     html {
         overflow-x: hidden;
+        width: 100%;
+        max-width: 100%;
     }
 
     body {
         padding-top: 64px;
         overflow-x: hidden;
-        max-width: 100vw;
+        width: 100%;
+        max-width: 100%;
+        position: relative;
     }
 
     #menubar {
@@ -2277,7 +3047,8 @@ body.modal-overlay-active #modal_overlay {
         max-width: 100%;
         width: 100%;
         margin: 0;
-        padding: 0 12px;
+        padding-left: 0px;
+        padding-right: 12px;
         height: 64px;
         box-sizing: border-box;
         overflow: hidden;
@@ -2290,13 +3061,13 @@ body.modal-overlay-active #modal_overlay {
         display: flex !important;
         align-items: center;
         justify-content: center;
-        width: 40px;
-        height: 40px;
+        width: 65px;
+        height: 100%;
         padding: 0;
-        margin: 0 12px 0 0;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid var(--proton-border);
-        border-radius: var(--proton-radius-sm);
+        margin: 0 0 0 0;
+        background: rgb(255 255 255 / 0%);
+        /* border: 1px solid rgb(255 255 255 / 0%); */
+        /* border-radius: var(--proton-radius-sm); */
         cursor: pointer;
         transition: var(--proton-transition);
         color: var(--proton-fg);
@@ -2305,7 +3076,7 @@ body.modal-overlay-active #modal_overlay {
     #menubar-inner>h2:hover,
     #menubar-inner>.navigation:hover {
         background: var(--proton-bg-hover);
-        border-color: rgba(255, 255, 255, 0.12);
+        border-color: var(--proton-border);
         color: var(--proton-fg);
     }
 
@@ -2326,8 +3097,8 @@ body.modal-overlay-active #modal_overlay {
 
     #menubar-inner>h2.active,
     #menubar-inner>.navigation.active {
-        background: rgba(255, 255, 255, 0.06);
-        border-color: rgba(255, 255, 255, 0.12);
+        background: var(--proton-bg-hover);
+        border-color: var(--proton-border);
         color: var(--proton-fg);
     }
 
@@ -2341,7 +3112,7 @@ body.modal-overlay-active #modal_overlay {
     }
 
     #menubar-inner .hostname {
-        font-size: 1rem;
+        /*font-size: 1rem;*/
         flex: 1;
         min-width: 0;
         overflow: hidden;
@@ -2364,8 +3135,8 @@ body.modal-overlay-active #modal_overlay {
         top: 0;
         left: 0;
         bottom: 0;
-        width: 320px;
-        max-width: 90vw;
+        width: 100%;
+        /* max-width: 90vw; */
         z-index: 999;
         transform: translateX(-100%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2379,6 +3150,10 @@ body.modal-overlay-active #modal_overlay {
         box-shadow: 8px 0 32px rgba(0, 0, 0, 0.6);
     }
 
+    :root[data-theme="light"] #mainmenu {
+        background: rgba(255, 255, 255, 0.98);
+    }
+
     #mainmenu.active {
         transform: translateX(0);
     }
@@ -2388,7 +3163,7 @@ body.modal-overlay-active #modal_overlay {
     }
 
     #mainmenu ul>li {
-        padding: 2px 0;
+        /*padding: 2px 0;*/
     }
 
     #mainmenu .mainmenu.l1>li>a {
@@ -2406,7 +3181,7 @@ body.modal-overlay-active #modal_overlay {
     }
 
     #mainmenu .mainmenu.l2>li>a {
-        padding: 10px 20px 10px 36px;
+        padding: 14px 60px;
         font-size: 0.95rem;
     }
 
@@ -2442,6 +3217,12 @@ body.modal-overlay-active #modal_overlay {
     #maincontainer {
         max-width: 100vw;
         overflow-x: hidden;
+    }
+
+    /* Override nowrap for mobile to prevent horizontal scroll */
+    .nowrap {
+        white-space: normal !important;
+        word-break: break-word;
     }
 
     /* Tables */
@@ -2521,6 +3302,31 @@ body.modal-overlay-active #modal_overlay {
         padding: 12px 20px;
     }
 
+    button+button, .btn+.btn, .cbi-button+.cbi-button {
+        margin-left: 0;
+    }
+
+    .cbi-section-actions>div,
+    .control-group {
+        display: flex;
+        gap: 1px;
+    }
+
+    /* Package Manager controls */
+    #view>.controls:first-of-type>div {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+    }
+
+    #view>.controls:first-of-type>div>* {
+        width: 100%;
+    }
+
+    #view>.controls:first-of-type .cbi-progressbar {
+        min-width: auto;
+    }
+
     .cbi-page-actions {
         flex-direction: column;
     }
@@ -2536,19 +3342,23 @@ body.modal-overlay-active #modal_overlay {
 
     /* Modal */
     #modal_overlay {
-        padding: 10px;
+        padding: 16px;
+        align-items: flex-start;
         box-sizing: border-box;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     #modal_overlay>.modal {
         width: 100%;
-        max-width: calc(100vw - 20px);
+        max-width: calc(100vw - 32px);
         margin: 0;
-        max-height: calc(100vh - 20px);
+        max-height: none;
         padding: 16px;
         border-left: none;
         box-sizing: border-box;
-        overflow-x: hidden;
+        overflow: visible;
+        flex-shrink: 0;
     }
 
     #modal_overlay>.modal:has(.cbi-section),
@@ -2614,6 +3424,84 @@ body.modal-overlay-active #modal_overlay {
         min-width: 80px;
     }
 
+    /* Таблица внутри модального окна - карточный layout */
+    #modal_overlay>.modal table {
+        display: block !important;
+        width: 100% !important;
+        overflow: visible !important;
+    }
+
+    #modal_overlay>.modal table thead {
+        display: none !important;
+    }
+
+    #modal_overlay>.modal table tbody {
+        display: flex !important;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    #modal_overlay>.modal table tr {
+        display: flex !important;
+        flex-direction: column;
+        background: var(--proton-bg-tertiary);
+        border: 1px solid var(--proton-border);
+        border-radius: var(--proton-radius);
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    #modal_overlay>.modal table td {
+        display: flex !important;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        width: 100% !important;
+        padding: 10px 14px !important;
+        border-bottom: 1px solid var(--proton-border-light);
+        white-space: normal !important;
+        word-break: break-word;
+        box-sizing: border-box;
+    }
+
+    #modal_overlay>.modal table td:last-child {
+        border-bottom: none;
+    }
+
+    /* Показываем data-title как label слева */
+    #modal_overlay>.modal table td[data-title]::before {
+        content: attr(data-title);
+        font-weight: 600;
+        color: var(--proton-fg-secondary);
+        font-size: 0.8rem;
+        flex-shrink: 0;
+        min-width: 80px;
+    }
+
+    /* Первая ячейка - заголовок карточки */
+    #modal_overlay>.modal table td:first-child {
+        background: var(--proton-bg-secondary);
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--proton-fg);
+    }
+
+    /* Ifacebadge внутри модального окна */
+    #modal_overlay>.modal table .ifacebadge {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        max-width: 100%;
+    }
+
+    #modal_overlay>.modal table .ifacebadge>span {
+        white-space: normal;
+        word-break: break-word;
+    }
+
     /* Убираем стили wifinet внутри модальных окон */
     #modal_overlay [id^="cbi-wireless-wifinet"] {
         border-left: none !important;
@@ -2636,7 +3524,7 @@ body.modal-overlay-active #modal_overlay {
     }
 
     #indicators>* {
-        padding: 4px 8px;
+        padding: 9px 18px;
         font-size: 0.75rem;
         flex-shrink: 1;
         min-width: 0;
@@ -2658,7 +3546,7 @@ body.modal-overlay-active #modal_overlay {
     #cbi-network-interface table.cbi-section-table tr {
         display: flex;
         flex-direction: column;
-        background: rgba(255, 255, 255, 0.02);
+        background: var(--proton-bg-secondary);
         border: 1px solid var(--proton-border);
         border-radius: var(--proton-radius);
         padding: 0;
@@ -2688,7 +3576,7 @@ body.modal-overlay-active #modal_overlay {
 
     #cbi-network-interface td[data-name="_ifacebox"] .ifacebox {
         border: none;
-        border-radius: 0;
+        border-radius: var(--proton-radius);
         width: 100%;
     }
 
@@ -2704,7 +3592,7 @@ body.modal-overlay-active #modal_overlay {
 
     /* Статистика интерфейса */
     #cbi-network-interface td[data-name="_ifacestat"] {
-        background: rgba(255, 255, 255, 0.01);
+        background: var(--proton-bg-tertiary);
         font-size: 0.875rem;
         line-height: 1.6;
     }
@@ -2720,7 +3608,7 @@ body.modal-overlay-active #modal_overlay {
         flex-wrap: wrap;
         gap: 8px;
         padding: 12px 16px;
-        background: rgba(255, 255, 255, 0.02);
+        background: var(--proton-bg-tertiary);
     }
 
     #cbi-network-interface td.cbi-section-actions>div {
@@ -2733,201 +3621,6 @@ body.modal-overlay-active #modal_overlay {
     #cbi-network-interface td.cbi-section-actions .cbi-button,
     #cbi-network-interface td.cbi-section-actions .btn,
     #cbi-network-interface td.cbi-section-actions button {
-        flex: 1 1 auto;
-        min-width: 80px;
-        text-align: center;
-        justify-content: center;
-    }
-
-    /* =====================================================
-       Wireless - элегантные карточки на мобилке
-       ===================================================== */
-    /* Модули радио - тусклые заголовки секций */
-    #cbi-wireless tr[data-section-id^="radio"] {
-        display: flex;
-        flex-direction: column;
-        background: transparent;
-        border: none;
-        border-bottom: 1px solid var(--proton-border);
-        border-radius: 0;
-        padding: 0;
-        margin: 20px 0 8px 0;
-        overflow: visible;
-        opacity: 0.7;
-    }
-
-    #cbi-wireless tr[data-section-id^="radio"]:first-child {
-        margin-top: 0;
-    }
-
-    #cbi-wireless tr[data-section-id^="radio"] td[data-name="_badge"] {
-        background: transparent;
-        padding: 8px 0;
-        border: none;
-    }
-
-    #cbi-wireless tr[data-section-id^="radio"] td[data-name="_badge"]::after {
-        display: none;
-    }
-
-    #cbi-wireless tr[data-section-id^="radio"] td[data-name="_badge"] .ifacebadge {
-        background: transparent;
-        padding: 0;
-        border: none;
-        color: var(--proton-muted);
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-weight: 600;
-    }
-
-    #cbi-wireless tr[data-section-id^="radio"] td[data-name="_stat"] {
-        padding: 8px 0;
-        background: transparent;
-        border: none;
-        font-size: 0.8rem;
-        color: var(--proton-muted);
-    }
-
-    #cbi-wireless tr[data-section-id^="radio"] td[data-name="_stat"] big {
-        font-size: 0.8rem;
-        font-weight: 500;
-        color: var(--proton-muted);
-    }
-
-    #cbi-wireless tr[data-section-id^="radio"] td.cbi-section-actions {
-        padding: 8px 0;
-    }
-
-    #cbi-wireless tr[data-section-id^="radio"] .cbi-button {
-        font-size: 0.8rem;
-        padding: 6px 10px;
-        opacity: 0.8;
-    }
-
-    /* WiFi сети - ЯРКИЕ карточки */
-    #cbi-wireless tr[data-section-id^="wifinet"] {
-        display: flex;
-        flex-direction: column;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: var(--proton-radius);
-        padding: 0;
-        margin: 0 0 16px 0;
-        overflow: hidden;
-    }
-
-    /* wifinet0 (2.4 GHz) */
-    #cbi-wireless-wifi-device #cbi-wireless-wifinet0,
-    .cbi-section-table>#cbi-wireless-wifinet0 {
-        border-left: 4px solid #ff9800;
-    }
-
-    #cbi-wireless-wifi-device #cbi-wireless-wifinet0 td[data-name="_badge"],
-    .cbi-section-table>#cbi-wireless-wifinet0 td[data-name="_badge"] {
-        background: linear-gradient(135deg, rgba(255, 152, 0, 0.12), rgba(255, 152, 0, 0.04));
-    }
-
-    #cbi-wireless-wifi-device #cbi-wireless-wifinet0 td[data-name="_badge"] .ifacebadge::after,
-    .cbi-section-table>#cbi-wireless-wifinet0 td[data-name="_badge"] .ifacebadge::after {
-        content: "2.4 GHz";
-        margin-left: 8px;
-        padding: 3px 8px;
-        border-radius: 8px;
-        font-size: 0.65rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #ff9800, #ff6f00);
-        color: #fff;
-    }
-
-    /* wifinet1 (5 GHz) */
-    #cbi-wireless-wifi-device #cbi-wireless-wifinet1,
-    .cbi-section-table>#cbi-wireless-wifinet1 {
-        border-left: 4px solid #00bcd4;
-    }
-
-    #cbi-wireless-wifi-device #cbi-wireless-wifinet1 td[data-name="_badge"],
-    .cbi-section-table>#cbi-wireless-wifinet1 td[data-name="_badge"] {
-        background: linear-gradient(135deg, rgba(0, 188, 212, 0.12), rgba(0, 188, 212, 0.04));
-    }
-
-    #cbi-wireless-wifi-device #cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after,
-    .cbi-section-table>#cbi-wireless-wifinet1 td[data-name="_badge"] .ifacebadge::after {
-        content: "5 GHz";
-        margin-left: 8px;
-        padding: 3px 8px;
-        border-radius: 8px;
-        font-size: 0.65rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #00bcd4, #0097a7);
-        color: #fff;
-    }
-
-    #cbi-wireless tr[data-section-id^="wifinet"] td[data-name="_badge"] {
-        padding: 14px 16px;
-        border: none;
-    }
-
-    #cbi-wireless tr[data-section-id^="wifinet"] td[data-name="_badge"] .ifacebadge {
-        background: transparent;
-        border: none;
-        padding: 0;
-        display: inline-flex;
-        align-items: center;
-    }
-
-    #cbi-wireless tr[data-section-id^="wifinet"] td[data-name="_stat"] {
-        padding: 14px 16px;
-        font-size: 0.875rem;
-        line-height: 1.6;
-        border: none;
-    }
-
-    #cbi-wireless tr[data-section-id^="wifinet"] td[data-name="_stat"] strong {
-        color: var(--proton-fg);
-        font-weight: 600;
-    }
-
-    /* Общие стили для wireless таблиц на мобилке */
-    #cbi-wireless table.cbi-section-table {
-        display: block;
-    }
-
-    #cbi-wireless table.cbi-section-table tbody {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-    }
-
-    #cbi-wireless table.cbi-section-table td {
-        display: block;
-        width: 100% !important;
-        border-bottom: 1px solid var(--proton-border-light);
-    }
-
-    #cbi-wireless table.cbi-section-table td:last-child {
-        border-bottom: none;
-    }
-
-    /* Wireless actions */
-    #cbi-wireless td.cbi-section-actions {
-        display: flex !important;
-        flex-wrap: wrap;
-        gap: 8px;
-        padding: 12px 16px;
-        background: rgba(255, 255, 255, 0.02);
-    }
-
-    #cbi-wireless td.cbi-section-actions>div {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        width: 100%;
-    }
-
-    #cbi-wireless td.cbi-section-actions .cbi-button,
-    #cbi-wireless td.cbi-section-actions .btn,
-    #cbi-wireless td.cbi-section-actions button {
         flex: 1 1 auto;
         min-width: 80px;
         text-align: center;
@@ -2987,6 +3680,57 @@ body.modal-overlay-active #modal_overlay {
     }
 
     /* =====================================================
+       Port Status Grid (Состояние портов) - мобильная адаптация
+       Grid с ifacebox элементами для LAN/WAN портов
+       ===================================================== */
+    body[data-page="admin-status-overview"] .cbi-section>div>div[style*="display:grid"],
+    body[data-page=""] .cbi-section>div>div[style*="display:grid"] {
+        display: flex !important;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    body[data-page="admin-status-overview"] .cbi-section>div>div[style*="display:grid"]>.ifacebox,
+    body[data-page=""] .cbi-section>div>div[style*="display:grid"]>.ifacebox {
+        flex: 1 1 calc(33.333% - 8px);
+        min-width: 90px !important;
+        max-width: none !important;
+        margin: 0 !important;
+    }
+
+    body[data-page="admin-status-overview"] .cbi-section>div>div[style*="display:grid"]>.ifacebox .ifacebox-head,
+    body[data-page=""] .cbi-section>div>div[style*="display:grid"]>.ifacebox .ifacebox-head {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+    }
+
+    body[data-page="admin-status-overview"] .cbi-section>div>div[style*="display:grid"]>.ifacebox .ifacebox-body,
+    body[data-page=""] .cbi-section>div>div[style*="display:grid"]>.ifacebox .ifacebox-body {
+        padding: 8px;
+        font-size: 0.7rem;
+        line-height: 1.3;
+    }
+
+    body[data-page="admin-status-overview"] .cbi-section>div>div[style*="display:grid"]>.ifacebox .ifacebox-body img,
+    body[data-page=""] .cbi-section>div>div[style*="display:grid"]>.ifacebox .ifacebox-body img {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Скрываем детальную статистику трафика на мобильных для компактности */
+    body[data-page="admin-status-overview"] .cbi-section>div>div[style*="display:grid"]>.ifacebox .cbi-tooltip-container[style*="font-size:80%"],
+    body[data-page=""] .cbi-section>div>div[style*="display:grid"]>.ifacebox .cbi-tooltip-container[style*="font-size:80%"] {
+        font-size: 0.65rem !important;
+    }
+
+    /* Zone badge компактнее */
+    body[data-page="admin-status-overview"] .cbi-section>div>div[style*="display:grid"]>.ifacebox .zonebadge,
+    body[data-page=""] .cbi-section>div>div[style*="display:grid"]>.ifacebox .zonebadge {
+        height: 2px !important;
+    }
+
+    /* =====================================================
        Associated Stations (assoclist) - карточки на мобилке
        ===================================================== */
     table.assoclist,
@@ -3005,7 +3749,7 @@ body.modal-overlay-active #modal_overlay {
     #wifi_assoclist_table tr {
         display: flex !important;
         flex-direction: column;
-        background: rgba(255, 255, 255, 0.02);
+        background: var(--proton-bg-secondary);
         border: 1px solid var(--proton-border);
         border-radius: var(--proton-radius);
         padding: 0;
@@ -3042,7 +3786,7 @@ body.modal-overlay-active #modal_overlay {
     /* MAC адрес - выделяем как заголовок карточки */
     table.assoclist td:first-child,
     #wifi_assoclist_table td:first-child {
-        background: rgba(255, 255, 255, 0.03);
+        background: var(--proton-bg-tertiary);
         font-weight: 600;
         font-size: 0.95rem;
         color: var(--proton-fg);
@@ -3062,6 +3806,94 @@ body.modal-overlay-active #modal_overlay {
         word-break: break-word;
     }
 
+    /* =====================================================
+       Channel Analysis - карточки на мобильных
+       ===================================================== */
+    [data-tab] [id="channel_graph"]~table.table {
+        display: block !important;
+    }
+
+    [data-tab] [id="channel_graph"]~table.table thead {
+        display: none !important;
+    }
+
+    [data-tab] [id="channel_graph"]~table.table tbody {
+        display: flex !important;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    [data-tab] [id="channel_graph"]~table.table tr:not(.placeholder) {
+        display: flex !important;
+        flex-direction: column;
+        background: var(--proton-bg-secondary);
+        border: 1px solid var(--proton-border);
+        border-radius: var(--proton-radius);
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    [data-tab] [id="channel_graph"]~table.table tr:not(.placeholder) td {
+        display: flex !important;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        width: 100% !important;
+        padding: 10px 14px !important;
+        border-bottom: 1px solid var(--proton-border-light);
+        white-space: normal !important;
+        word-break: break-word;
+        box-sizing: border-box;
+    }
+
+    [data-tab] [id="channel_graph"]~table.table tr:not(.placeholder) td:last-child {
+        border-bottom: none;
+    }
+
+    /* Показываем data-title как label */
+    [data-tab] [id="channel_graph"]~table.table tr:not(.placeholder) td[data-title]::before {
+        content: attr(data-title);
+        font-weight: 600;
+        color: var(--proton-fg-secondary);
+        font-size: 0.8rem;
+        flex-shrink: 0;
+        min-width: 70px;
+    }
+
+    /* Сигнал - заголовок карточки (1-я колонка) */
+    [data-tab] [id="channel_graph"]~table.table tr:not(.placeholder) td:nth-child(1) {
+        background: var(--proton-bg-tertiary);
+        font-weight: 600;
+        order: -1;
+    }
+
+    [data-tab] [id="channel_graph"]~table.table tr:not(.placeholder) td:nth-child(1) .ifacebadge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    /* SSID с цветными кружками (2-я колонка) */
+    [data-tab] [id="channel_graph"]~table.table tr:not(.placeholder) td:nth-child(2) {
+        order: -2;
+        background: var(--proton-bg-hover);
+        font-size: 0.95rem;
+    }
+
+    [data-tab] [id="channel_graph"]~table.table tr:not(.placeholder) td:nth-child(2) span[style*="color"] {
+        font-weight: 600;
+    }
+
+    /* BSSID компактный (6-я колонка) */
+    [data-tab] [id="channel_graph"]~table.table tr:not(.placeholder) td:nth-child(6) {
+        font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+        font-size: 0.8rem;
+        color: var(--proton-fg-secondary);
+    }
+
     /* Signal strength - делаем читабельным */
     .proton-signal-cell,
     table.assoclist td[data-title*="Signal"],
@@ -3078,7 +3910,7 @@ body.modal-overlay-active #modal_overlay {
         flex-wrap: wrap;
         gap: 8px;
         padding: 12px 16px;
-        background: rgba(255, 255, 255, 0.02);
+        background: var(--proton-bg-tertiary);
     }
 
     table.assoclist td.cbi-section-actions .control-group,
@@ -3105,7 +3937,7 @@ body.modal-overlay-active #modal_overlay {
     #status_leases tr {
         display: flex !important;
         flex-direction: column;
-        background: rgba(255, 255, 255, 0.02);
+        background: var(--proton-bg-secondary);
         border: 1px solid var(--proton-border);
         border-radius: var(--proton-radius);
         padding: 0;
@@ -3150,7 +3982,7 @@ body.modal-overlay-active #modal_overlay {
 
     /* Hostname - выделяем как заголовок карточки */
     #status_leases td:first-child {
-        background: rgba(255, 255, 255, 0.03);
+        background: var(--proton-bg-tertiary);
         font-weight: 600;
         font-size: 0.95rem;
         color: var(--proton-fg);
@@ -3262,6 +4094,10 @@ body.modal-overlay-active #modal_overlay {
         transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
     }
 
+    :root[data-theme="light"] #mainmenu li>ul {
+        background: rgba(255, 255, 255, 0.98);
+    }
+
     #mainmenu li>ul.align-left {
         left: auto;
         right: 0;
@@ -3350,6 +4186,12 @@ body.modal-overlay-active #modal_overlay {
 #packages {
     width: 100%;
     border-spacing: 0;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Smooth scroll behavior for package list */
+#packages.table {
+    scroll-behavior: smooth;
 }
 
 /* =====================================================
@@ -3361,10 +4203,24 @@ body.modal-overlay-active #modal_overlay {
     gap: 0 !important;
     margin: 24px 0 !important;
     padding: 0 !important;
-    background: transparent !important;
+    background: var(--proton-bg-secondary) !important;
     border-radius: var(--proton-radius-lg);
     border: 1px solid var(--proton-border);
     overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Каждый блок - строка */
@@ -3384,7 +4240,7 @@ body.modal-overlay-active #modal_overlay {
 }
 
 #view>.controls:first-of-type>div:nth-child(odd) {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--proton-bg-tertiary);
 }
 
 /* Labels - inline, не колонка */
@@ -3408,20 +4264,59 @@ body.modal-overlay-active #modal_overlay {
 
 #view>.controls .cbi-progressbar {
     flex: 1 !important;
-    height: 24px !important;
-    background: var(--proton-bg-tertiary) !important;
-    border-radius: var(--proton-radius-sm) !important;
+    height: 28px !important;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.02) 100%) !important;
+    border-radius: var(--proton-radius) !important;
     overflow: hidden !important;
     border: 1px solid var(--proton-border) !important;
     position: relative !important;
     min-width: 200px !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 #view>.controls .cbi-progressbar>div {
     height: 100% !important;
-    background: linear-gradient(90deg, var(--proton-accent) 0%, #4ecdc4 100%) !important;
+    background: linear-gradient(135deg, #4a8fe7 0%, #5e9eff 50%, #4ecdc4 100%) !important;
     border-radius: 0 !important;
-    transition: width 0.3s ease !important;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative;
+    box-shadow: 0 0 15px rgba(74, 143, 231, 0.4);
+}
+
+#view>.controls .cbi-progressbar>div::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 200%;
+    }
+}
+
+/* Subtle pulse animation for active buttons */
+@keyframes subtlePulse {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(74, 143, 231, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 2px 16px rgba(74, 143, 231, 0.5);
+    }
+}
+
+#view>.controls .cbi-button-positive {
+    animation: subtlePulse 3s ease-in-out infinite;
 }
 
 /* Показать текст после progress bar */
@@ -3437,6 +4332,10 @@ body.modal-overlay-active #modal_overlay {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
+:root[data-theme="light"] #view>.controls .cbi-progressbar::after {
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
+}
+
 /* Control Groups (input + button) */
 #view>.controls .control-group {
     display: flex !important;
@@ -3450,19 +4349,22 @@ body.modal-overlay-active #modal_overlay {
     flex: 1 !important;
     min-width: 150px !important;
     max-width: 300px !important;
-    padding: 8px 12px !important;
-    background: var(--proton-bg-tertiary) !important;
-    border: 1px solid var(--proton-border) !important;
-    border-radius: var(--proton-radius-sm) !important;
+    padding: 10px 14px !important;
+    background: var(--proton-bg-primary) !important;
+    border: 2px solid var(--proton-border) !important;
+    border-radius: var(--proton-radius) !important;
     color: var(--proton-fg) !important;
     font-size: 0.9rem !important;
-    transition: var(--proton-transition) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 #view>.controls .control-group input[type="text"]:focus {
     outline: none !important;
     border-color: var(--proton-accent) !important;
-    box-shadow: 0 0 0 2px var(--proton-accent-glow) !important;
+    background: var(--proton-bg-secondary) !important;
+    box-shadow: 0 0 0 3px var(--proton-accent-glow), 0 4px 12px rgba(74, 143, 231, 0.15) !important;
+    transform: translateY(-1px);
 }
 
 #view>.controls .control-group input[type="text"]::placeholder {
@@ -3472,42 +4374,89 @@ body.modal-overlay-active #modal_overlay {
 /* Buttons in Controls */
 #view>.controls .btn,
 #view>.controls button {
-    padding: 8px 14px !important;
-    border-radius: var(--proton-radius-sm) !important;
-    font-size: 0.85rem !important;
+    padding: 10px 16px !important;
+    border-radius: var(--proton-radius) !important;
+    font-size: 0.875rem !important;
     font-weight: 500 !important;
     cursor: pointer !important;
-    transition: var(--proton-transition) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     white-space: nowrap !important;
     border: 1px solid var(--proton-border) !important;
     background: var(--proton-bg-tertiary) !important;
     color: var(--proton-fg) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 #view>.controls .btn:hover,
 #view>.controls button:hover {
     background: var(--proton-bg-hover) !important;
     border-color: var(--proton-accent) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 #view>.controls .cbi-button-positive {
-    background: var(--proton-success) !important;
+    background: linear-gradient(135deg, var(--proton-success) 0%, #48bb78 100%) !important;
     border-color: var(--proton-success) !important;
     color: #fff !important;
+    box-shadow: 0 2px 8px rgba(56, 161, 105, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+#view>.controls .cbi-button-positive::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+#view>.controls .cbi-button-positive:hover::before {
+    width: 300px;
+    height: 300px;
 }
 
 #view>.controls .cbi-button-positive:hover {
-    filter: brightness(1.1) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(56, 161, 105, 0.5) !important;
 }
 
 #view>.controls .cbi-button-action {
-    background: var(--proton-accent) !important;
+    background: linear-gradient(135deg, var(--proton-accent) 0%, #5e9eff 100%) !important;
     border-color: var(--proton-accent) !important;
     color: #fff !important;
+    box-shadow: 0 2px 8px rgba(74, 143, 231, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+#view>.controls .cbi-button-action::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+#view>.controls .cbi-button-action:hover::before {
+    width: 300px;
+    height: 300px;
 }
 
 #view>.controls .cbi-button-action:hover {
-    filter: brightness(1.1) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(74, 143, 231, 0.5) !important;
 }
 
 /* Radio Buttons - inline pills */
@@ -3521,25 +4470,31 @@ body.modal-overlay-active #modal_overlay {
     display: inline-flex !important;
     align-items: center !important;
     gap: 6px !important;
-    padding: 6px 12px !important;
+    padding: 8px 16px !important;
     background: var(--proton-bg-tertiary) !important;
-    border: 1px solid var(--proton-border) !important;
-    border-radius: 20px !important;
+    border: 2px solid var(--proton-border) !important;
+    border-radius: 24px !important;
     cursor: pointer !important;
-    transition: var(--proton-transition) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     color: var(--proton-fg-secondary) !important;
-    font-size: 0.85rem !important;
-    font-weight: 400 !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 #view>.controls label:has(input[type="radio"]):hover {
     border-color: var(--proton-accent) !important;
+    background: var(--proton-bg-hover) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 #view>.controls label:has(input[type="radio"]:checked) {
-    background: var(--proton-accent) !important;
+    background: linear-gradient(135deg, var(--proton-accent) 0%, #5e9eff 100%) !important;
     border-color: var(--proton-accent) !important;
     color: #fff !important;
+    box-shadow: 0 3px 10px rgba(74, 143, 231, 0.4);
+    transform: scale(1.05);
 }
 
 #view>.controls input[type="radio"] {
@@ -3568,10 +4523,52 @@ body.modal-overlay-active #modal_overlay {
     padding: 0 !important;
     border-bottom: 1px solid var(--proton-border-light);
     gap: 0 !important;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    animation: slideInFromLeft 0.3s ease-out backwards;
+}
+
+/* Staggered animation for table rows */
+#packages .tr:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+#packages .tr:nth-child(2) {
+    animation-delay: 0.08s;
+}
+
+#packages .tr:nth-child(3) {
+    animation-delay: 0.11s;
+}
+
+#packages .tr:nth-child(4) {
+    animation-delay: 0.14s;
+}
+
+#packages .tr:nth-child(5) {
+    animation-delay: 0.17s;
+}
+
+#packages .tr:nth-child(n+6) {
+    animation-delay: 0.2s;
+}
+
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 #packages .tr:hover {
     background: var(--proton-bg-hover);
+    transform: translateX(4px);
+    box-shadow: -4px 0 0 var(--proton-accent), 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* Переопределить inline стили из страницы для .td.version и .td.size */
@@ -3586,18 +4583,18 @@ body.modal-overlay-active #modal_overlay {
 
 /* Заголовки таблицы */
 #packages .tr.cbi-section-table-titles {
-    background: var(--proton-bg-tertiary);
-    border-bottom: 2px solid var(--proton-border);
+    background: linear-gradient(135deg, var(--proton-bg-tertiary) 0%, var(--proton-bg-secondary) 100%);
+    border-bottom: 3px solid var(--proton-accent);
     font-weight: 600;
     font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: var(--proton-muted);
+    letter-spacing: 0.05em;
+    color: var(--proton-fg);
     padding: 0 !important;
-    sticky: top;
     position: sticky;
     top: 0;
     z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 #packages .tr.cbi-section-table-titles .th {
@@ -3628,29 +4625,36 @@ body.modal-overlay-active #modal_overlay {
 #packages .td.col-2:nth-child(1),
 #packages .th.col-2:nth-child(1) {
     flex: 0 0 180px !important;
-    font-weight: 500;
+    font-weight: 600;
     white-space: normal !important;
     word-break: break-word !important;
+    color: var(--proton-fg);
 }
 
 /* Version (col-2) - перенос длинных версий */
 #packages .td.col-2:nth-child(2),
 #packages .th.col-2:nth-child(2) {
     flex: 0 0 120px !important;
-    font-family: "Courier New", monospace;
+    font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace;
     font-size: 0.85rem;
     white-space: normal !important;
     word-break: break-all !important;
+    color: var(--proton-accent);
+    background: rgba(74, 143, 231, 0.05);
+    border-radius: 4px;
+    font-weight: 500;
 }
 
 /* Size (col-1) */
 #packages .td.col-1:nth-child(3),
 #packages .th.col-1:nth-child(3) {
-    flex: 0 0 90px !important;
+    flex: 0 0 100px !important;
     text-align: center;
     color: var(--proton-muted);
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     white-space: nowrap;
+    font-weight: 500;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
 }
 
 /* Description (col-10) - ПОЛНЫЙ ТЕКСТ БЕЗ ОБРЕЗАНИЯ */
@@ -3662,80 +4666,101 @@ body.modal-overlay-active #modal_overlay {
     min-width: 250px !important;
     color: var(--proton-fg-secondary);
     font-size: 0.9rem;
-    line-height: 1.5;
+    line-height: 1.6;
     white-space: normal !important;
     overflow: visible !important;
     text-overflow: unset !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     display: block !important;
-    padding: 12px 16px !important;
+    padding: 14px 16px !important;
 }
 
 /* Action buttons (cbi-section-actions) */
 #packages .td.cbi-section-actions:nth-child(5),
 #packages .th.cbi-section-actions:nth-child(5) {
-    flex: 0 0 130px !important;
+    flex: 0 0 160px !important;
     text-align: right;
     justify-content: flex-end;
+    min-width: 160px !important;
 }
 
 /* Кнопки Install/Remove */
 #packages .cbi-button,
 #packages button {
-    white-space: nowrap !important;
-    padding: 6px 12px !important;
+    white-space: normal !important;
+    padding: 8px 14px !important;
     font-size: 0.85rem !important;
-    border-radius: 4px;
+    border-radius: var(--proton-radius);
     cursor: pointer;
-    transition: var(--proton-transition);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    text-align: center !important;
+    word-wrap: break-word !important;
+    min-width: 120px !important;
 }
 
 #packages .cbi-button-action,
 #packages .cbi-button-positive {
-    background: var(--proton-success) !important;
+    background: linear-gradient(135deg, var(--proton-success) 0%, #48bb78 100%) !important;
     border-color: var(--proton-success) !important;
     color: #fff !important;
 }
 
 #packages .cbi-button-action:hover,
 #packages .cbi-button-positive:hover {
-    opacity: 0.9;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(56, 161, 105, 0.4);
 }
 
 #packages .cbi-button-negative {
     background: rgba(255, 107, 107, 0.15) !important;
     border-color: rgba(255, 107, 107, 0.3) !important;
     color: var(--proton-danger) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root[data-theme="light"] #packages .cbi-button-negative {
+    background: rgba(245, 101, 101, 0.2) !important;
+    border-color: rgba(245, 101, 101, 0.45) !important;
 }
 
 #packages .cbi-button-negative:hover {
-    background: rgba(255, 107, 107, 0.25) !important;
+    background: rgba(255, 107, 107, 0.3) !important;
+    border-color: var(--proton-danger) !important;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(229, 62, 62, 0.4);
+}
+
+:root[data-theme="light"] #packages .cbi-button-negative:hover {
+    background: rgba(245, 101, 101, 0.35) !important;
+    border-color: #e53e3e !important;
 }
 
 /* Пагинация - контейнер с кнопками навигации */
-#view>.controls:has(.pager),
-#view>.controls .pager,
 .controls:has(.pager) {
     display: flex !important;
     flex-direction: row !important;
-    flex-wrap: nowrap !important;
+    flex-wrap: wrap !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 20px !important;
-    padding: 16px 24px !important;
-    background: var(--proton-bg-secondary);
+    gap: 16px !important;
+    padding: 16px 20px !important;
+    background: linear-gradient(135deg, var(--proton-bg-secondary) 0%, var(--proton-bg-tertiary) 100%);
     border: 1px solid var(--proton-border);
-    border-radius: var(--proton-radius);
-    margin: 16px 0 !important;
+    border-radius: var(--proton-radius-lg);
+    margin: 20px 0 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .controls .pager {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
-    justify-content: center !important;
-    gap: 20px !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
     width: 100%;
 }
 
@@ -3747,26 +4772,38 @@ body.modal-overlay-active #modal_overlay {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    min-width: 44px !important;
-    min-height: 44px !important;
-    padding: 10px 18px !important;
+    min-width: 48px !important;
+    max-width: 56px !important;
+    width: auto !important;
+    min-height: 48px !important;
+    padding: 12px 16px !important;
     background: var(--proton-bg-tertiary) !important;
-    border: 1px solid var(--proton-border) !important;
-    border-radius: var(--proton-radius-sm) !important;
+    border: 2px solid var(--proton-border) !important;
+    border-radius: var(--proton-radius) !important;
     color: var(--proton-fg) !important;
     font-size: 1.1rem !important;
     font-weight: 600 !important;
     cursor: pointer;
-    transition: var(--proton-transition);
-    flex-shrink: 0 !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    flex: 0 0 auto !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme="light"] .controls .pager button,
+:root[data-theme="light"] .controls .pager .btn,
+:root[data-theme="light"] #view>.controls button[aria-label],
+:root[data-theme="light"] .pager button {
+    color: #1a1d29 !important;
 }
 
 .controls .pager button:hover:not([disabled]),
 .controls .pager .btn:hover:not([disabled]),
 .pager button:hover:not([disabled]) {
-    background: var(--proton-accent) !important;
+    background: linear-gradient(135deg, var(--proton-accent) 0%, #5e9eff 100%) !important;
     border-color: var(--proton-accent) !important;
     color: #fff !important;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(74, 143, 231, 0.4);
 }
 
 .controls .pager button[disabled],
@@ -3782,18 +4819,27 @@ body.modal-overlay-active #modal_overlay {
 .pager .text {
     color: var(--proton-fg) !important;
     font-size: 0.95rem !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
     white-space: nowrap !important;
     text-align: center !important;
-    flex: 0 0 auto !important;
+    flex: 0 1 auto !important;
+    padding: 8px 12px;
+    background: var(--proton-bg-tertiary);
+    border-radius: var(--proton-radius);
+    border: 1px solid var(--proton-border);
+    letter-spacing: 0.02em;
 }
 
 /* Табы Available/Installed/Updates */
 #packages .cbi-tabmenu {
-    margin: 20px 0 !important;
+    margin: 24px 0 16px !important;
     display: flex;
-    gap: 8px;
-    border-bottom: 1px solid var(--proton-border);
+    gap: 4px;
+    border-bottom: 2px solid var(--proton-border);
+    background: var(--proton-bg-secondary);
+    border-radius: var(--proton-radius) var(--proton-radius) 0 0;
+    padding: 4px;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
 }
 
 #packages .cbi-tabmenu li {
@@ -3804,22 +4850,51 @@ body.modal-overlay-active #modal_overlay {
 
 #packages .cbi-tabmenu li a {
     display: block;
-    padding: 12px 16px;
-    color: var(--proton-muted);
+    padding: 12px 20px;
+    color: var(--proton-fg-secondary);
     text-decoration: none;
-    border-bottom: 3px solid transparent;
-    transition: var(--proton-transition);
+    border-radius: var(--proton-radius-sm);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+}
+
+#packages .cbi-tabmenu li a::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    background: var(--proton-accent);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(-50%);
+}
+
+#packages .cbi-tabmenu li a:hover {
+    background: var(--proton-bg-hover);
+    color: var(--proton-fg);
 }
 
 #packages .cbi-tabmenu li.cbi-tab a,
 #packages .cbi-tabmenu li.active a {
+    background: var(--proton-bg-tertiary);
     color: var(--proton-accent);
-    border-bottom-color: var(--proton-accent);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#packages .cbi-tabmenu li.cbi-tab a::before,
+#packages .cbi-tabmenu li.active a::before {
+    width: 100%;
 }
 
 #packages .cbi-tabmenu li.cbi-tab-disabled a {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
+    pointer-events: none;
 }
 
 /* =====================================================
@@ -3830,36 +4905,196 @@ body.modal-overlay-active #modal_overlay {
     /* Controls - верхняя панель управления */
     #view>.controls {
         flex-direction: column !important;
-        gap: 12px !important;
-        padding: 12px !important;
+        gap: 0 !important;
+        padding: 0 !important;
+        margin: 16px 0 !important;
+    }
+
+    #view>.controls:first-of-type {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
     }
 
     #view>.controls>div {
         width: 100% !important;
         flex: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        padding: 16px !important;
+    }
+
+    /* Исключение для .pager - оставляем горизонтальным */
+    #view>.controls>div.pager,
+    #view>.controls .pager {
+        flex-direction: row !important;
+        width: 100% !important;
+    }
+
+    #view>.controls>div>label:first-child {
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 2px !important;
+        min-width: auto !important;
+    }
+
+    #view>.controls>div>* {
+        width: 100% !important;
+    }
+
+    /* Исключение для элементов внутри .pager */
+    #view>.controls .pager>* {
+        width: auto !important;
+    }
+
+    #view>.controls .control-group {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        width: 100% !important;
+    }
+
+    #view>.controls .control-group>* {
+        width: 100% !important;
+        margin-left: 0 !important;
+        min-height: 48px !important;
     }
 
     #view>.controls input[type="text"] {
         width: 100% !important;
+        max-width: 100% !important;
+        min-height: 48px !important;
+        padding: 14px 16px !important;
+        font-size: 0.9rem !important;
+        box-sizing: border-box !important;
+    }
+
+    #view>.controls input[type="text"]::placeholder {
+        font-size: 0.9rem !important;
+    }
+
+    /* Все кнопки - единый размер */
+    #view>.controls button,
+    #view>.controls .btn,
+    #view>.controls .cbi-button,
+    #view>.controls .cbi-button-action,
+    #view>.controls .cbi-button-positive,
+    #view>.controls .cbi-button-neutral {
+        width: 100% !important;
+        min-height: 48px !important;
+        padding: 14px 16px !important;
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    #view>.controls .cbi-progressbar {
+        min-width: auto !important;
+        width: 100% !important;
+        height: 32px !important;
+        flex: none !important;
+    }
+
+    #view>.controls .cbi-progressbar::after {
+        font-size: 0.75rem !important;
+        right: 10px !important;
     }
 
     #view>.controls label:has(input[type="radio"]) {
-        padding: 8px 12px !important;
-        font-size: 0.85rem !important;
+        padding: 12px 18px !important;
+        font-size: 0.9rem !important;
+        font-weight: 500 !important;
+        min-height: 44px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 1 !important;
+    }
+
+    #view>.controls>div>div:has(input[type="radio"]) {
+        display: flex !important;
+        gap: 8px !important;
+        width: 100% !important;
     }
 
     /* Пагинация - компактно на мобильных */
-    #view>.controls:has(.pager),
     .controls:has(.pager) {
-        flex-direction: row !important;
         flex-wrap: wrap !important;
         gap: 10px !important;
-        padding: 10px !important;
+        padding: 12px 16px !important;
     }
 
     .controls .pager {
-        flex-wrap: wrap !important;
+        flex-wrap: nowrap !important;
+        justify-content: space-between !important;
         gap: 8px !important;
+    }
+
+    .controls .pager button,
+    .controls .pager .btn,
+    .pager button {
+        min-width: 48px !important;
+        max-width: 52px !important;
+        width: 52px !important;
+        min-height: 48px !important;
+        padding: 10px !important;
+        font-size: 1rem !important;
+        flex: 0 0 auto !important;
+    }
+
+    .controls .pager .text,
+    .pager .text {
+        font-size: 0.875rem !important;
+        padding: 8px 10px !important;
+        white-space: nowrap !important;
+        text-align: center !important;
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+    }
+
+    /* Упрощаем hover эффекты на мобильных */
+    #view>.controls button:hover,
+    #view>.controls .btn:hover {
+        transform: none !important;
+    }
+
+    #view>.controls .cbi-button-action:hover,
+    #view>.controls .cbi-button-positive:hover {
+        transform: none !important;
+    }
+
+    #view>.controls label:has(input[type="radio"]):hover {
+        transform: none !important;
+    }
+
+    #view>.controls label:has(input[type="radio"]:checked) {
+        transform: none !important;
+    }
+
+    .controls .pager button:hover:not([disabled]) {
+        transform: none !important;
+    }
+
+    /* Блок Actions с несколькими кнопками */
+    #view>.controls>div:has([data-command]) .control-group,
+    #view>.controls>div:nth-child(4) .control-group {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    #view>.controls>div:has([data-command]) .control-group button,
+    #view>.controls>div:nth-child(4) .control-group button {
+        width: 100% !important;
+    }
+
+    /* Поля ввода на всю ширину на мобильных */
+    #view>.controls .control-group input[type="text"] {
+        min-width: 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
     }
 
     /* Таблица пакетов - карточный layout */
@@ -3876,13 +5111,13 @@ body.modal-overlay-active #modal_overlay {
     #packages .tr:not(.cbi-section-table-titles) {
         display: grid !important;
         grid-template-columns: 1fr auto !important;
-        grid-template-rows: auto auto auto !important;
+        grid-template-rows: auto auto auto auto !important;
         background: var(--proton-bg-secondary) !important;
         border: 1px solid var(--proton-border) !important;
         border-radius: var(--proton-radius-sm) !important;
         padding: 12px !important;
         margin-bottom: 8px !important;
-        gap: 4px 12px !important;
+        gap: 6px 12px !important;
     }
 
     #packages .tr:not(.cbi-section-table-titles):hover {
@@ -3904,7 +5139,7 @@ body.modal-overlay-active #modal_overlay {
 
     /* Имя пакета - главный заголовок */
     #packages .td.col-2:nth-child(1) {
-        grid-column: 1 / 2 !important;
+        grid-column: 1 / -1 !important;
         grid-row: 1 !important;
         font-size: 0.95rem !important;
         font-weight: 600 !important;
@@ -3920,28 +5155,35 @@ body.modal-overlay-active #modal_overlay {
         display: none !important;
     }
 
-    /* Версия и Размер - в одну строку */
+    /* Версия - слева */
     #packages .td.col-2:nth-child(2) {
-        grid-column: 1 / 2 !important;
+        grid-column: 1 !important;
         grid-row: 2 !important;
         font-size: 0.8rem !important;
         color: var(--proton-muted) !important;
-        font-family: inherit !important;
+        font-family: monospace !important;
+        word-break: break-all !important;
+        overflow-wrap: anywhere !important;
+        display: block !important;
+        align-self: center !important;
     }
 
+    /* Размер - справа с badge-стилем */
     #packages .td.col-1:nth-child(3) {
-        grid-column: 1 / 2 !important;
+        grid-column: 2 !important;
         grid-row: 2 !important;
-        text-align: left !important;
-        font-size: 0.8rem !important;
-        color: var(--proton-muted) !important;
-        margin-left: auto !important;
-    }
-
-    /* Версия + Размер в одной строке */
-    #packages .td.col-2:nth-child(2)::after {
-        content: " • " !important;
-        display: inline !important;
+        text-align: right !important;
+        font-size: 0.75rem !important;
+        color: var(--proton-fg) !important;
+        display: inline-block !important;
+        font-weight: 600 !important;
+        font-family: monospace !important;
+        background: var(--proton-bg-tertiary) !important;
+        padding: 4px 10px !important;
+        border-radius: 12px !important;
+        border: 1px solid var(--proton-border) !important;
+        white-space: nowrap !important;
+        align-self: center !important;
     }
 
     /* Описание - компактное */
@@ -3952,24 +5194,39 @@ body.modal-overlay-active #modal_overlay {
         font-size: 0.85rem !important;
         line-height: 1.4 !important;
         color: var(--proton-fg-secondary) !important;
-        margin-top: 6px !important;
+        margin-top: 4px !important;
         padding-top: 8px !important;
         border-top: 1px solid var(--proton-border-light) !important;
     }
 
-    /* Кнопка - справа сверху */
+    /* Кнопка - внизу на полную ширину */
     #packages .td.cbi-section-actions:nth-child(5) {
-        grid-column: 2 !important;
-        grid-row: 1 / 3 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: flex-end !important;
+        grid-column: 1 / -1 !important;
+        grid-row: 4 !important;
+        display: block !important;
+        width: 100% !important;
+        margin-top: 4px !important;
+        padding: 0 !important;
+        text-align: left !important;
     }
 
-    #packages .td.cbi-section-actions .cbi-button {
-        padding: 6px 14px !important;
-        font-size: 0.8rem !important;
+    #packages .td.cbi-section-actions .cbi-button,
+    #packages .td.cbi-section-actions button,
+    #packages .td.cbi-section-actions .btn,
+    #packages .td.cbi-section-actions .cbi-button-action,
+    #packages .td.cbi-section-actions .cbi-button-positive,
+    #packages .td.cbi-section-actions .cbi-button-negative {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 12px 16px !important;
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
         white-space: nowrap !important;
+        text-align: center !important;
+        min-height: 44px !important;
+        display: block !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
     }
 }
 
@@ -4043,7 +5300,7 @@ body.modal-overlay-active #modal_overlay {
 }
 
 #cbi-firewall-rule table.cbi-section-table tr.cbi-section-table-row:nth-child(even) {
-    background: rgba(255, 255, 255, 0.01);
+    background: var(--proton-bg-tertiary);
 }
 
 #cbi-firewall-rule table.cbi-section-table tr.cbi-section-table-row:nth-child(even):hover {
@@ -4099,6 +5356,10 @@ body.modal-overlay-active #modal_overlay {
     border: none !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2) !important;
+}
+
+:root[data-theme="light"] #cbi-firewall .zonebadge {
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5) !important;
 }
 
 #cbi-firewall .zonebadge strong,
@@ -5199,10 +6460,15 @@ body[data-page=""] .cbi-section:first-of-type table.table {
 
 body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table tr,
 body[data-page=""] .cbi-section:first-of-type table.table tr {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--proton-bg-tertiary);
     border-radius: var(--proton-radius-sm);
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+}
+
+:root[data-theme="light"] body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table tr,
+:root[data-theme="light"] body[data-page=""] .cbi-section:first-of-type table.table tr {
+    background: var(--proton-bg-secondary);
 }
 
 body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table tr:hover,
@@ -5252,7 +6518,12 @@ body[data-page=""] .cbi-section:first-of-type table.table td:last-child {
 /* Zebra striping для улучшенной читаемости */
 body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table tr:nth-child(even),
 body[data-page=""] .cbi-section:first-of-type table.table tr:nth-child(even) {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--proton-bg-secondary);
+}
+
+:root[data-theme="light"] body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table tr:nth-child(even),
+:root[data-theme="light"] body[data-page=""] .cbi-section:first-of-type table.table tr:nth-child(even) {
+    background: var(--proton-bg-tertiary);
 }
 
 body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table tr:nth-child(even):hover,
@@ -5333,6 +6604,10 @@ body[data-page=""] .cbi-section:first-of-type table.table tr:has(td:first-child:
     backdrop-filter: blur(12px);
 }
 
+:root[data-theme="light"] .proton-load-tooltip {
+    background: rgba(255, 255, 255, 0.98);
+}
+
 .proton-load-info:hover .proton-load-tooltip {
     opacity: 1;
     visibility: visible;
@@ -5346,6 +6621,10 @@ body[data-page=""] .cbi-section:first-of-type table.table tr:has(td:first-child:
     right: 8px;
     border: 6px solid transparent;
     border-top-color: rgba(26, 31, 46, 0.98);
+}
+
+:root[data-theme="light"] .proton-load-tooltip::after {
+    border-top-color: rgba(255, 255, 255, 0.98);
 }
 
 .proton-load-tooltip-title {
@@ -5440,7 +6719,7 @@ body[data-page=""] .cbi-section:first-of-type table.table tr:has(td:first-child:
 .proton-load-bar {
     width: 60px;
     height: 6px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--proton-bg-hover);
     border-radius: 3px;
     overflow: hidden;
     position: relative;
@@ -5514,46 +6793,106 @@ body[data-page=""] .cbi-section:first-of-type table.table tr:has(td:first-child:
     transition: none;
 }
 
-/* Мобильная адаптация */
+/* Мобильная адаптация - Overview Tables (как assoclist) */
 @media only screen and (max-width: 800px) {
 
-    body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table tr,
-    body[data-page=""] .cbi-section:first-of-type table.table tr {
+    /* =====================================================
+       Все таблицы на Overview - карточный стиль
+       ===================================================== */
+    body[data-page="admin-status-overview"] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6),
+    body[data-page=""] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) {
+        display: block !important;
+        border: none;
+        background: transparent;
+    }
+
+    body[data-page="admin-status-overview"] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) tbody,
+    body[data-page=""] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) tbody {
         display: flex;
         flex-direction: column;
-        padding: 12px;
-        margin-bottom: 8px;
+        gap: 0;
     }
 
-    body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table td,
-    body[data-page=""] .cbi-section:first-of-type table.table td {
-        padding: 4px 0;
-        width: 100% !important;
+    body[data-page="admin-status-overview"] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) tr,
+    body[data-page=""] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) tr {
+        display: flex !important;
+        flex-direction: column;
+        background: var(--proton-bg-secondary);
+        border: 1px solid var(--proton-border);
+        border-radius: var(--proton-radius);
+        padding: 0;
+        margin: 0 0 12px 0;
+        overflow: hidden;
     }
 
-    body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table td:first-child,
-    body[data-page=""] .cbi-section:first-of-type table.table td:first-child {
-        font-size: 0.85rem;
-        opacity: 0.8;
-        margin-bottom: 4px;
-        padding-right: 0;
+    body[data-page="admin-status-overview"] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) tr:last-child,
+    body[data-page=""] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) tr:last-child {
+        margin-bottom: 0;
     }
 
-    body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table td:first-child::after,
-    body[data-page=""] .cbi-section:first-of-type table.table td:first-child::after {
+    body[data-page="admin-status-overview"] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) thead,
+    body[data-page=""] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) thead {
         display: none;
     }
 
-    body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table td:last-child,
-    body[data-page=""] .cbi-section:first-of-type table.table td:last-child {
+    body[data-page="admin-status-overview"] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) td,
+    body[data-page=""] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) td {
+        display: flex !important;
+        flex-direction: column;
+        width: 100% !important;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--proton-border-light);
+        white-space: normal !important;
+        text-overflow: unset;
+        overflow: visible;
+    }
+
+    body[data-page="admin-status-overview"] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) td:last-child,
+    body[data-page=""] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) td:last-child {
+        border-bottom: none;
+    }
+
+    /* Первая колонка - название параметра (как заголовок) */
+    body[data-page="admin-status-overview"] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) td:first-child,
+    body[data-page=""] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) td:first-child {
+        background: var(--proton-bg-tertiary);
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--proton-accent);
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        padding: 10px 16px;
+    }
+
+    /* Убираем декоративную линию */
+    body[data-page="admin-status-overview"] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) td:first-child::after,
+    body[data-page=""] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) td:first-child::after {
+        display: none;
+    }
+
+    /* Вторая колонка - значение */
+    body[data-page="admin-status-overview"] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) td:last-child,
+    body[data-page=""] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) td:last-child {
         font-weight: 500;
-        padding-left: 0;
+        font-size: 0.95rem;
+        color: var(--proton-fg);
+        padding: 12px 16px;
+        padding-left: 16px;
+    }
+
+    /* Progress bars - адаптация на мобилке */
+    body[data-page="admin-status-overview"] .cbi-section table.table .cbi-progressbar,
+    body[data-page=""] .cbi-section table.table .cbi-progressbar {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
     }
 
     /* Load Average на мобильных */
     .proton-load-average {
         flex-direction: column;
         gap: 12px;
+        width: 100%;
     }
 
     .proton-load-item {
@@ -5566,7 +6905,48 @@ body[data-page=""] .cbi-section:first-of-type table.table tr:has(td:first-child:
 
     .proton-load-bar {
         flex: 1;
-        max-width: 120px;
+        max-width: none;
+    }
+
+    .proton-load-info {
+        position: absolute;
+        top: -40px;
+        right: 0;
+    }
+
+    /* Tooltip - показываем снизу на мобильных */
+    .proton-load-tooltip {
+        bottom: auto;
+        top: calc(100% + 12px);
+        right: -8px;
+        left: auto;
+        min-width: 250px;
+        max-width: calc(100vw - 32px);
+        z-index: 10001;
+    }
+
+    .proton-load-tooltip::after {
+        top: auto;
+        bottom: 100%;
+        border-top-color: transparent;
+        border-bottom-color: rgba(26, 31, 46, 0.98);
+    }
+
+    :root[data-theme="light"] .proton-load-tooltip::after {
+        border-top-color: transparent;
+        border-bottom-color: rgba(255, 255, 255, 0.98);
+    }
+
+    /* Убираем overflow: hidden для карточек с Load Average */
+    body[data-page="admin-status-overview"] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) tr:has(.proton-load-average),
+    body[data-page=""] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) tr:has(.proton-load-average) {
+        overflow: visible;
+    }
+
+    body[data-page="admin-status-overview"] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) td:has(.proton-load-average),
+    body[data-page=""] .cbi-section table.table:not(.assoclist):not(#status_leases):not(#status_leases6) td:has(.proton-load-average) {
+        overflow: visible;
+        position: relative;
     }
 }
 
@@ -5594,30 +6974,90 @@ body[data-page=""] .cbi-section:first-of-type table.table tr:has(td:first-child:
 
 /* Zoom range slider styling */
 input[type="range"]#proton-zoom-range {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 100%;
     height: 6px;
     border-radius: 3px;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--proton-bg-hover);
     cursor: pointer;
+    border: none;
+    outline: none;
+    margin: 0;
+    padding: 0;
+}
+
+:root[data-theme="light"] input[type="range"]#proton-zoom-range {
+    background: rgba(0, 0, 0, 0.12);
 }
 
 input[type="range"]#proton-zoom-range::-webkit-slider-thumb {
     -webkit-appearance: none;
+    appearance: none;
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: var(--proton-accent);
+    background: #5e9eff;
     cursor: pointer;
+    border: none;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    margin-top: -6px;
+    /* Center thumb on track: (thumb_height - track_height) / 2 = (18-6)/2 = 6 */
+}
+
+:root[data-theme="light"] input[type="range"]#proton-zoom-range::-webkit-slider-thumb {
+    background: #4a8fe7;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 input[type="range"]#proton-zoom-range::-moz-range-thumb {
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: var(--proton-accent);
+    background: #5e9eff;
     cursor: pointer;
     border: none;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+:root[data-theme="light"] input[type="range"]#proton-zoom-range::-moz-range-thumb {
+    background: #4a8fe7;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Webkit slider track */
+input[type="range"]#proton-zoom-range::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--proton-bg-hover);
+}
+
+:root[data-theme="light"] input[type="range"]#proton-zoom-range::-webkit-slider-runnable-track {
+    background: rgba(0, 0, 0, 0.12);
+}
+
+/* Firefox slider track */
+input[type="range"]#proton-zoom-range::-moz-range-track {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--proton-bg-hover);
+    border: none;
+}
+
+:root[data-theme="light"] input[type="range"]#proton-zoom-range::-moz-range-track {
+    background: rgba(0, 0, 0, 0.12);
+}
+
+/* Firefox progress (filled part) */
+input[type="range"]#proton-zoom-range::-moz-range-progress {
+    height: 6px;
+    border-radius: 3px 0 0 3px;
+    background: #5e9eff;
+}
+
+:root[data-theme="light"] input[type="range"]#proton-zoom-range::-moz-range-progress {
+    background: #4a8fe7;
 }
 
 #proton-zoom-value {
@@ -5649,41 +7089,8 @@ input[type="range"]#proton-zoom-range::-moz-range-thumb {
     -webkit-backdrop-filter: blur(20px);
 }
 
-/* =====================================================
-   Theme Settings Section Styling
-   ===================================================== */
-#proton-theme-settings {
-    background: rgba(94, 158, 255, 0.03);
-    border-radius: var(--proton-radius-sm);
-    padding: 1.25rem;
-}
-
-#proton-theme-settings h4 {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-#proton-theme-settings h4::before {
-    content: "⚙";
-    font-size: 1.1rem;
-    opacity: 0.8;
-}
-
-#proton-theme-settings .cbi-value {
-    background: rgba(255, 255, 255, 0.02);
-    padding: 0.75rem;
-    border-radius: var(--proton-radius-sm);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-#proton-theme-settings .cbi-value-title {
-    min-width: 180px;
-}
-
-#proton-theme-settings .cbi-value-description {
-    margin-top: 0.375rem;
-    font-size: 0.85rem;
+:root[data-theme="light"] .proton-transparency #menubar {
+    background: rgba(255, 255, 255, 0.6) !important;
 }
 
 /* =====================================================
@@ -5707,97 +7114,672 @@ input[type="range"]#proton-zoom-range::-moz-range-thumb {
 }
 
 /* =====================================================
-   Services Widget - Main Page
+   Temperature Widget - Main Page
    ===================================================== */
-.proton-services-widget {
-    margin: 24px 0;
+.proton-temp-widget {
+    margin: 0;
     background: var(--proton-bg-secondary);
     border: 1px solid var(--proton-border);
     border-radius: var(--proton-radius);
-    padding: 20px;
+    padding: 14px 16px;
     backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.proton-services-header {
+/* Если виджеты в контейнере - объединяем их в единый блок */
+.proton-widgets-container .proton-services-widget:not(:first-child),
+.proton-widgets-container .proton-temp-widget:not(:first-child) {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top: none;
+    margin-top: 0;
+    position: relative;
+}
+
+
+
+/* Если виджеты в контейнере - убираем нижний border-radius у первого виджета */
+.proton-widgets-container .proton-services-widget:not(:last-child),
+.proton-widgets-container .proton-temp-widget:not(:last-child) {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.proton-temp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 12px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--proton-border);
+}
+
+.proton-temp-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--proton-fg);
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.proton-temp-info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(94, 158, 255, 0.15);
+    color: var(--proton-accent);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: help;
+    transition: var(--proton-transition);
+    position: relative;
+}
+
+.proton-temp-tooltip {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    background: rgba(26, 31, 46, 0.98);
+    border: 1px solid var(--proton-border);
+    border-radius: var(--proton-radius-sm);
+    padding: 12px 16px;
+    min-width: 280px;
+    max-width: 340px;
+    box-shadow: var(--proton-shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 1000;
+    backdrop-filter: blur(12px);
+    text-align: left;
+}
+
+:root[data-theme="light"] .proton-temp-tooltip {
+    background: rgba(255, 255, 255, 0.98);
+}
+
+.proton-temp-info:hover .proton-temp-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.proton-temp-tooltip::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    right: 12px;
+    border: 6px solid transparent;
+    border-bottom-color: rgba(26, 31, 46, 0.98);
+}
+
+:root[data-theme="light"] .proton-temp-tooltip::after {
+    border-bottom-color: rgba(255, 255, 255, 0.98);
+}
+
+:root[data-theme="light"] .proton-temp-widget {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme="light"] .proton-temp-card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme="light"] .proton-temp-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+:root[data-theme="light"] .proton-temp-bar-container {
+    background: rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* Light theme for Services Widget */
+:root[data-theme="light"] .proton-services-widget {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme="light"] .proton-service-card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme="light"] .proton-service-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.proton-temp-tooltip-title {
+    font-weight: 600;
+    color: var(--proton-accent);
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.proton-temp-tooltip-text {
+    color: var(--proton-fg-secondary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.proton-temp-tooltip-legend {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--proton-border);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.8rem;
+}
+
+.proton-temp-tooltip-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.proton-temp-tooltip-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.proton-temp-tooltip-legend-dot.normal {
+    background: var(--proton-success);
+}
+
+.proton-temp-tooltip-legend-dot.warm {
+    background: #ffc107;
+}
+
+.proton-temp-tooltip-legend-dot.hot {
+    background: #ff9800;
+}
+
+.proton-temp-tooltip-legend-dot.critical {
+    background: var(--proton-danger);
+}
+
+.proton-temp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px;
+}
+
+.proton-temp-card {
+    background: var(--proton-bg-tertiary);
+    border: 1px solid var(--proton-border);
+    border-radius: var(--proton-radius-sm);
+    padding: 10px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.proton-temp-card:hover {
+    background: var(--proton-bg-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-color: var(--proton-border-hover, var(--proton-border));
+}
+
+/*.proton-temp-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--proton-success);
+    transition: var(--proton-transition);
+}*/
+
+.proton-temp-card[data-level="warm"]::before {
+    background: #ffffff00;
+}
+
+.proton-temp-card[data-level="hot"]::before {
+    background: #f97316;
+}
+
+.proton-temp-card[data-level="critical"]::before {
+    background: #ef4444;
+}
+
+.proton-temp-value-container {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.proton-temp-value-wrapper {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.proton-temp-sensor-name {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--proton-muted);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+    opacity: 0.7;
+    letter-spacing: 0.2px;
+    align-self: flex-end;
+    padding-bottom: 2px;
+    min-width: 0;
+    max-width: 50%;
+}
+
+.proton-temp-value {
+    font-size: 17px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--proton-success);
+    transition: color 0.3s ease;
+    letter-spacing: -0.5px;
+}
+
+.proton-temp-card[data-level="warm"] .proton-temp-value {
+    color: #fbbf24;
+}
+
+.proton-temp-card[data-level="hot"] .proton-temp-value {
+    color: #f97316;
+}
+
+.proton-temp-card[data-level="critical"] .proton-temp-value {
+    color: #ef4444;
+}
+
+.proton-temp-unit {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--proton-muted);
+}
+
+.proton-temp-bar-container {
+    width: 100%;
+    height: 4px;
+    background: var(--proton-bg-hover);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.proton-temp-bar {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(90deg, var(--proton-success), rgba(107, 207, 127, 0.6));
+}
+
+.proton-temp-card[data-level="warm"] .proton-temp-bar {
+    background: linear-gradient(90deg, #fbbf24, rgba(251, 191, 36, 0.5));
+}
+
+.proton-temp-card[data-level="hot"] .proton-temp-bar {
+    background: linear-gradient(90deg, #f97316, rgba(249, 115, 22, 0.5));
+}
+
+.proton-temp-card[data-level="critical"] .proton-temp-bar {
+    background: linear-gradient(90deg, #ef4444, rgba(239, 68, 68, 0.5));
+}
+
+.proton-temp-bar::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+.proton-temp-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    /*text-transform: uppercase;*/
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.proton-temp-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--proton-success);
+    animation: pulse-dot 2s ease-in-out infinite;
+}
+
+.proton-temp-card[data-level="warm"] .proton-temp-status-dot {
+    background: #fbbf24;
+}
+
+.proton-temp-card[data-level="hot"] .proton-temp-status-dot {
+    background: #f97316;
+}
+
+.proton-temp-card[data-level="critical"] .proton-temp-status-dot {
+    background: #ef4444;
+    animation: pulse-dot 1s ease-in-out infinite;
+}
+
+.proton-temp-status-text {
+    color: var(--proton-success);
+}
+
+.proton-temp-card[data-level="warm"] .proton-temp-status-text {
+    color: #fbbf24;
+}
+
+.proton-temp-card[data-level="hot"] .proton-temp-status-text {
+    color: #f97316;
+}
+
+.proton-temp-card[data-level="critical"] .proton-temp-status-text {
+    color: #ef4444;
+}
+
+.proton-temp-peak {
+    font-size: 12px;
+    color: var(--proton-muted);
+    margin-left: auto;
+    opacity: 0.8;
+    font-weight: 500;
+}
+
+.proton-temp-empty,
+.proton-temp-loading {
+    text-align: center;
+    padding: 24px;
+    color: var(--proton-muted);
+    font-size: 14px;
+}
+
+.proton-temp-loading {
+    animation: pulse-opacity 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-opacity {
+    0%, 100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+@keyframes pulse-scale {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* Мобильная адаптация виджетов */
+@media only screen and (max-width: 600px) {
+    .proton-widgets-container {
+        margin: 16px 0;
+        overflow: hidden;
+        max-width: 100%;
+    }
+
+    .proton-temp-widget,
+    .proton-services-widget {
+        padding: 16px;
+        border-radius: var(--proton-radius-sm);
+        overflow: hidden;
+        max-width: 100%;
+    }
+
+    .proton-temp-grid,
+    .proton-services-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .proton-temp-card,
+    .proton-service-card {
+        padding: 14px;
+        overflow: hidden;
+    }
+
+    .proton-temp-value {
+        font-size: 20px;
+    }
+
+    .proton-temp-title,
+    .proton-services-title {
+        font-size: 16px;
+    }
+
+    .proton-add-service-btn {
+        width: 18px;
+        height: 18px;
+        font-size: 12px;
+    }
+
+    .proton-temp-value-container {
+        flex-wrap: wrap;
+    }
+
+    .proton-temp-sensor-name {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .proton-temp-tooltip {
+        min-width: 200px;
+        max-width: calc(100vw - 48px);
+        right: -8px;
+    }
+
+    .proton-temp-info {
+        position: static;
+    }
+
+    .proton-temp-header {
+        position: relative;
+    }
+}
+
+/* Отключаем анимации при необходимости */
+@media (prefers-reduced-motion: reduce) {
+    .proton-temp-bar::after {
+        animation: none;
+    }
+
+    .proton-temp-status-dot {
+        animation: none;
+    }
+
+    .proton-temp-card,
+    .proton-temp-bar,
+    .proton-temp-value {
+        transition: none;
+    }
+}
+
+.proton-no-animations .proton-temp-bar::after,
+.proton-no-animations .proton-temp-status-dot {
+    animation: none;
+}
+
+.proton-no-animations .proton-temp-card,
+.proton-no-animations .proton-temp-bar,
+.proton-no-animations .proton-temp-value {
+    transition: none;
+}
+
+/* =====================================================
+   Widgets Container - Общий контейнер для виджетов
+   ===================================================== */
+.proton-widgets-section {
+    margin: 24px 0;
+}
+
+.proton-widgets-section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
 }
 
-.proton-services-title {
-    font-size: 18px;
+.proton-widgets-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* Общий заголовок "Виджеты" над контейнером */
+.proton-widgets-section-title {
+    font-size: 1.5rem;
     font-weight: 600;
     color: var(--proton-fg);
     margin: 0;
+    letter-spacing: -0.01em;
+}
+
+/* Кнопка настроек виджетов в заголовке секции */
+.proton-widgets-settings-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(94, 158, 255, 0.15);
+    color: var(--proton-accent);
+    font-size: 16px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: var(--proton-transition);
+    line-height: 1;
+    padding: 0;
+}
+
+.proton-widgets-settings-btn:hover {
+    background: rgba(94, 158, 255, 0.3);
+    transform: scale(1.1);
+}
+
+/* =====================================================
+   Services Widget - Main Page
+   ===================================================== */
+.proton-services-widget {
+    margin: 0;
+    background: var(--proton-bg-secondary);
+    border: 1px solid var(--proton-border);
+    border-radius: var(--proton-radius);
+    padding: 14px 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.proton-services-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 12px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--proton-border);
+}
+
+.proton-services-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--proton-fg);
+    margin: 0;
+    letter-spacing: -0.01em;
 }
 
 .proton-add-service-btn {
-    background: var(--proton-accent);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 38px;
-    height: 38px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(94, 158, 255, 0.15);
+    color: var(--proton-accent);
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
     cursor: pointer;
     transition: var(--proton-transition);
-    font-size: 20px;
     line-height: 1;
-    box-shadow: var(--proton-shadow-sm);
+    padding: 0;
 }
 
 .proton-add-service-btn:hover {
-    background: var(--proton-accent-hover);
-    transform: scale(1.05);
-    box-shadow: 0 0 20px var(--proton-accent-glow);
+    background: rgba(94, 158, 255, 0.3);
+    transform: scale(1.1);
 }
 
-.proton-add-service-btn:active {
-    transform: scale(0.95);
-}
 
-/* Пульсирующая анимация для привлечения внимания */
-@keyframes pulse-button {
-    0%, 100% {
-        transform: scale(1);
-        box-shadow: var(--proton-shadow-sm);
-    }
-
-    50% {
-        transform: scale(1.1);
-        box-shadow: 0 0 20px var(--proton-accent-glow);
-    }
-}
-
-.proton-add-service-btn.pulse {
-    animation: pulse-button 2s ease-in-out 3;
-}
 
 .proton-services-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+/* Empty state placeholder for services widget */
+.proton-services-empty {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 0;
+    color: var(--proton-muted);
+    font-size: 0.85rem;
+}
+
+.proton-services-empty-hint {
+    opacity: 0.7;
 }
 
 /* Log area under services widget */
 .proton-services-log {
-    margin-top: 14px;
-    padding: 10px 12px;
+    margin-top: 10px;
+    padding: 6px 10px;
     background: var(--proton-bg-tertiary);
     border: 1px solid var(--proton-border-light);
     border-radius: var(--proton-radius-sm);
     color: var(--proton-fg-secondary);
-    font-size: 12px;
-    line-height: 1.4;
-    min-height: 18px;
+    font-size: 11px;
+    line-height: 1.3;
+    min-height: 14px;
 }
 
 .proton-services-log-line {
     display: flex;
-    gap: 8px;
+    gap: 6px;
 }
 
 .proton-services-log-time {
@@ -5816,14 +7798,14 @@ input[type="range"]#proton-zoom-range::-moz-range-thumb {
 /* Category headers in widget */
 .proton-services-category-header {
     grid-column: 1 / -1;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
     color: var(--proton-muted);
-    padding: 8px 0 4px 0;
-    border-bottom: 1px solid var(--proton-border);
-    margin-top: 8px;
+    padding: 6px 0 3px 0;
+    border-bottom: 1px solid var(--proton-border-light, var(--proton-border));
+    margin-top: 6px;
 }
 
 .proton-services-category-header:first-child {
@@ -5834,88 +7816,68 @@ input[type="range"]#proton-zoom-range::-moz-range-thumb {
     background: var(--proton-bg-tertiary);
     border: 1px solid var(--proton-border);
     border-radius: var(--proton-radius-sm);
-    padding: 16px;
-    transition: var(--proton-transition);
-    cursor: pointer;
+    padding: 10px 12px;
+    transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 }
 
 .proton-service-card:hover {
     background: var(--proton-bg-hover);
-    border-color: var(--proton-accent);
-    transform: translateY(-2px);
-    box-shadow: var(--proton-shadow-md);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .proton-service-card-header {
     display: flex;
-    justify-content: flex-start;
     align-items: center;
     gap: 8px;
-    margin-bottom: 12px;
-}
-
-.proton-service-icon {
-    font-size: 18px;
-    flex-shrink: 0;
-}
-
-.proton-service-name {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--proton-fg);
-    margin: 0;
+    min-width: 0;
     flex: 1;
 }
 
-.proton-service-remove {
-    background: transparent;
-    border: none;
-    color: var(--proton-muted);
-    cursor: pointer;
-    font-size: 18px;
+.proton-service-icon {
+    font-size: 16px;
+    flex-shrink: 0;
     line-height: 1;
-    padding: 4px;
-    transition: var(--proton-transition);
-    opacity: 0;
 }
 
-.proton-service-card:hover .proton-service-remove {
-    opacity: 1;
+.proton-service-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--proton-fg);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.proton-service-remove:hover {
-    color: var(--proton-danger);
+.proton-service-remove {
+    display: none;
 }
 
 .proton-service-status {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 .proton-service-status-dot {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     position: relative;
+    flex-shrink: 0;
 }
 
 .proton-service-status-dot.running {
     background: var(--proton-success);
-    animation: pulse-dot 2s ease-in-out infinite;
-}
-
-.proton-service-status-dot.running::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: var(--proton-success);
-    opacity: 0.5;
-    animation: pulse-ring 2s ease-in-out infinite;
+    box-shadow: 0 0 6px var(--proton-success);
 }
 
 .proton-service-status-dot.stopped {
@@ -5924,14 +7886,14 @@ input[type="range"]#proton-zoom-range::-moz-range-thumb {
 
 .proton-service-status-dot.error {
     background: var(--proton-danger);
-    animation: pulse-dot 1s ease-in-out infinite;
+    box-shadow: 0 0 6px var(--proton-danger);
 }
 
 .proton-service-status-text {
-    font-size: 13px;
+    font-size: 10px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
 }
 
 .proton-service-status-text.running {
@@ -5947,40 +7909,8 @@ input[type="range"]#proton-zoom-range::-moz-range-thumb {
 }
 
 .proton-service-description {
-    font-size: 12px;
-    color: var(--proton-fg-secondary);
-    margin: 8px 0 0 0;
-    line-height: 1.4;
-}
-
-/* Pulsing animations */
-@keyframes pulse-dot {
-    0%, 100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-
-    50% {
-        transform: scale(1.1);
-        opacity: 0.9;
-    }
-}
-
-@keyframes pulse-ring {
-    0% {
-        transform: scale(1);
-        opacity: 0.5;
-    }
-
-    50% {
-        transform: scale(1.8);
-        opacity: 0;
-    }
-
-    100% {
-        transform: scale(1);
-        opacity: 0;
-    }
+    display: none;
+    /* Скрыто для компактности */
 }
 
 /* Modal for adding services */
@@ -6061,6 +7991,91 @@ input[type="range"]#proton-zoom-range::-moz-range-thumb {
     color: var(--proton-fg);
 }
 
+/* Widget toggles section */
+.proton-widget-toggles {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--proton-border);
+}
+
+.proton-widget-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--proton-bg-tertiary);
+    border: 1px solid var(--proton-border);
+    border-radius: var(--proton-radius-sm);
+    cursor: pointer;
+    transition: var(--proton-transition);
+}
+
+.proton-widget-toggle:hover {
+    background: var(--proton-bg-hover);
+    border-color: var(--proton-border-hover, var(--proton-border));
+}
+
+.proton-widget-toggle-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.proton-widget-toggle-icon {
+    font-size: 20px;
+}
+
+.proton-widget-toggle-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--proton-fg);
+}
+
+.proton-widget-toggle input[type="checkbox"] {
+    display: none;
+}
+
+.proton-widget-toggle-slider {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: var(--proton-muted);
+    border-radius: 12px;
+    transition: var(--proton-transition);
+    flex-shrink: 0;
+}
+
+.proton-widget-toggle-slider::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: var(--proton-transition);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.proton-widget-toggle input[type="checkbox"]:checked+.proton-widget-toggle-slider {
+    background: var(--proton-accent);
+}
+
+.proton-widget-toggle input[type="checkbox"]:checked+.proton-widget-toggle-slider::after {
+    transform: translateX(20px);
+}
+
+/* Section title in modal */
+.proton-service-modal-section-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--proton-muted);
+    margin-bottom: 12px;
+}
+
 /* Search in modal */
 .proton-service-search {
     margin-bottom: 16px;
@@ -6088,83 +8103,6 @@ input[type="range"]#proton-zoom-range::-moz-range-thumb {
     color: var(--proton-muted);
 }
 
-/* Custom service input */
-.proton-service-custom {
-    display: flex;
-    gap: 8px;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--proton-border);
-    flex-shrink: 0;
-}
-
-.proton-service-custom-input-wrap {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.proton-service-custom input {
-    width: 100%;
-    padding: 10px 14px;
-    background: var(--proton-bg-tertiary);
-    border: 1px solid var(--proton-border);
-    border-radius: var(--proton-radius-sm);
-    color: var(--proton-fg);
-    font-size: 14px;
-    outline: none;
-    transition: var(--proton-transition);
-    box-sizing: border-box;
-}
-
-.proton-service-custom input:focus {
-    border-color: var(--proton-accent);
-    box-shadow: 0 0 0 3px var(--proton-accent-glow);
-}
-
-.proton-service-custom input.valid {
-    border-color: var(--proton-success, #34d399);
-}
-
-.proton-service-custom input.invalid {
-    border-color: var(--proton-error, #f87171);
-}
-
-.proton-service-custom input::placeholder {
-    color: var(--proton-muted);
-}
-
-.proton-service-custom-hint {
-    font-size: 12px;
-    min-height: 16px;
-    transition: var(--proton-transition);
-}
-
-.proton-service-custom-hint.info {
-    color: var(--proton-muted);
-}
-
-.proton-service-custom-hint.success {
-    color: var(--proton-success, #34d399);
-}
-
-.proton-service-custom-hint.error {
-    color: var(--proton-error, #f87171);
-}
-
-.proton-service-custom .proton-service-item-add {
-    flex-shrink: 0;
-    padding: 10px 16px;
-    align-self: flex-start;
-}
-
-.proton-service-custom .proton-service-item-add:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background: var(--proton-bg-tertiary);
-}
-
 .proton-service-list {
     display: flex;
     flex-direction: column;
@@ -6172,6 +8110,45 @@ input[type="range"]#proton-zoom-range::-moz-range-thumb {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+    position: relative;
+    mask-image: linear-gradient(to bottom,
+            transparent 0,
+            black 8px,
+            black calc(100% - 8px),
+            transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom,
+            transparent 0,
+            black 8px,
+            black calc(100% - 8px),
+            transparent 100%);
+    padding: 8px 0;
+}
+
+/* Loading indicator */
+.proton-service-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px 20px;
+    color: var(--proton-muted);
+    font-size: 14px;
+}
+
+.proton-service-loading-spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid var(--proton-border);
+    border-top-color: var(--proton-accent);
+    border-radius: 50%;
+    animation: proton-spin 0.8s linear infinite;
+}
+
+@keyframes proton-spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Category headers in list */
@@ -6266,11 +8243,35 @@ input[type="range"]#proton-zoom-range::-moz-range-thumb {
 
 .proton-service-item-add:hover {
     background: var(--proton-accent-hover);
+    transform: translateY(-1px);
 }
 
 .proton-service-item-add.added {
-    background: var(--proton-success);
-    pointer-events: none;
+    background: var(--proton-danger, #ef4444);
+}
+
+.proton-service-item-add.added:hover {
+    background: var(--proton-danger-hover, #dc2626);
+}
+
+/* Custom service badge */
+.proton-custom-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 2px 6px;
+    background: var(--proton-accent-glow, rgba(94, 158, 255, 0.15));
+    color: var(--proton-accent);
+    border-radius: 4px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.proton-service-item-custom {
+    border-color: var(--proton-accent-glow, rgba(94, 158, 255, 0.3));
+    background: var(--proton-accent-glow, rgba(94, 158, 255, 0.05));
 }
 
 .proton-service-empty {
@@ -6278,6 +8279,53 @@ input[type="range"]#proton-zoom-range::-moz-range-thumb {
     padding: 32px;
     color: var(--proton-muted);
     font-size: 14px;
+}
+
+/* Empty state with custom service suggestion */
+.proton-service-empty-custom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.proton-service-empty-icon {
+    font-size: 32px;
+    opacity: 0.7;
+}
+
+.proton-service-empty-text {
+    font-size: 14px;
+    color: var(--proton-fg-secondary);
+}
+
+.proton-service-empty-hint {
+    font-size: 12px;
+    color: var(--proton-muted);
+}
+
+.proton-service-add-custom-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    background: var(--proton-accent);
+    color: white;
+    border: none;
+    border-radius: var(--proton-radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--proton-transition);
+    margin-top: 4px;
+}
+
+.proton-service-add-custom-btn:hover {
+    background: var(--proton-accent-hover);
+    transform: translateY(-1px);
 }
 
 /* Disable animations if user prefers */
@@ -6288,12 +8336,8 @@ input[type="range"]#proton-zoom-range::-moz-range-thumb {
 
 /* Mobile responsive */
 @media (max-width: 768px) {
-    .proton-services-grid {
-        grid-template-columns: 1fr;
-    }
-
     .proton-service-modal-content {
-        width: calc(70% - 32px);
+        width: calc(100% - 32px);
         max-width: 100%;
         padding: 16px;
         max-height: 85vh;
@@ -6332,17 +8376,30 @@ input[type="range"]#proton-zoom-range::-moz-range-thumb {
         /* Предотвращает зум на iOS */
     }
 
-    .proton-service-custom {
-        flex-direction: column;
+    .proton-service-add-custom-btn {
+        width: 100%;
+        justify-content: center;
     }
 
-    .proton-service-custom input {
-        font-size: 16px;
-        /* Предотвращает зум на iOS */
+    .proton-widget-toggle {
+        padding: 10px 14px;
     }
 
-    .proton-service-custom .proton-service-item-add {
-        align-self: stretch;
-        text-align: center;
+    .proton-widget-toggle-name {
+        font-size: 13px;
+    }
+
+    .proton-widget-toggle-slider {
+        width: 40px;
+        height: 22px;
+    }
+
+    .proton-widget-toggle-slider::after {
+        width: 18px;
+        height: 18px;
+    }
+
+    .proton-widget-toggle input[type="checkbox"]:checked+.proton-widget-toggle-slider::after {
+        transform: translateX(18px);
     }
 }
