@@ -62,8 +62,19 @@ jobs:
             ./setup.sh
           fi
 
+          # Avoid transient 503 errors from git.openwrt.org by using GitHub mirrors.
+          if [ -f ./feeds.conf.default ]; then
+            sed -i 's|https://git.openwrt.org/openwrt/openwrt.git|https://github.com/openwrt/openwrt.git|g' ./feeds.conf.default
+            sed -i 's|https://git.openwrt.org/project/luci.git|https://github.com/openwrt/luci.git|g' ./feeds.conf.default
+          fi
+
           # Update feeds (we only need luci.mk, not to build luci-base)
-          ./scripts/feeds update luci base
+          for i in 1 2 3 4 5; do
+            ./scripts/feeds update luci base && break
+            echo "feeds update failed (attempt $i/5), retrying in 10s..."
+            sleep 10
+          done
+
           ./scripts/feeds install -p luci luci-base  # Install package definition, not build
 
           # Copy theme package (exclude .git and .github)
