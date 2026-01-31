@@ -1,4 +1,4 @@
-name: Build IPK Package
+name: Build Packages (IPK + APK)
 
 on:
   push:
@@ -14,8 +14,21 @@ permissions:
 
 jobs:
   build:
-    name: Build LuCI Theme Package
+    name: Build (${{ matrix.name }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: OpenWrt 23.05 (ipk)
+            container: openwrt/sdk:x86-64-23.05.5
+            pkg_ext: ipk
+          - name: OpenWrt 24.10 (apk)
+            container: openwrt/sdk:x86-64-24.10.0
+            pkg_ext: apk
+
+    container:
+      image: ${{ matrix.container }}
 
     steps:
       - name: Checkout
@@ -31,106 +44,41 @@ jobs:
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Build IPK
+      - name: Build package
         run: |
+          set -euo pipefail
           VERSION="${{ steps.version.outputs.version }}"
           PKG_NAME="luci-theme-proton2025"
 
-          # Создаём структуру пакета
-          mkdir -p pkg/data/www/luci-static/proton2025
-          mkdir -p pkg/data/usr/share/ucode/luci/template/themes/proton2025
-          mkdir -p pkg/data/usr/share/rpcd/acl.d
-          mkdir -p pkg/data/usr/share/rpcd/ucode
-          mkdir -p pkg/data/etc/uci-defaults
-          mkdir -p pkg/control
+          mkdir -p /builder
+          cd /builder
 
-          # Копируем файлы темы (включая translations.js с переводами)
-          cp -r htdocs/luci-static/proton2025/* pkg/data/www/luci-static/proton2025/
-          cp -r ucode/template/themes/proton2025/* pkg/data/usr/share/ucode/luci/template/themes/proton2025/
-          cp root/etc/uci-defaults/30_luci-theme-proton2025 pkg/data/etc/uci-defaults/
+          [ -d ./scripts ] || ./setup.sh
 
-          # Копируем RPC модуль температуры и ACL
-          if [ -f "root/usr/share/rpcd/ucode/luci.proton-temp" ]; then
-            cp root/usr/share/rpcd/ucode/luci.proton-temp pkg/data/usr/share/rpcd/ucode/
-          fi
-          if [ -f "root/usr/share/rpcd/acl.d/luci-theme-proton2025.json" ]; then
-            cp root/usr/share/rpcd/acl.d/luci-theme-proton2025.json pkg/data/usr/share/rpcd/acl.d/
-          fi
+          ./scripts/feeds update luci
+          ./scripts/feeds install luci-base || true
 
-          # Копируем JS меню
-          if [ -d "htdocs/luci-static/resources" ]; then
-            mkdir -p pkg/data/www/luci-static/resources
-            cp -r htdocs/luci-static/resources/* pkg/data/www/luci-static/resources/ 2>/dev/null || true
-          fi
+          rm -rf "package/${PKG_NAME}"
+          mkdir -p package
+          cp -a "${GITHUB_WORKSPACE}" "package/${PKG_NAME}"
 
-          # Вычисляем размер
-          INSTALLED_SIZE=$(du -sb pkg/data | cut -f1)
+          make defconfig
+          make "package/${PKG_NAME}/clean"
+          make "package/${PKG_NAME}/compile" -j"$(nproc)" V=s PKG_VERSION="${VERSION}"
 
-          # Создаём control файл
-          cat > pkg/control/control << EOF
-          Package: ${PKG_NAME}
-          Version: ${VERSION}
-          Depends: libc, luci-base
-          Source: https://github.com/${{ github.repository }}
-          SourceName: ${PKG_NAME}
-          License: Apache-2.0
-          Section: luci
-          Architecture: all
-          Installed-Size: ${INSTALLED_SIZE}
-          Description: Proton2025 - Elegant Dark Theme for LuCI
-          EOF
-
-          # Убираем лишние пробелы в начале строк
-          sed -i 's/^[[:space:]]*//' pkg/control/control
-
-          # Создаём postinst скрипт
-          cat > pkg/control/postinst << 'EOF'
-          #!/bin/sh
-          [ -n "${IPKG_INSTROOT}" ] || {
-            uci -q batch <<-EOI
-              set luci.themes.Proton2025=/luci-static/proton2025
-              commit luci
-          EOI
-            # Перезапускаем rpcd для загрузки RPC модуля температуры
-            /etc/init.d/rpcd restart 2>/dev/null || true
-          }
-          exit 0
-          EOF
-          chmod 755 pkg/control/postinst
-
-          # Создаём prerm скрипт
-          cat > pkg/control/prerm << 'EOF'
-          #!/bin/sh
-          [ -n "${IPKG_INSTROOT}" ] || {
-            uci -q delete luci.themes.Proton2025
-            uci commit luci
-          }
-          exit 0
-          EOF
-          chmod 755 pkg/control/prerm
-
-          # Собираем архивы
-          cd pkg/control && tar czvf ../control.tar.gz . && cd ../..
-          cd pkg/data && tar czvf ../data.tar.gz . && cd ../..
-          echo "2.0" > pkg/debian-binary
-
-          # Собираем IPK
-          cd pkg && tar czvf "../${PKG_NAME}_${VERSION}_all.ipk" ./debian-binary ./control.tar.gz ./data.tar.gz && cd ..
-
-          echo "ipk_file=${PKG_NAME}_${VERSION}_all.ipk" >> $GITHUB_OUTPUT
-          echo "Built: ${PKG_NAME}_${VERSION}_all.ipk"
-          ls -la *.ipk
+          mkdir -p "${GITHUB_WORKSPACE}/out/${{ matrix.pkg_ext }}"
+          find bin/packages -type f -name "${PKG_NAME}_*.${{ matrix.pkg_ext }}" -exec cp -v {} "${GITHUB_WORKSPACE}/out/${{ matrix.pkg_ext }}/" \;
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: luci-theme-proton2025-all
-          path: "*.ipk"
+          name: luci-theme-proton2025-${{ matrix.pkg_ext }}
+          path: out/${{ matrix.pkg_ext }}/*.${{ matrix.pkg_ext }}
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v1
         with:
-          files: "*.ipk"
+          files: out/${{ matrix.pkg_ext }}/*.${{ matrix.pkg_ext }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
