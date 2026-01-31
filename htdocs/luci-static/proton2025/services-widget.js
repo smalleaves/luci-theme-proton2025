@@ -199,7 +199,9 @@
             console.info("[ProtonServicesWidget]", message, extra);
           else console.info("[ProtonServicesWidget]", message);
         }
-      } catch (e) {}
+      } catch (e) {
+        // Ignore console errors in restricted environments
+      }
     }
 
     _logDebug(message, extra) {
@@ -214,7 +216,9 @@
             console.debug("[ProtonServicesWidget]", message, extra);
           else console.debug("[ProtonServicesWidget]", message);
         }
-      } catch (e) {}
+      } catch (e) {
+        // Ignore console errors in restricted environments
+      }
     }
 
     _getUiLogEl() {
@@ -224,7 +228,7 @@
     _formatTime(d) {
       const pad = (n) => String(n).padStart(2, "0");
       return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(
-        d.getSeconds()
+        d.getSeconds(),
       )}`;
     }
 
@@ -248,10 +252,10 @@
         .map(
           (l) =>
             `<div class="proton-services-log-line"><span class="proton-services-log-time">${this.escapeHtml(
-              l.time
+              l.time,
             )}</span><span class="proton-services-log-text">${this.escapeHtml(
-              l.text
-            )}</span></div>`
+              l.text,
+            )}</span></div>`,
         )
         .join("");
     }
@@ -274,7 +278,7 @@
         this._backendRetryDelaysMs[this._backendRetryAttempts++] || 1000;
       this._logDebug("Scheduling backend retry", { reason, delay });
       this._appendUiLogLine(
-        `${this._t("Waiting for LuCI API...")} ${this._formatElapsedMs(delay)}`
+        `${this._t("Waiting for LuCI API...")} ${this._formatElapsedMs(delay)}`,
       );
 
       this._backendRetryTimer = setTimeout(() => {
@@ -393,7 +397,7 @@
     saveServices() {
       this._safeSetItem(
         "proton-services-widget",
-        JSON.stringify(this.services)
+        JSON.stringify(this.services),
       );
     }
 
@@ -420,7 +424,7 @@
 
       // Создаем или находим общий контейнер для виджетов
       let widgetsContainer = document.getElementById(
-        "proton-widgets-container"
+        "proton-widgets-container",
       );
       if (!widgetsContainer) {
         // Создаём секцию с заголовком "Виджеты" и кнопкой настроек
@@ -472,16 +476,16 @@
       widget.innerHTML = `
                 <div class="proton-services-header">
                     <h3 class="proton-services-title">${this._t(
-                      "Services Monitor"
+                      "Services Monitor",
                     )}</h3>
                     <div class="proton-services-info">?
                         <div class="proton-services-tooltip">
                             <div class="proton-services-tooltip-title">${this._t(
-                              "Services Monitor"
+                              "Services Monitor",
                             )}</div>
                             <div class="proton-services-tooltip-text">
                                 ${this._t(
-                                  "Monitor and manage system services. Click on service card to view details and control actions."
+                                  "Monitor and manage system services. Click on service card to view details and control actions.",
                                 )}
                             </div>
                             <div class="proton-services-tooltip-legend">
@@ -560,7 +564,7 @@
         const placeholder = document.createElement("div");
         placeholder.className = "proton-services-empty";
         placeholder.innerHTML = `<span class="proton-services-empty-hint">${this._t(
-          "Click ⚙ to add services"
+          "Click ⚙ to add services",
         )}</span>`;
         grid.appendChild(placeholder);
         return;
@@ -638,13 +642,13 @@
                     <span class="proton-service-icon">${safeIcon}</span>
                     <h4 class="proton-service-name">${safeDisplayName}</h4>
                     <button class="proton-service-remove" title="${this._t(
-                      "Remove"
+                      "Remove",
                     )}">×</button>
                 </div>
                 <div class="proton-service-status">
                     <span class="proton-service-status-dot" data-status="checking"></span>
                     <span class="proton-service-status-text">${this._t(
-                      "Checking..."
+                      "Checking...",
                     )}</span>
                 </div>
                 <p class="proton-service-description">${safeDescription}</p>
@@ -689,7 +693,7 @@
                 <div class="proton-service-modal-content">
                     <div class="proton-service-modal-header">
                         <h3 class="proton-service-modal-title">${this._t(
-                          "Widget Settings"
+                          "Widget Settings",
                         )}</h3>
                         <button class="proton-service-modal-close">×</button>
                     </div>
@@ -699,7 +703,7 @@
                             <span class="proton-widget-toggle-info">
                                 <span class="proton-widget-toggle-icon">🌡</span>
                                 <span class="proton-widget-toggle-name">${this._t(
-                                  "Temperature Widget"
+                                  "Temperature Widget",
                                 )}</span>
                             </span>
                             <input type="checkbox" id="proton-temp-widget-toggle" ${
@@ -710,13 +714,13 @@
                     </div>
                     
                     <div class="proton-service-modal-section-title">${this._t(
-                      "Services"
+                      "Services",
                     )}</div>
                     
                     <div class="proton-service-search">
                         <input type="text" id="proton-service-search-input" 
                                placeholder="${this._t(
-                                 "Search or add custom service..."
+                                 "Search or add custom service...",
                                )}" autocomplete="off" maxlength="64">
                     </div>
                     <div class="proton-service-list" id="proton-service-list">
@@ -792,10 +796,10 @@
         list,
         "",
         this,
-        addCustomFromSearch
+        addCustomFromSearch,
       );
       this._appendUiLogLine(
-        `${this._t("Available services")}: ${initialCount}`
+        `${this._t("Available services")}: ${initialCount}`,
       );
 
       // Поиск с debounce
@@ -808,7 +812,7 @@
             list,
             q,
             this,
-            addCustomFromSearch
+            addCustomFromSearch,
           );
           if (q) {
             this._appendUiLogLine(`${this._t("Search")}: "${q}" - ${count}`);
@@ -851,7 +855,7 @@
       // Сначала добавляем пользовательские сервисы (которых нет в availableServices)
       const availableNames = new Set(this.availableServices.map((s) => s.name));
       const customServices = this.services.filter(
-        (name) => !availableNames.has(name)
+        (name) => !availableNames.has(name),
       );
 
       if (customServices.length > 0) {
@@ -923,34 +927,34 @@
           emptyDiv.innerHTML = `
             <div class="proton-service-empty-icon">🔍</div>
             <div class="proton-service-empty-text">${this._t(
-              "No services found"
+              "No services found",
             )}</div>
             <div class="proton-service-empty-hint">${this._t(
-              "Invalid name. Use only: a-z, 0-9, -, _"
+              "Invalid name. Use only: a-z, 0-9, -, _",
             )}</div>
           `;
         } else if (alreadyAdded) {
           emptyDiv.innerHTML = `
             <div class="proton-service-empty-icon">✓</div>
             <div class="proton-service-empty-text">"${this.escapeHtml(
-              filterLower
+              filterLower,
             )}" ${this._t("already added")}</div>
           `;
         } else {
           emptyDiv.innerHTML = `
             <div class="proton-service-empty-icon">📦</div>
             <div class="proton-service-empty-text">${this._t(
-              "Service not found in system"
+              "Service not found in system",
             )}</div>
             <button class="proton-service-add-custom-btn" data-name="${this.escapeHtml(
-              filterLower
+              filterLower,
             )}">
               + ${this._t("Add")} "${this.escapeHtml(filterLower)}" ${this._t(
-            "as custom"
-          )}
+                "as custom",
+              )}
             </button>
             <div class="proton-service-empty-hint">${this._t(
-              "Or press Enter"
+              "Or press Enter",
             )}</div>
           `;
 
@@ -968,7 +972,7 @@
 
       if (sortedCategories.length === 0) {
         container.innerHTML = `<div class="proton-service-empty">${this._t(
-          "No services found"
+          "No services found",
         )}</div>`;
         return 0;
       }
@@ -981,7 +985,7 @@
         const header = document.createElement("div");
         header.className = "proton-service-list-category";
         header.innerHTML = `${catInfo.icon || ""} ${this.getCategoryName(
-          category
+          category,
         )}`;
         container.appendChild(header);
 
@@ -1020,12 +1024,12 @@
                             <span class="proton-service-item-icon">${safeIcon}</span>
                             <div>
                                 <h4>${safeDisplayName}${
-            isCustom
-              ? ' <span class="proton-custom-badge">' +
-                this._t("custom") +
-                "</span>"
-              : ""
-          }</h4>
+                                  isCustom
+                                    ? ' <span class="proton-custom-badge">' +
+                                      this._t("custom") +
+                                      "</span>"
+                                    : ""
+                                }</h4>
                                 <p>${safeDescription}</p>
                             </div>
                         </div>
@@ -1126,7 +1130,7 @@
       const seen = new Set();
 
       const anchors = document.querySelectorAll(
-        '#mainmenu a[href*="/admin/services/"]'
+        '#mainmenu a[href*="/admin/services/"]',
       );
       anchors.forEach((a) => {
         const href = a.getAttribute("href") || "";
@@ -1176,7 +1180,7 @@
               this._initdCacheAt = now;
               this._logDebug(
                 "Discovered services via rc list",
-                this._initdCache.length
+                this._initdCache.length,
               );
               return this._initdCache;
             }
@@ -1197,13 +1201,13 @@
                 (f) =>
                   f.type === "file" &&
                   !f.name.startsWith(".") &&
-                  this._isValidServiceName(f.name)
+                  this._isValidServiceName(f.name),
               )
               .map((f) => ({ name: f.name, fromInitd: true }));
             this._initdCacheAt = now;
             this._logDebug(
               "Discovered init.d services via fs.list",
-              this._initdCache.length
+              this._initdCache.length,
             );
             return this._initdCache;
           }
@@ -1260,7 +1264,7 @@
 
       this.availableServices = Array.from(merged.values());
       this._appendUiLogLine(
-        `${this._t("Services loaded")}: ${this.availableServices.length}`
+        `${this._t("Services loaded")}: ${this.availableServices.length}`,
       );
     }
 
@@ -1341,7 +1345,9 @@
               }
               return;
             }
-          } catch (e) {}
+          } catch (e) {
+            // RPC parsing failed, fallback to exec mode
+          }
         }
 
         // Fallback на exec-режим - используем последовательный опрос для снижения нагрузки
@@ -1355,7 +1361,7 @@
         this._appendUiLogLine(
           `${this._t("Check complete")}: ${mode}${
             elapsedMs ? " - " + this._formatElapsedMs(elapsedMs) : ""
-          }`
+          }`,
         );
       }
     }
@@ -1410,7 +1416,7 @@
 
             const result = await L.resolveDefault(
               this._rcListOne(serviceName),
-              null
+              null,
             );
 
             if (result && result[serviceName]) {
@@ -1423,7 +1429,9 @@
               }
               return "stopped";
             }
-          } catch (e) {}
+          } catch (e) {
+            // RPC check failed, fallback to init script
+          }
         }
 
         const initCheck = await this.checkViaInitScript(serviceName);
@@ -1466,7 +1474,9 @@
             this._initActionCache.set(serviceName, "running");
             return res;
           }
-        } catch (e) {}
+        } catch (e) {
+          // "running" action not supported, try "status"
+        }
 
         try {
           const res = await runAction("status");
@@ -1474,7 +1484,9 @@
             this._initActionCache.set(serviceName, "status");
             return res;
           }
-        } catch (e) {}
+        } catch (e) {
+          // "status" action also not supported
+        }
       }
       return null;
     }
@@ -1588,7 +1600,7 @@
       if (this._onVisibilityChange) {
         document.removeEventListener(
           "visibilitychange",
-          this._onVisibilityChange
+          this._onVisibilityChange,
         );
         this._onVisibilityChange = null;
       }
@@ -1765,7 +1777,9 @@
         if (localStorage.getItem("proton-temp-widget-enabled") === "false") {
           return;
         }
-      } catch (e) {}
+      } catch (e) {
+        // localStorage may be unavailable in some contexts
+      }
 
       if (!this.isOverviewPage()) return;
 
@@ -1777,10 +1791,10 @@
       const tryInject = () => {
         // Ищем общий контейнер виджетов или виджет сервисов
         const widgetsContainer = document.getElementById(
-          "proton-widgets-container"
+          "proton-widgets-container",
         );
         const servicesWidget = document.getElementById(
-          "proton-services-widget"
+          "proton-services-widget",
         );
 
         if (widgetsContainer) {
@@ -1824,7 +1838,7 @@
           const maincontent = document.getElementById("maincontent");
           if (maincontent) {
             let widgetsContainer = document.getElementById(
-              "proton-widgets-container"
+              "proton-widgets-container",
             );
             if (!widgetsContainer) {
               const insertPoint =
@@ -1854,7 +1868,7 @@
 
                 insertPoint.parentNode.insertBefore(
                   widgetsSection,
-                  insertPoint
+                  insertPoint,
                 );
               }
             }
@@ -1890,37 +1904,37 @@
           <div class="proton-temp-info">?
             <div class="proton-temp-tooltip">
               <div class="proton-temp-tooltip-title">${this._t(
-                "Temperature Monitor"
+                "Temperature Monitor",
               )}</div>
               <div class="proton-temp-tooltip-text">
                 ${this._t(
-                  "Thermal sensors monitoring. Colors indicate: green - normal, yellow - warm, orange - hot, red - critical."
+                  "Thermal sensors monitoring. Colors indicate: green - normal, yellow - warm, orange - hot, red - critical.",
                 )}
               </div>
               <div class="proton-temp-tooltip-legend">
                 <div class="proton-temp-tooltip-legend-item">
                   <span class="proton-temp-tooltip-legend-dot normal"></span>
                   <span>${this._t("Normal")} (&lt; ${
-        this._thresholds.warm
-      }°C)</span>
+                    this._thresholds.warm
+                  }°C)</span>
                 </div>
                 <div class="proton-temp-tooltip-legend-item">
                   <span class="proton-temp-tooltip-legend-dot warm"></span>
                   <span>${this._t("Warm")} (${this._thresholds.warm}-${
-        this._thresholds.hot - 1
-      }°C)</span>
+                    this._thresholds.hot - 1
+                  }°C)</span>
                 </div>
                 <div class="proton-temp-tooltip-legend-item">
                   <span class="proton-temp-tooltip-legend-dot hot"></span>
                   <span>${this._t("Hot")} (${this._thresholds.hot}-${
-        this._thresholds.critical - 1
-      }°C)</span>
+                    this._thresholds.critical - 1
+                  }°C)</span>
                 </div>
                 <div class="proton-temp-tooltip-legend-item">
                   <span class="proton-temp-tooltip-legend-dot critical"></span>
                   <span>${this._t("Critical")} (≥ ${
-        this._thresholds.critical
-      }°C)</span>
+                    this._thresholds.critical
+                  }°C)</span>
                 </div>
               </div>
             </div>
@@ -1943,7 +1957,7 @@
         } else {
           referenceElement.parentNode.insertBefore(
             widget,
-            referenceElement.nextSibling
+            referenceElement.nextSibling,
           );
         }
       }
@@ -2126,7 +2140,7 @@
           // Проверяем есть ли thermal zones через file.list
           const thermalResult = await L.resolveDefault(
             rpc.list("/sys/class/thermal"),
-            []
+            [],
           );
           const thermalEntries = this._normalizeEntries(thermalResult);
           this._log("thermal entries (alt):", thermalEntries);
@@ -2134,11 +2148,11 @@
           // Если thermal zones есть но данных нет - значит RPC модуль не установлен
           if (
             thermalEntries.some(
-              (e) => e.name && e.name.startsWith("thermal_zone")
+              (e) => e.name && e.name.startsWith("thermal_zone"),
             )
           ) {
             this._log(
-              "Thermal zones exist but RPC module not available. Please reinstall theme."
+              "Thermal zones exist but RPC module not available. Please reinstall theme.",
             );
           }
         }
@@ -2289,7 +2303,7 @@
       if (this._onVisibilityChange) {
         document.removeEventListener(
           "visibilitychange",
-          this._onVisibilityChange
+          this._onVisibilityChange,
         );
         this._onVisibilityChange = null;
       }
@@ -2321,7 +2335,7 @@
       if (!tabMenu) return false;
 
       const button = document.querySelector(
-        ".cbi-title-section .cbi-title-buttons > button.cbi-button.cbi-button-edit"
+        ".cbi-title-section .cbi-title-buttons > button.cbi-button.cbi-button-edit",
       );
       if (!button) return false;
 
@@ -2343,7 +2357,7 @@
         button.setAttribute("aria-label", label);
 
       const titleButtons = document.querySelector(
-        ".cbi-title-section .cbi-title-buttons"
+        ".cbi-title-section .cbi-title-buttons",
       );
       if (titleButtons && titleButtons.children.length === 0)
         titleButtons.remove();
@@ -2424,120 +2438,143 @@
     return key;
   }
 
+  // Паттерн для проверки значений Load Average: "X.XX, X.XX, X.XX" или "X.XX X.XX X.XX"
+  const LOAD_AVERAGE_PATTERN = /^\s*\d+\.\d+[\s,]+\d+\.\d+[\s,]+\d+\.\d+\s*$/;
+  // Позиция строки Load Average в таблице System (9-я строка, индекс 8)
+  const LOAD_AVERAGE_ROW_INDEX = 8;
+
   function enhanceLoadAverage() {
-    // Находим ячейку с Load Average
-    const tables = document.querySelectorAll(
-      'body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table, body[data-page=""] .cbi-section:first-of-type table.table'
+    // Находим таблицу System на странице Overview
+    const table = document.querySelector(
+      'body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table',
     );
 
-    tables.forEach((table) => {
-      const rows = table.querySelectorAll("tr");
-      rows.forEach((row) => {
-        const firstCell = row.querySelector("td:first-child");
-        const secondCell = row.querySelector("td:last-child");
+    if (!table) return;
 
-        if (!firstCell || !secondCell) return;
+    const rows = table.querySelectorAll("tr");
 
-        const cellText = firstCell.textContent.trim();
+    // Проверяем 9-ю строку (индекс 8)
+    if (rows.length <= LOAD_AVERAGE_ROW_INDEX) {
+      console.warn(
+        "[Proton2025] Load Average: таблица System содержит меньше 9 строк",
+      );
+      return;
+    }
 
-        // Проверяем, это ли строка Load Average
-        if (
-          cellText.includes("Load Average") ||
-          cellText.includes("Load") ||
-          cellText.includes("Нагрузка") ||
-          cellText.includes("нагрузка")
-        ) {
-          // Получаем значения load average
-          const loadText = secondCell.textContent.trim();
-          const loadValues = loadText.split(/[,\s]+/).filter((v) => v);
+    const row = rows[LOAD_AVERAGE_ROW_INDEX];
+    const firstCell = row.querySelector("td:first-child");
+    const secondCell = row.querySelector("td:last-child");
 
-          if (loadValues.length >= 3) {
-            const loads = loadValues.slice(0, 3).map((v) => parseFloat(v));
+    if (!firstCell || !secondCell) return;
 
-            // Определяем количество ядер CPU (по умолчанию 1)
-            let cpuCores = 1;
-            rows.forEach((r) => {
-              const fc = r.querySelector("td:first-child");
-              if (fc && fc.textContent.includes("CPU")) {
-                const sc = r.querySelector("td:last-child");
-                if (sc) {
-                  const coresMatch = sc.textContent.match(/(\d+)\s*x/i);
-                  if (coresMatch) {
-                    cpuCores = parseInt(coresMatch[1]);
-                  }
-                }
-              }
-            });
+    // Проверяем паттерн значений Load Average
+    const loadText = secondCell.textContent.trim();
 
-            // Функция определения уровня загрузки
-            function getLoadLevel(load, cores) {
-              const normalized = load / cores;
-              if (normalized < 0.7) return "low";
-              if (normalized < 1.2) return "medium";
-              return "high";
-            }
+    if (!LOAD_AVERAGE_PATTERN.test(loadText)) {
+      // Это не Load Average - структура таблицы изменилась
+      console.warn(
+        "[Proton2025] Load Average: строка 9 не содержит паттерн Load Average.",
+        "Ожидалось: 'X.XX, X.XX, X.XX', получено:",
+        loadText,
+        "| Label:",
+        firstCell.textContent.trim(),
+      );
+      return;
+    }
 
-            // Функция расчета процента заполнения бара (максимум = cores * 2)
-            function getBarWidth(load, cores) {
-              return Math.min((load / (cores * 2)) * 100, 100);
-            }
+    // Уже обработано?
+    if (secondCell.querySelector(".proton-load-average")) return;
 
-            // Создаем новую разметку
-            const container = document.createElement("div");
-            container.className = "proton-load-average";
+    // Парсим значения
+    const loadValues = loadText.split(/[,\s]+/).filter((v) => v);
+    if (loadValues.length < 3) return;
 
-            const labels = [t("1 min"), t("5 min"), t("15 min")];
+    const loads = loadValues.slice(0, 3).map((v) => parseFloat(v));
 
-            loads.forEach((load, index) => {
-              const level = getLoadLevel(load, cpuCores);
-              const barWidth = getBarWidth(load, cpuCores);
+    // Определяем количество ядер CPU (по умолчанию 1)
+    let cpuCores = 1;
+    rows.forEach((r) => {
+      const fc = r.querySelector("td:first-child");
+      if (fc && fc.textContent.includes("CPU")) {
+        const sc = r.querySelector("td:last-child");
+        if (sc) {
+          const coresMatch = sc.textContent.match(/(\d+)\s*x/i);
+          if (coresMatch) {
+            cpuCores = parseInt(coresMatch[1]);
+          }
+        }
+      }
+    });
 
-              const item = document.createElement("div");
-              item.className = "proton-load-item";
+    // Функция определения уровня загрузки
+    function getLoadLevel(load, cores) {
+      const normalized = load / cores;
+      if (normalized < 0.7) return "low";
+      if (normalized < 1.2) return "medium";
+      return "high";
+    }
 
-              const label = document.createElement("div");
-              label.className = "proton-load-label";
-              label.textContent = labels[index];
+    // Функция расчета процента заполнения бара (максимум = cores * 2)
+    function getBarWidth(load, cores) {
+      return Math.min((load / (cores * 2)) * 100, 100);
+    }
 
-              const valueRow = document.createElement("div");
-              valueRow.className = "proton-load-value-row";
+    // Создаем новую разметку
+    const container = document.createElement("div");
+    container.className = "proton-load-average";
 
-              const number = document.createElement("span");
-              number.className = "proton-load-number";
-              number.setAttribute("data-level", level);
-              number.textContent = load.toFixed(2);
+    const labels = [t("1 min"), t("5 min"), t("15 min")];
 
-              const bar = document.createElement("div");
-              bar.className = "proton-load-bar";
+    loads.forEach((load, index) => {
+      const level = getLoadLevel(load, cpuCores);
+      const barWidth = getBarWidth(load, cpuCores);
 
-              const fill = document.createElement("div");
-              fill.className = "proton-load-bar-fill";
-              fill.setAttribute("data-level", level);
-              fill.style.width = barWidth + "%";
+      const item = document.createElement("div");
+      item.className = "proton-load-item";
 
-              bar.appendChild(fill);
-              valueRow.appendChild(number);
-              valueRow.appendChild(bar);
-              item.appendChild(label);
-              item.appendChild(valueRow);
-              container.appendChild(item);
-            });
+      const label = document.createElement("div");
+      label.className = "proton-load-label";
+      label.textContent = labels[index];
 
-            // Добавляем информационную иконку с tooltip
-            const infoIcon = document.createElement("div");
-            infoIcon.className = "proton-load-info";
-            infoIcon.innerHTML = "?";
+      const valueRow = document.createElement("div");
+      valueRow.className = "proton-load-value-row";
 
-            const tooltip = document.createElement("div");
-            tooltip.className = "proton-load-tooltip";
+      const number = document.createElement("span");
+      number.className = "proton-load-number";
+      number.setAttribute("data-level", level);
+      number.textContent = load.toFixed(2);
 
-            tooltip.innerHTML = `
+      const bar = document.createElement("div");
+      bar.className = "proton-load-bar";
+
+      const fill = document.createElement("div");
+      fill.className = "proton-load-bar-fill";
+      fill.setAttribute("data-level", level);
+      fill.style.width = barWidth + "%";
+
+      bar.appendChild(fill);
+      valueRow.appendChild(number);
+      valueRow.appendChild(bar);
+      item.appendChild(label);
+      item.appendChild(valueRow);
+      container.appendChild(item);
+    });
+
+    // Добавляем информационную иконку с tooltip
+    const infoIcon = document.createElement("div");
+    infoIcon.className = "proton-load-info";
+    infoIcon.innerHTML = "?";
+
+    const tooltip = document.createElement("div");
+    tooltip.className = "proton-load-tooltip";
+
+    tooltip.innerHTML = `
               <div class="proton-load-tooltip-title">${t(
-                "System Load Average"
+                "System Load Average",
               )}</div>
               <div class="proton-load-tooltip-text">
                 ${t(
-                  "Shows the average number of processes waiting for CPU execution. Three values represent the last 1, 5, and 15 minutes."
+                  "Shows the average number of processes waiting for CPU execution. Three values represent the last 1, 5, and 15 minutes.",
                 )}
               </div>
               <div class="proton-load-tooltip-legend">
@@ -2556,22 +2593,17 @@
               </div>
             `;
 
-            infoIcon.appendChild(tooltip);
-            container.appendChild(infoIcon);
+    infoIcon.appendChild(tooltip);
+    container.appendChild(infoIcon);
 
-            secondCell.innerHTML = "";
-            secondCell.appendChild(container);
-          }
-        }
-      });
-    });
+    secondCell.innerHTML = "";
+    secondCell.appendChild(container);
   }
 
   // Запускаем enhancement после загрузки страницы
   function initLoadAverageEnhancement() {
     if (
       document.body.dataset.page === "admin-status-overview" ||
-      document.body.dataset.page === "" ||
       window.location.pathname.includes("/admin/status/overview")
     ) {
       let observer = null;
@@ -2588,28 +2620,20 @@
 
         // Проверяем, не был ли уже применен enhancement
         const table = document.querySelector(
-          'body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table, body[data-page=""] .cbi-section:first-of-type table.table'
+          'body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table',
         );
-        if (table) {
-          const hasEnhancement = table.querySelector(".proton-load-average");
-          const hasLoadAverage = Array.from(table.querySelectorAll("tr")).some(
-            (row) => {
-              const firstCell = row.querySelector("td:first-child");
-              if (!firstCell) return false;
-              const text = firstCell.textContent.trim();
-              return (
-                text.includes("Load") ||
-                text.includes("load") ||
-                text.includes("Нагрузка") ||
-                text.includes("нагрузка")
-              );
-            }
-          );
+        if (!table) return;
 
-          // Применяем enhancement только если есть Load Average и нет нашего enhancement
-          if (hasLoadAverage && !hasEnhancement) {
-            enhanceLoadAverage();
-          }
+        const rows = table.querySelectorAll("tr");
+        if (rows.length <= LOAD_AVERAGE_ROW_INDEX) return;
+
+        const row = rows[LOAD_AVERAGE_ROW_INDEX];
+        const secondCell = row.querySelector("td:last-child");
+        if (!secondCell) return;
+
+        // Проверяем, есть ли уже наш enhancement
+        if (!secondCell.querySelector(".proton-load-average")) {
+          enhanceLoadAverage();
         }
       }
 
@@ -2649,12 +2673,20 @@
       // Первоначальная инициализация
       const initCheck = setInterval(() => {
         const table = document.querySelector(
-          'body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table, body[data-page=""] .cbi-section:first-of-type table.table'
+          'body[data-page="admin-status-overview"] .cbi-section:first-of-type table.table',
         );
         if (table && table.querySelectorAll("tr").length > 0) {
           enhanceLoadAverage();
           clearInterval(initCheck);
           setupObserver();
+
+          // Подписываемся на LuCI poll события для повторного применения enhancement
+          if (typeof L !== "undefined" && L.poll) {
+            L.poll.add(() => {
+              // Небольшая задержка чтобы LuCI успел обновить DOM
+              setTimeout(throttledEnhance, 100);
+            }, 5);
+          }
         }
       }, 100);
 

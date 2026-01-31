@@ -60,7 +60,7 @@
 <style>
 /* Critical: keep header height stable before cascade.css loads */
 :root {
-	--proton-page-max-width: 1200px;
+	--proton-page-max-width: 990px;
 	--proton-page-gutter: 20px;
 }
 
@@ -117,6 +117,7 @@
 <script src="{{ media }}/translations.js"></script>
 <script src="{{ media }}/settings-sync.js" defer></script>
 <script src="{{ media }}/services-widget.js" defer></script>
+<script src="{{ media }}/custom-pages.js" defer></script>
 
 <script>
 (function() {

@@ -112,14 +112,11 @@
 
         const result = response.json();
         if (result?.result?.[1]?.success) {
-          console.log(
-            "[Proton2025] Settings saved to UCI:",
-            Object.keys(changes)
-          );
+          // Settings saved successfully
         } else if (result?.result?.[1]?.errors) {
           console.warn(
             "[Proton2025] UCI save errors:",
-            result.result[1].errors
+            result.result[1].errors,
           );
         }
       } else {
@@ -142,10 +139,7 @@
 
         const result = await response.json();
         if (result?.result?.[1]?.success) {
-          console.log(
-            "[Proton2025] Settings saved to UCI:",
-            Object.keys(changes)
-          );
+          // Settings saved successfully
         }
       }
     } catch (err) {
@@ -197,7 +191,7 @@
 
       const settings = result?.result?.[1]?.settings;
       if (!settings) {
-        console.log("[Proton2025] No UCI settings found, using localStorage");
+        // No UCI settings found, using localStorage
         return;
       }
 
@@ -217,9 +211,6 @@
         if (currentLocal !== localValue) {
           originalSetItem(localKey, localValue); // Use original to avoid triggering save back
           updated = true;
-          console.log(
-            `[Proton2025] Synced ${localKey}: ${currentLocal} -> ${localValue}`
-          );
         }
       }
 
