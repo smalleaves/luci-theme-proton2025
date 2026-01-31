@@ -61,9 +61,9 @@ jobs:
             ./setup.sh
           fi
 
-          # Update and install luci feed
-          ./scripts/feeds update -a
-          ./scripts/feeds install luci-base
+          # Update feeds (we only need luci.mk, not to build luci-base)
+          ./scripts/feeds update luci base
+          ./scripts/feeds install -p luci luci-base  # Install package definition, not build
 
           # Copy theme package (exclude .git and .github)
           rm -rf "package/${PKG_NAME}"
@@ -73,10 +73,13 @@ jobs:
           cp -r "${GITHUB_WORKSPACE}/ucode" "package/${PKG_NAME}/"
           cp "${GITHUB_WORKSPACE}/Makefile" "package/${PKG_NAME}/"
 
+          # Set version in the package Makefile (not globally!)
+          sed -i "s/^PKG_VERSION.*/PKG_VERSION:=${VERSION}/" "package/${PKG_NAME}/Makefile"
+
           # Build
           make defconfig
-          make "package/${PKG_NAME}/compile" -j"$(nproc)" V=s PKG_VERSION="${VERSION}" || \
-            make "package/${PKG_NAME}/compile" -j1 V=s PKG_VERSION="${VERSION}"
+          make "package/${PKG_NAME}/compile" -j"$(nproc)" V=s || \
+            make "package/${PKG_NAME}/compile" -j1 V=s
 
           # Copy result
           mkdir -p "${GITHUB_WORKSPACE}/out/${{ matrix.pkg_ext }}"
