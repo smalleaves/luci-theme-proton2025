@@ -23,8 +23,9 @@ jobs:
           - name: OpenWrt 23.05 (ipk)
             container: openwrt/sdk:x86-64-23.05.5
             pkg_ext: ipk
-          - name: OpenWrt SNAPSHOT (apk)
-            container: openwrt/sdk:x86-64-snapshot
+          - name: OpenWrt 24.10 (apk)
+            # Use the 24.10 branch SDK (snapshots) where the APK packaging transition lives.
+            container: openwrt/sdk:x86-64-openwrt-24.10
             pkg_ext: apk
 
     container:
@@ -83,7 +84,15 @@ jobs:
 
           # Copy result
           mkdir -p "${GITHUB_WORKSPACE}/out/${{ matrix.pkg_ext }}"
-          find bin/packages -type f \( -name "${PKG_NAME}*.ipk" -o -name "${PKG_NAME}*.apk" \) \
+          if ! find bin/packages -type f -name "${PKG_NAME}*.${{ matrix.pkg_ext }}" -print -quit | grep -q .; then
+            echo "ERROR: Expected a .${{ matrix.pkg_ext }} package, but none was produced."
+            echo "This usually means the selected SDK still builds IPK packages."
+            echo "Found theme packages:";
+            find bin/packages -type f \( -name "${PKG_NAME}*.ipk" -o -name "${PKG_NAME}*.apk" \) -print || true
+            exit 1
+          fi
+
+          find bin/packages -type f -name "${PKG_NAME}*.${{ matrix.pkg_ext }}" \
             -exec cp -v {} "${GITHUB_WORKSPACE}/out/${{ matrix.pkg_ext }}/" \;
 
           # Debug: show what was built
