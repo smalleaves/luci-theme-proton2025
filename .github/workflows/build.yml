@@ -1,4 +1,4 @@
-name: Build Packages (IPK + APK)
+name: Build OpenWrt Packages
 
 on:
   push:
@@ -14,23 +14,21 @@ permissions:
 
 jobs:
   build:
-    name: Build (${{ matrix.name }})
+    name: Build (${{ matrix.openwrt }})
     runs-on: ubuntu-latest
+
     strategy:
       fail-fast: false
       matrix:
         include:
-          - name: OpenWrt 23.05 (ipk)
-            container: openwrt/sdk:x86-64-23.05.5
-            pkg_ext: ipk
-          - name: OpenWrt main (apk)
-            # 24.10 SDK still produces .ipk (ipkg-build). For .apk you need an APK-based SDK.
-            container: openwrt/sdk:x86-64-main
-            pkg_ext: apk
-
-    container:
-      image: ${{ matrix.container }}
-      options: --user 0:0
+          # IPK (opkg)
+          - openwrt: "23.05.5"
+            ext: "ipk"
+            sdk_url: "https://downloads.openwrt.org/releases/23.05.5/targets/x86/64/openwrt-sdk-23.05.5-x86-64_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+          # APK (apk)
+          - openwrt: "24.10.0"
+            ext: "apk"
+            sdk_url: "https://downloads.openwrt.org/releases/24.10.0/targets/x86/64/openwrt-sdk-24.10.0-x86-64_gcc-13.3.0_musl.Linux-x86_64.tar.xz"
 
     steps:
       - name: Checkout
@@ -38,90 +36,98 @@ jobs:
 
       - name: Get version
         id: version
-        shell: bash
         run: |
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             VERSION="${GITHUB_REF#refs/tags/v}"
           else
-            # APK has stricter version validation - use tilde (~) instead of multiple dashes
-            VERSION="1.0.0~$(date +%Y%m%d).${GITHUB_SHA::7}"
+            VERSION="1.0.0-$(date +%Y%m%d)-${GITHUB_SHA::7}"
           fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Build package
-        shell: bash
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential clang flex bison g++ gawk gcc-multilib gettext git \
+            libncurses-dev libssl-dev python3 python3-setuptools \
+            rsync unzip wget zlib1g-dev file
+
+      - name: Download and extract OpenWrt SDK
         run: |
           set -euo pipefail
-          VERSION="${{ steps.version.outputs.version }}"
-          PKG_NAME="luci-theme-proton2025"
-
-          # SDK container has /builder as workdir with setup.sh
-          cd /builder
-
-          # Run setup.sh if SDK not yet extracted (newer container approach)
-          if [ -f ./setup.sh ] && [ ! -d ./scripts ]; then
-            ./setup.sh
-          fi
-
-          # Avoid transient 503 errors from git.openwrt.org by using GitHub mirrors.
-          if [ -f ./feeds.conf.default ]; then
-            sed -i 's|https://git.openwrt.org/openwrt/openwrt.git|https://github.com/openwrt/openwrt.git|g' ./feeds.conf.default
-            sed -i 's|https://git.openwrt.org/project/luci.git|https://github.com/openwrt/luci.git|g' ./feeds.conf.default
-          fi
-
-          # Update feeds (we only need luci.mk, not to build luci-base)
-          for i in 1 2 3 4 5; do
-            ./scripts/feeds update luci base && break
-            echo "feeds update failed (attempt $i/5), retrying in 10s..."
-            sleep 10
-          done
-
-          ./scripts/feeds install -p luci luci-base  # Install package definition, not build
-
-          # Copy theme package (exclude .git and .github)
-          rm -rf "package/${PKG_NAME}"
-          mkdir -p "package/${PKG_NAME}"
-          cp -r "${GITHUB_WORKSPACE}/htdocs" "package/${PKG_NAME}/"
-          cp -r "${GITHUB_WORKSPACE}/root" "package/${PKG_NAME}/"
-          cp -r "${GITHUB_WORKSPACE}/ucode" "package/${PKG_NAME}/"
-          cp "${GITHUB_WORKSPACE}/Makefile" "package/${PKG_NAME}/"
-
-          # Set version in the package Makefile (not globally!)
-          sed -i "s/^PKG_VERSION.*/PKG_VERSION:=${VERSION}/" "package/${PKG_NAME}/Makefile"
-
-          # Build
-          make defconfig
-          make "package/${PKG_NAME}/compile" -j"$(nproc)" V=s || \
-            make "package/${PKG_NAME}/compile" -j1 V=s
-
-          # Copy result
-          mkdir -p "${GITHUB_WORKSPACE}/out/${{ matrix.pkg_ext }}"
-          if ! find bin/packages -type f -name "${PKG_NAME}*.${{ matrix.pkg_ext }}" -print -quit | grep -q .; then
-            echo "ERROR: Expected a .${{ matrix.pkg_ext }} package, but none was produced."
-            echo "This usually means the selected SDK still builds IPK packages."
-            echo "Found theme packages:";
-            find bin/packages -type f \( -name "${PKG_NAME}*.ipk" -o -name "${PKG_NAME}*.apk" \) -print || true
+          wget -q "${{ matrix.sdk_url }}" -O sdk.tar.xz
+          tar -xf sdk.tar.xz
+          SDK_DIR=$(find . -maxdepth 1 -type d -name "openwrt-sdk-*" | head -n 1)
+          if [ -z "$SDK_DIR" ]; then
+            echo "SDK directory not found after extraction" >&2
             exit 1
           fi
+          mv "$SDK_DIR" openwrt-sdk
 
-          find bin/packages -type f -name "${PKG_NAME}*.${{ matrix.pkg_ext }}" \
-            -exec cp -v {} "${GITHUB_WORKSPACE}/out/${{ matrix.pkg_ext }}/" \;
+      - name: Build package via SDK
+        run: |
+          set -euo pipefail
+          PKG_NAME="luci-theme-proton2025"
+          EXT="${{ matrix.ext }}"
 
-          # Debug: show what was built
-          echo "=== Built packages ==="
-          find bin/packages -type f \( -name "*.ipk" -o -name "*.apk" \) -ls || true
-          ls -la "${GITHUB_WORKSPACE}/out/${{ matrix.pkg_ext }}/" || true
+          cd openwrt-sdk
+
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+          rm -rf "package/${PKG_NAME}"
+          mkdir -p "package/${PKG_NAME}"
+          rsync -a --delete \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude 'docs' \
+            "$GITHUB_WORKSPACE/" "package/${PKG_NAME}/"
+
+          echo "CONFIG_PACKAGE_${PKG_NAME}=m" >> .config
+          if [ "$EXT" = "apk" ]; then
+            # В APK-based ветках это обычно включено по умолчанию, но если опция есть — зафиксируем.
+            echo "CONFIG_USE_APK=y" >> .config
+          fi
+          make defconfig
+
+          make package/${PKG_NAME}/compile V=s
+
+          mkdir -p "$GITHUB_WORKSPACE/dist"
+          find bin/packages -type f \( -name "${PKG_NAME}_*.${EXT}" -o -name "${PKG_NAME}*.${EXT}" \) -print -exec cp -v {} "$GITHUB_WORKSPACE/dist/" \;
+          if ! ls -1 "$GITHUB_WORKSPACE/dist"/*.${EXT} >/dev/null 2>&1; then
+            echo "Expected output *.${EXT} was not produced by this SDK (OpenWrt ${{ matrix.openwrt }})." >&2
+            echo "Check SDK URL/target or switch to an APK-based SDK if you expect .apk." >&2
+            exit 1
+          fi
+          echo "Built files:"; ls -la "$GITHUB_WORKSPACE/dist" || true
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: luci-theme-proton2025-${{ matrix.pkg_ext }}
-          path: out/${{ matrix.pkg_ext }}/*.${{ matrix.pkg_ext }}
+          name: luci-theme-proton2025-${{ matrix.openwrt }}
+          path: dist/*
+
+  release:
+    name: Create GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: List release files
+        run: |
+          find dist -type f -maxdepth 3 -print
 
       - name: Create Release
-        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v1
         with:
-          files: out/${{ matrix.pkg_ext }}/*.${{ matrix.pkg_ext }}
+          files: |
+            dist/**/*.ipk
+            dist/**/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
