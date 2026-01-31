@@ -23,9 +23,9 @@ jobs:
           - name: OpenWrt 23.05 (ipk)
             container: openwrt/sdk:x86-64-23.05.5
             pkg_ext: ipk
-          - name: OpenWrt 24.10 (apk)
-            # Use the 24.10 branch SDK (snapshots) where the APK packaging transition lives.
-            container: openwrt/sdk:x86-64-openwrt-24.10
+          - name: OpenWrt main (apk)
+            # 24.10 SDK still produces .ipk (ipkg-build). For .apk you need an APK-based SDK.
+            container: openwrt/sdk:x86-64-main
             pkg_ext: apk
 
     container:
