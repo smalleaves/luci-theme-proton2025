@@ -3,6 +3,9 @@
 #
 # This is free software, licensed under the Apache License, Version 2.0
 #
+# Simplified Makefile for APK/IPK compatibility
+# Thanks to @smalleaves for the suggestion (GitHub issue #8)
+#
 
 include $(TOPDIR)/rules.mk
 
@@ -15,11 +18,6 @@ LUCI_PKGARCH:=all
 
 PKG_LICENSE:=Apache-2.0
 
-ifneq ($(wildcard $(TOPDIR)/feeds/luci/luci.mk),)
-  include $(TOPDIR)/feeds/luci/luci.mk
-else
-  include ../../luci.mk
-endif
+include $(TOPDIR)/feeds/luci/luci.mk
 
-# call BuildPackage - OpenWrt buildroot signature
 $(eval $(call BuildPackage,$(PKG_NAME)))
