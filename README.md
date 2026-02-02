@@ -119,10 +119,10 @@ Or:
 curl -fsSL https://raw.githubusercontent.com/ChesterGoodiny/luci-theme-proton2025/main/install.sh | sh
 ```
 
-### Building .ipk from Source
+### Building Packages from Source
 
 ```bash
-cp -r luci-theme-proton2025 ~/openwrt/feeds/luci/themes/
+cp -r luci-theme-proton2025 ~/openwrt/package/
 cd ~/openwrt
 ./scripts/feeds update -a && ./scripts/feeds install -a
 make menuconfig  # LuCI -> Themes -> luci-theme-proton2025
